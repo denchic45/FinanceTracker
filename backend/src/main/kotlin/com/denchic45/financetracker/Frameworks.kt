@@ -3,7 +3,7 @@ package com.denchic45.financetracker
 import com.denchic45.financetracker.feature.account.accountModule
 import com.denchic45.financetracker.feature.auth.authModule
 import com.denchic45.financetracker.feature.category.categoryModule
-import com.denchic45.financetracker.feature.error.InvalidRequest
+import com.denchic45.financetracker.error.InvalidRequest
 import com.denchic45.financetracker.feature.transaction.transactionModule
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
