@@ -1,8 +1,12 @@
 package com.denchic45.financetracker.feature.category
 
-import com.denchic45.financetracker.database.table.CategoryDao
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import com.denchic45.financetracker.category.model.CategoryRequest
 import com.denchic45.financetracker.category.model.CategoryResponse
+import com.denchic45.financetracker.database.table.CategoryDao
+import com.denchic45.financetracker.error.CategoryNotFound
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CategoryRepository() {
@@ -15,8 +19,8 @@ class CategoryRepository() {
         }.toCategoryResponse()
     }
 
-    fun findById(categoryId: Long): CategoryResponse = transaction {
-        CategoryDao[categoryId].toCategoryResponse()
+    fun findById(categoryId: Long): Either<CategoryNotFound, CategoryResponse> = transaction {
+        CategoryDao.findById(categoryId)?.toCategoryResponse()?.right() ?: CategoryNotFound.left()
     }
 
     fun update(categoryId: Long, request: CategoryRequest) = transaction {

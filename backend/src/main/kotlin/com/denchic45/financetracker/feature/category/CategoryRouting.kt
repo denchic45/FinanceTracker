@@ -1,5 +1,6 @@
 package com.denchic45.financetracker.feature.category
 
+import com.denchic45.financetracker.util.respond
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -20,7 +21,7 @@ fun Application.configureCategory() {
                 }
                 route("/{categoryId}") {
                     get {
-                        call.respond(repository.findById(call.parameters.getOrFail<Long>("categoryId")))
+                        repository.findById(call.parameters.getOrFail<Long>("categoryId")).respond()
                     }
                     put {
                         call.respond(
