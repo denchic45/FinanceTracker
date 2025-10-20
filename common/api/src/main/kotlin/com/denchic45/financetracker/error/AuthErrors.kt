@@ -1,4 +1,4 @@
-package com.denchic45.financetracker.feature.error
+package com.denchic45.financetracker.error
 
 import io.ktor.http.*
 import kotlinx.serialization.Serializable

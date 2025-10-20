@@ -1,8 +1,6 @@
-package com.denchic45.financetracker.feature.error
+package com.denchic45.financetracker.feature
 
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.plugins.requestvalidation.ValidationResult
-import kotlinx.serialization.Serializable
+import io.ktor.server.plugins.requestvalidation.*
 
 class ValidationResultBuilder {
     private val errors: MutableList<String> = mutableListOf()
@@ -21,14 +19,4 @@ class ValidationResultBuilder {
 fun buildValidationResult(block: ValidationResultBuilder.() -> Unit): ValidationResult {
     val builder = ValidationResultBuilder().apply(block)
     return builder.build()
-}
-
-@Serializable
-sealed class FailedValidation() : DomainError {
-    override val httpCode: HttpStatusCode get() = HttpStatusCode.BadRequest
-}
-
-@Serializable
-data class InvalidRequest(val errors: List<String>) : FailedValidation() {
-    override val message: String = "Request has invalid fields"
 }

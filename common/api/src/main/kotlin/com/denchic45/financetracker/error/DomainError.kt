@@ -1,9 +1,6 @@
-package com.denchic45.financetracker.feature.error
+package com.denchic45.financetracker.error
 
-import arrow.core.Either
 import io.ktor.http.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -24,16 +21,12 @@ sealed class NotFoundError() : DomainError {
     abstract val entity: String
 }
 
-context(routing: RoutingContext)
-suspend inline fun <reified A : Any> Either<DomainError, A>.respond(
-    status: HttpStatusCode = HttpStatusCode.OK
-): Unit = when (this) {
-    is Either.Left -> value.respond()
-    is Either.Right -> routing.call.respond(status, this)
+@Serializable
+sealed class FailedValidation() : DomainError {
+    override val httpCode: HttpStatusCode get() = HttpStatusCode.BadRequest
 }
 
-context(routing: RoutingContext)
-suspend fun DomainError.respond(
-) {
-    routing.call.respond(httpCode, this)
+@Serializable
+data class InvalidRequest(val errors: List<String>) : FailedValidation() {
+    override val message: String = "Request has invalid fields"
 }
