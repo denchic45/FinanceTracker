@@ -14,6 +14,7 @@ import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.UUID
 import java.util.regex.Pattern
 
 
@@ -21,7 +22,7 @@ fun Route.authRoute() {
     val authService: AuthService by inject()
     val config = environment.config
 
-    fun generateToken(userId: Long): String {
+    fun generateToken(userId: UUID): String {
         return JWT.create()
             .withAudience(config.property("jwt.audience").getString())
             .withClaim("id", userId.toString())

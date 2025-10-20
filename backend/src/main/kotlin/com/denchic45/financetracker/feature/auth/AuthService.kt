@@ -15,10 +15,11 @@ import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
+import java.util.UUID
 
 class AuthService {
 
-    fun signUp(request: SignUpRequest): Either<DomainError, Long> = transaction {
+    fun signUp(request: SignUpRequest): Either<DomainError, UUID> = transaction {
         val existingUser = UserDao.find { Users.email eq request.email }.singleOrNull()
         if (existingUser != null) return@transaction EmailAlreadyUsed.left()
 

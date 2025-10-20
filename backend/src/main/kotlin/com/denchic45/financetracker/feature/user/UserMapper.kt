@@ -1,4 +1,4 @@
-package com.denchic45.financetracker.feature.transaction
+package com.denchic45.financetracker.feature.user
 
 import com.denchic45.financetracker.database.table.UserDao
 import com.denchic45.financetracker.user.model.UserResponse

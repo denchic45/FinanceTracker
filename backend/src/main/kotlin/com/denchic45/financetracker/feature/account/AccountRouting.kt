@@ -22,19 +22,20 @@ fun Application.configureAccounts() {
                 }
                 route("/{accountId}") {
                     get {
-                        call.respond(repository.findById(call.parameters.getOrFail<Long>("accountId")))
+                        repository.findById(
+                            call.parameters.getUuidOrFail("accountId")
+                        ).respond()
                     }
                     put {
-                        call.respond(
-                            repository.update(
-                                call.parameters.getOrFail<Long>("accountId"),
-                                call.receive()
-                            )
-                        )
+                        repository.update(
+                            call.parameters.getUuidOrFail("accountId"),
+                            call.receive()
+                        ).respond()
                     }
                     delete {
-                        repository.remove(call.parameters.getOrFail<Long>("accountId"))
-                        call.respond(HttpStatusCode.NoContent)
+                        repository.remove(
+                            call.parameters.getUuidOrFail("accountId")
+                        ).respond(HttpStatusCode.NoContent)
                     }
                 }
             }
