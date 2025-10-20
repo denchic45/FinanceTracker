@@ -6,3 +6,7 @@ import kotlinx.serialization.Serializable
 object AccountNotFound : NotFoundError() {
     override val entity: String = "account"
 }
+
+object AccountValidationMessages {
+    const val INVALID_NAME = "Invalid account name."
+}
