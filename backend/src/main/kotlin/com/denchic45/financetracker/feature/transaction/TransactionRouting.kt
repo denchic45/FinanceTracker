@@ -1,8 +1,10 @@
 package com.denchic45.financetracker.feature.transaction
 
-import com.denchic45.financetracker.transaction.model.TransactionErrors
+import com.denchic45.financetracker.error.TransactionValidationMessages
+import com.denchic45.financetracker.feature.buildValidationResult
 import com.denchic45.financetracker.transaction.model.TransactionRequest
 import com.denchic45.financetracker.transaction.model.TransactionType
+import com.denchic45.financetracker.util.respond
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -17,20 +19,19 @@ fun Application.configureTransactions() {
     routing {
         authenticate("auth-jwt") {
             route("/transactions") {
-                val repository: TransactionRepository by inject()
+                val repository by inject<TransactionRepository>()
 
                 install(RequestValidation) {
                     validate<TransactionRequest> { request ->
-                        when {
-                            request.type == TransactionType.TRANSFER && request.incomeSourceId == null -> {
-                                ValidationResult.Invalid(TransactionErrors.INCOME_ACCOUNT_REQUIRED_ON_TRANSFER)
-                            }
-
-                            request.type != TransactionType.TRANSFER && request.incomeSourceId != null -> {
-                                ValidationResult.Invalid(TransactionErrors.INCOME_ACCOUNT_MUST_BE_NULL)
-                            }
-
-                            else -> ValidationResult.Valid
+                        buildValidationResult {
+                            condition(
+                                request.type == TransactionType.TRANSFER && request.incomeSourceId == null,
+                                TransactionValidationMessages.INCOME_ACCOUNT_REQUIRED_ON_TRANSFER
+                            )
+                            condition(
+                                request.type != TransactionType.TRANSFER && request.incomeSourceId != null,
+                                TransactionValidationMessages.INCOME_ACCOUNT_MUST_BE_NULL
+                            )
                         }
                     }
                 }
@@ -45,19 +46,17 @@ fun Application.configureTransactions() {
                 }
                 route("/{transactionId}") {
                     get {
-                        call.respond(repository.findById(call.parameters.getOrFail<Long>("transactionId")))
+                        repository.findById(call.parameters.getOrFail<Long>("transactionId"))
                     }
                     put {
-                        call.respond(
-                            repository.update(
-                                call.parameters.getOrFail<Long>("transactionId"),
-                                call.receive()
-                            )
-                        )
+                        repository.update(
+                            call.parameters.getOrFail<Long>("transactionId"),
+                            call.receive()
+                        ).respond()
                     }
                     delete {
                         repository.remove(call.parameters.getOrFail<Long>("transactionId"))
-                        call.respond(HttpStatusCode.NoContent)
+                            .respond(HttpStatusCode.NoContent)
                     }
                 }
             }
