@@ -70,6 +70,9 @@ dependencies {
     implementation(libs.coil.network.ktor)
     implementation(libs.material3)
 
+    implementation(libs.arrow.core)
+    implementation(libs.arrow.fx.coroutines)
+
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
