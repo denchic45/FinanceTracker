@@ -20,10 +20,7 @@ dependencies {
     api("io.ktor:ktor-client-logging:$ktorVersion")
     api("io.ktor:ktor-client-auth:$ktorVersion")
 
-    // kotlin-result
-    api("com.michael-bull.kotlin-result:kotlin-result:1.1.17")
-    api("com.michael-bull.kotlin-result:kotlin-result-coroutines:1.1.17")
-
+    // arrow-kt
     api("io.arrow-kt:arrow-core:$arrowVersion")
     api("io.arrow-kt:arrow-fx-coroutines:$arrowVersion")
 
