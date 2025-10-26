@@ -5,24 +5,24 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import androidx.room.withTransaction
 import com.denchic45.financetracker.data.TransactionRemoteMediator
 import com.denchic45.financetracker.data.database.AppDatabase
 import com.denchic45.financetracker.data.database.dao.AccountDao
 import com.denchic45.financetracker.data.database.dao.CategoryDao
 import com.denchic45.financetracker.data.database.dao.TransactionDao
 import com.denchic45.financetracker.data.database.entity.AggregatedTransactionEntity
-import com.denchic45.financetracker.data.fetchResourceFlow
 import com.denchic45.financetracker.data.mapper.toAccountEntity
 import com.denchic45.financetracker.data.mapper.toCategoryEntity
 import com.denchic45.financetracker.data.mapper.toTransactionEntity
 import com.denchic45.financetracker.data.mapper.toTransactionItem
-import com.denchic45.financetracker.data.observeResource
-import com.denchic45.financetracker.domain.Resource
+import com.denchic45.financetracker.data.observeData
 import com.denchic45.financetracker.domain.model.TransactionItem
-import com.denchic45.financetracker.transaction.model.TransactionApi
+import com.denchic45.financetracker.response.EmptyResponseResult
+import com.denchic45.financetracker.response.ResponseResult
+import com.denchic45.financetracker.transaction.TransactionApi
 import com.denchic45.financetracker.transaction.model.TransactionRequest
 import com.denchic45.financetracker.transaction.model.TransactionResponse
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -43,25 +43,26 @@ class TransactionRepository(
         ).flow.map { it.map(AggregatedTransactionEntity::toTransactionItem) }
     }
 
-    fun findById(transactionId: Long) = observeResource(
-        query = transactionDao.observeById(transactionId).map {
-
-        },
+    fun findById(transactionId: Long) = observeData(
+        query = transactionDao.observeById(transactionId)
+            .map(AggregatedTransactionEntity::toTransactionItem),
         fetch = {
-            coroutineScope {
-                val transactionResponse = transactionApi.getById(transactionId)
-                categoryDao.upsert(transactionResponse.category.toCategoryEntity())
-                accountDao.upsert(transactionResponse.account.toAccountEntity())
-                transactionDao.upsert(transactionResponse.toTransactionEntity())
+            val transactionResponse = transactionApi.getById(transactionId)
+            transactionResponse.onRight { response ->
+                database.withTransaction {
+                    categoryDao.upsert(response.category.toCategoryEntity())
+                    accountDao.upsert(response.account.toAccountEntity())
+                    transactionDao.upsert(response.toTransactionEntity())
+                }
             }
         }
     )
 
-    fun add(request: TransactionRequest): Flow<Resource<TransactionResponse>> {
-        return fetchResourceFlow { transactionApi.add(request) }
+    suspend fun add(request: TransactionRequest): ResponseResult<TransactionResponse> {
+        return transactionApi.add(request)
     }
 
-    fun remove(transactionId: Long): Flow<Resource<Unit>> {
-        return fetchResourceFlow { transactionApi.delete(transactionId) }
+    suspend fun remove(transactionId: Long): EmptyResponseResult {
+        return transactionApi.delete(transactionId)
     }
 }
