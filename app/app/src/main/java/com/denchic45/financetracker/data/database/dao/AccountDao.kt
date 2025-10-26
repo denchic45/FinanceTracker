@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.denchic45.financetracker.data.database.entity.AccountEntity
-import com.denchic45.financetracker.data.database.entity.CategoryEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,5 +16,5 @@ interface AccountDao {
     suspend fun upsert(entities: List<AccountEntity>)
 
     @Query("SELECT * FROM account")
-    fun getAll(): List<AccountEntity>
+    fun observeAll(): Flow<List<AccountEntity>>
 } 

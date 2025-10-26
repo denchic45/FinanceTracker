@@ -24,11 +24,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.denchic45.financetracker.ui.accounteditor.AccountEditorDialog
 import com.denchic45.financetracker.ui.analytics.AnalyticsScreen
 import com.denchic45.financetracker.ui.categories.LabelsScreen
@@ -43,111 +41,115 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MainScreen()
+            RootContainer()
         }
+    }
+}
+
+@Composable
+private fun RootContainer() {
+    FinanceTrackerTheme {
+        MainScreen()
     }
 }
 
 @Composable
 private fun MainScreen() {
     val viewModel = koinViewModel<MainViewModel>()
-    FinanceTrackerTheme {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            bottomBar = {
-                NavigationBar {
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = {},
-                        icon = {
-                            Icon(Icons.Outlined.Home, null)
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    selected = false,
+                    onClick = {},
+                    icon = {
+                        Icon(Icons.Outlined.Home, null)
+                    },
+                    label = { Text("Главная") }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = {},
+                    icon = {
+                        Icon(Icons.Outlined.Analytics, null)
+                    },
+                    label = { Text("Аналитика") }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = {},
+                    icon = {
+                        Icon(Icons.Outlined.History, null)
+                    },
+                    label = { Text("Транзакции") }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = {},
+                    icon = {
+                        Icon(Icons.AutoMirrored.Outlined.Label, null)
+                    },
+                    label = { Text("Ярлыки") }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = {},
+                    icon = {
+                        Icon(Icons.Outlined.Settings, null)
+                    },
+                    label = { Text("Настройки") }
+                )
+            }
+        }) { innerPadding ->
+        NavDisplay(
+            backStack = viewModel.backStack, // Your custom-managed back stack
+            modifier = Modifier.padding(innerPadding),
+            transitionSpec = { // Define custom transitions for screen changes
+                fadeIn(tween(300)) togetherWith fadeOut(tween(300))
+            },
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
+            entryProvider = entryProvider {
+                entry<Screen.Home> {
+                    HomeScreen()
+                }
+                entry<Screen.Analytics> {
+                    AnalyticsScreen()
+                }
+                entry<Screen.Transactions> {
+                    TransactionsScreen(
+                        navigateToTransactionEditor = {
+                            viewModel.onTransactionEditorNavigate(it)
                         },
-                        label = { Text("Главная") }
-                    )
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = {},
-                        icon = {
-                            Icon(Icons.Outlined.Analytics, null)
-                        },
-                        label = { Text("Аналитика") }
-                    )
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = {},
-                        icon = {
-                            Icon(Icons.Outlined.History, null)
-                        },
-                        label = { Text("Транзакции") }
-                    )
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = {},
-                        icon = {
-                            Icon(Icons.AutoMirrored.Outlined.Label, null)
-                        },
-                        label = { Text("Ярлыки") }
-                    )
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = {},
-                        icon = {
-                            Icon(Icons.Outlined.Settings, null)
-                        },
-                        label = { Text("Настройки") }
+                        navigateToTransactionDetails = {
+                            viewModel.onTransactionDetailsNavigate(it)
+                        }
                     )
                 }
-            }) { innerPadding ->
-            NavDisplay(
-                backStack = viewModel.backStack, // Your custom-managed back stack
-                modifier = Modifier.padding(innerPadding),
-                transitionSpec = { // Define custom transitions for screen changes
-                    fadeIn(tween(300)) togetherWith fadeOut(tween(300))
-                },
-                entryDecorators = listOf(
-                    rememberSceneSetupNavEntryDecorator(),
-                    rememberSavedStateNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator()
-                ),
-                entryProvider = entryProvider {
-                    entry<Screen.Home> {
-                        HomeScreen()
-                    }
-                    entry<Screen.Analytics> {
-                        AnalyticsScreen()
-                    }
-                    entry<Screen.Transactions> {
-                        TransactionsScreen(
-                            navigateToTransactionEditor = {
-                                viewModel.onTransactionEditorNavigate(it)
-                            },
-                            navigateToTransactionDetails = {
-                                viewModel.onTransactionDetailsNavigate(it)
-                            }
-                        )
-                    }
-                    entry<Screen.Labels> {
-                        LabelsScreen()
-                    }
-
-
-                    entry<Screen.AccountEditor> { key ->
-                        AccountEditorDialog(
-                            accountId = key.accountId,
-                            onFinish = { viewModel.onNavigateBack() }
-                        )
-                    }
-                    entry<Screen.TransactionEditor> { key ->
-                        TODO()
-                    }
-                    entry<Screen.TransactionDetails> { key ->
-                        TransactionDetailsSheet(
-                            transactionId = key.transactionId,
-                            navigateBack = { viewModel.onNavigateBack() }
-                        )
-                    }
+                entry<Screen.Labels> {
+                    LabelsScreen()
                 }
-            )
-        }
+
+
+                entry<Screen.AccountEditor> { key ->
+                    AccountEditorDialog(
+                        accountId = key.accountId,
+                        onFinish = { viewModel.onNavigateBack() }
+                    )
+                }
+                entry<Screen.TransactionEditor> { key ->
+                    TODO()
+                }
+                entry<Screen.TransactionDetails> { key ->
+                    TransactionDetailsSheet(
+                        transactionId = key.transactionId,
+                        navigateBack = { viewModel.onNavigateBack() }
+                    )
+                }
+            }
+        )
     }
 }
