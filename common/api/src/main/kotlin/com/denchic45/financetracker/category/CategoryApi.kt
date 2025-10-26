@@ -2,8 +2,11 @@ package com.denchic45.financetracker.category
 
 import com.denchic45.financetracker.category.model.CategoryRequest
 import com.denchic45.financetracker.category.model.CategoryResponse
+import com.denchic45.financetracker.response.ResponseResult
+import com.denchic45.financetracker.response.EmptyResponseResult
+import com.denchic45.financetracker.response.safeApiCall
+import com.denchic45.financetracker.response.safeApiCallForEmpty
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -13,30 +16,35 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
 class CategoryApi(private val client: HttpClient) {
-
-    suspend fun add(request: CategoryRequest): CategoryResponse {
-        return client.post("/categories") {
-            contentType(ContentType.Application.Json)
-            setBody(request)
-        }.body()
+    suspend fun add(request: CategoryRequest): ResponseResult<CategoryResponse> {
+        return client.safeApiCall {
+            post("/categories") {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+        }
     }
 
-    suspend fun getList(): List<CategoryResponse> {
-        return client.get("/categories").body()
+    suspend fun getList(): ResponseResult<List<CategoryResponse>> {
+        return client.safeApiCall { get("/categories") }
     }
 
-    suspend fun getById(categoryId: Long): CategoryResponse {
-        return client.get("/categories/$categoryId").body()
+    suspend fun getById(categoryId: Long): ResponseResult<CategoryResponse> {
+        return client.safeApiCall { get("/categories/$categoryId") }
     }
 
-    suspend fun update(categoryId: Long, request: CategoryRequest): CategoryResponse {
-        return client.put("/categories/$categoryId") {
-            contentType(ContentType.Application.Json)
-            setBody(request)
-        }.body()
+    suspend fun update(categoryId: Long, request: CategoryRequest): ResponseResult<CategoryResponse> {
+        return client.safeApiCall {
+            put("/categories/$categoryId") {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+        }
     }
 
-    suspend fun delete(categoryId: Long) {
-        return client.delete("/categories/$categoryId").body()
+    suspend fun delete(categoryId: Long): EmptyResponseResult {
+        return client.safeApiCallForEmpty {
+            delete("/categories/$categoryId")
+        }
     }
 }
