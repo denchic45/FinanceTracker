@@ -16,11 +16,12 @@ class AccountRepository(private val accountApi: AccountApi) {
         return accountApi.add(request)
     }
 
-    suspend fun update(accountId: Long, request: AccountRequest): AccountResponse {
+
+    suspend fun update(accountId: UUID, request: AccountRequest): ResponseResult<AccountResponse> {
         return accountApi.update(accountId, request)
     }
 
-    suspend fun remove(accountId: Long) {
-        accountApi.delete(accountId)
+    suspend fun remove(accountId: UUID): EmptyResponseResult {
+        return accountApi.delete(accountId)
     }
 }

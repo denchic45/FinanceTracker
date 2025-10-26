@@ -19,11 +19,11 @@ class AccountsViewModel(
         showEditor = EditingAccountConfig(null)
     }
 
-    fun onEditClick(accountId: Long) {
+    fun onEditClick(accountId: UUID) {
         showEditor = EditingAccountConfig(accountId)
     }
 
-    fun onRemoveClick(accountId: Long) {
+    fun onRemoveClick(accountId: UUID) {
         viewModelScope.launch {
             accountRepository.remove(accountId)
         }

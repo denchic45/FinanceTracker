@@ -22,11 +22,12 @@ import androidx.compose.ui.Modifier
 import com.denchic45.financetracker.account.model.AccountType
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountEditorDialog(
-    accountId: Long?,
+    accountId: UUID?,
     onFinish: () -> Unit
 ) {
     val viewModel = koinViewModel<AccountEditorViewModel> {

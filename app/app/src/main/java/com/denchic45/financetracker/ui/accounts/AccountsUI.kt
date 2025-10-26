@@ -17,33 +17,36 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.denchic45.financetracker.ui.ResourceContent
+import com.denchic45.financetracker.account.model.AccountResponse
+import com.denchic45.financetracker.ui.CacheableResource
+import com.denchic45.financetracker.ui.CircularLoadingBox
 import com.denchic45.financetracker.ui.accounteditor.AccountEditorDialog
 import org.koin.compose.viewmodel.koinViewModel
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountsScreen(viewModel: AccountsViewModel = koinViewModel()) {
-    val accounts by viewModel.accounts.collectAsState()
-    var confirmToRemoveAccount by remember { mutableLongStateOf(0L) }
+    val accountsResource by viewModel.accounts.collectAsState()
+    var confirmToRemoveAccount by remember { mutableStateOf<UUID?>(null) }
     val showEditor = viewModel.showEditor
 
-    if (confirmToRemoveAccount != 0L) {
+    if (confirmToRemoveAccount != null) {
         AlertDialog(
-            onDismissRequest = { confirmToRemoveAccount = 0L },
+            onDismissRequest = { confirmToRemoveAccount = null },
             confirmButton = {
                 TextButton(onClick = {
-                    viewModel.onRemoveClick(confirmToRemoveAccount)
-                    confirmToRemoveAccount = 0L
+                    viewModel.onRemoveClick(confirmToRemoveAccount!!)
+                    confirmToRemoveAccount = null
                 }) { Text("Удалить") }
             },
             dismissButton = {
                 TextButton(onClick = {
-                    confirmToRemoveAccount = 0L
+                    confirmToRemoveAccount = null
                 }) { Text("Отмена") }
             },
             title = { Text("Удалить счет?") },
@@ -65,17 +68,45 @@ fun AccountsScreen(viewModel: AccountsViewModel = koinViewModel()) {
             })
     }) { padding ->
         Box(Modifier.padding(padding)) {
-            ResourceContent(accounts) { accounts ->
-                LazyColumn {
-                    items(accounts) {
-                        AccountListItem(
-                            account = it,
-                            onEditClick = { viewModel.onEditClick(it.id) },
-                            onRemoveClick = { viewModel.onRemoveClick(it.id) }
-                        )
-                    }
+            when (val resource = accountsResource) {
+                CacheableResource.Loading -> CircularLoadingBox()
+                is CacheableResource.Newest -> {
+                    AccountsList(
+                        accounts = resource.value,
+                        onEditClick = viewModel::onEditClick,
+                        onRemoveClick = viewModel::onRemoveClick
+                    )
+                }
+
+                is CacheableResource.Cached -> {
+                    AccountsList(
+                        accounts = resource.value,
+                        onEditClick = viewModel::onEditClick,
+                        onRemoveClick = viewModel::onRemoveClick
+                    )
+                }
+                is CacheableResource.Failed -> {
+                    TODO()
                 }
             }
+
+        }
+    }
+}
+
+@Composable
+private fun AccountsList(
+    accounts: List<AccountResponse>,
+    onEditClick: (UUID) -> Unit,
+    onRemoveClick: (UUID) -> Unit,
+) {
+    LazyColumn {
+        items(accounts) {
+            AccountListItem(
+                account = it,
+                onEditClick = { onEditClick(it.id) },
+                onRemoveClick = { onRemoveClick(it.id) }
+            )
         }
     }
 }

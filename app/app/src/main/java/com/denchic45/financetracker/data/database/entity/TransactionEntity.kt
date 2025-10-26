@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.NO_ACTION
 import androidx.room.PrimaryKey
 import com.denchic45.financetracker.transaction.model.TransactionType
+import java.util.UUID
 
 @Entity(
     tableName = "transaction",
@@ -42,9 +43,9 @@ data class TransactionEntity(
     val type: TransactionType,
     val description: String,
     @ColumnInfo("account_id")
-    val accountId: Long,
+    val accountId: UUID,
     @ColumnInfo("category_id")
     val categoryId: Long,
     @ColumnInfo("income_account_id")
-    val incomeAccountId: Long?,
+    val incomeAccountId: UUID?,
 )

@@ -3,6 +3,7 @@ package com.denchic45.financetracker.ui.main
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import kotlinx.serialization.Serializable
+import java.util.UUID
 
 
 class MainViewModel() : ViewModel() {
@@ -31,5 +32,5 @@ sealed interface Screen {
     data object Settings : Screen
     data class TransactionEditor(val transactionId: Long) : Screen
     data class TransactionDetails(val transactionId: Long) : Screen
-    data class AccountEditor(val accountId: Long) : Screen
+    data class AccountEditor(val accountId: UUID) : Screen
 }
