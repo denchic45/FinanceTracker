@@ -66,6 +66,6 @@ fun Route.authRoute() {
         either {
             val userId = authService.signUp(call.receive()).bind()
             generateToken(userId)
-        }.respond(HttpStatusCode.Created)
+        }.respond()
     }
 }

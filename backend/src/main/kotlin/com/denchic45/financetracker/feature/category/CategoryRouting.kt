@@ -1,20 +1,40 @@
 package com.denchic45.financetracker.feature.category
 
+import com.denchic45.financetracker.category.model.CategoryRequest
+import com.denchic45.financetracker.error.CategoryValidationMessages
+import com.denchic45.financetracker.feature.buildValidationResult
 import com.denchic45.financetracker.util.respond
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.plugins.requestvalidation.RequestValidation
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
+import sun.security.util.KeyUtil.validate
 
 fun Application.configureCategory() {
     routing {
         authenticate("auth-jwt") {
             route("/categories") {
-                val repository: CategoryRepository by inject()
+                val repository by inject<CategoryRepository>()
+
+                install(RequestValidation) {
+                    validate<CategoryRequest> { request ->
+                        buildValidationResult {
+                            condition(
+                                request.name.isNotBlank(),
+                                CategoryValidationMessages.NAME_REQUIRED
+                            )
+                            condition(
+                                request.icon.isNotBlank(),
+                                CategoryValidationMessages.ICON_REQUIRED
+                            )
+                        }
+                    }
+                }
 
                 post {
                     call.respond(HttpStatusCode.Created, repository.add(call.receive()))
@@ -24,16 +44,14 @@ fun Application.configureCategory() {
                         repository.findById(call.parameters.getOrFail<Long>("categoryId")).respond()
                     }
                     put {
-                        call.respond(
-                            repository.update(
-                                call.parameters.getOrFail<Long>("categoryId"),
-                                call.receive()
-                            )
-                        )
+                        repository.update(
+                            call.parameters.getOrFail<Long>("categoryId"),
+                            call.receive()
+                        ).respond()
                     }
                     delete {
                         repository.remove(call.parameters.getOrFail<Long>("categoryId"))
-                        call.respond(HttpStatusCode.NoContent)
+                            .respond(HttpStatusCode.NoContent)
                     }
                 }
             }
