@@ -18,7 +18,7 @@ import java.util.UUID
 
 class AuthService {
 
-    fun signUp(request: SignUpRequest): Either<DomainError, UUID> = transaction {
+    fun signUp(request: SignUpRequest): Either<EmailAlreadyUsed, UUID> = transaction {
         val existingUser = UserDao.find { Users.email eq request.email }.singleOrNull()
         if (existingUser != null) return@transaction EmailAlreadyUsed.left()
 

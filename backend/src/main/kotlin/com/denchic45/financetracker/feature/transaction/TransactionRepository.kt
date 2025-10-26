@@ -1,10 +1,13 @@
 package com.denchic45.financetracker.feature.transaction
 
 import arrow.core.Either
+import arrow.core.None
+import arrow.core.Option
 import arrow.core.left
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import arrow.core.right
+import arrow.core.some
 import com.denchic45.financetracker.database.table.AccountDao
 import com.denchic45.financetracker.database.table.CategoryDao
 import com.denchic45.financetracker.database.table.TransactionDao
@@ -63,7 +66,10 @@ class TransactionRepository() {
         }?.toResponse()?.right() ?: TransactionNotFound.left()
     }
 
-    fun remove(transactionId: Long): Either<TransactionNotFound, Unit> = transaction {
-        TransactionDao.findById(transactionId)?.delete()?.right() ?: TransactionNotFound.left()
+    fun remove(transactionId: Long): Option<TransactionNotFound> = transaction {
+        TransactionDao.findById(transactionId)
+            ?.delete()?.right()
+            ?: return@transaction TransactionNotFound.some()
+        None
     }
 }
