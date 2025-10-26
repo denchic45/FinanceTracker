@@ -34,31 +34,3 @@ fun <T> observeResource(
         })
     } else emitAll(query.map { Resource.Success(it) })
 }
-
-suspend fun <T> fetchResource(fetch: suspend () -> T): Resource<T> {
-    return runCatching { fetch() }
-        .fold(
-            onSuccess = { Resource.Success(it) },
-            onFailure = { throwable ->
-                Resource.Failed(
-                    throwable.asFailure(), null
-                )
-            }
-        )
-}
-
-fun <T> fetchResourceFlow(
-    fetch: suspend () -> T
-): Flow<Resource<T>> = flow {
-    emit(Resource.Loading)
-    runCatching { fetch() }.onFailure { throwable ->
-        emit(
-            Resource.Failed(
-                throwable.asFailure(), null
-            )
-        )
-    }.onSuccess {
-        emit(Resource.Success(it))
-    }
-}
-
