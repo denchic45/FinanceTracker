@@ -2,7 +2,6 @@ package com.denchic45.financetracker.feature.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.denchic45.financetracker.BackendErrorResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -27,7 +26,7 @@ fun Application.configureAuth() {
                 if (credential.payload.audience.contains(jwtJWTAudience)) JWTPrincipal(credential.payload) else null
             }
             challenge { defaultScheme, realm ->
-                call.respond(HttpStatusCode.Unauthorized, BackendErrorResponse("Token is not valid or has expired"))
+                call.respond(HttpStatusCode.Unauthorized, "Token is not valid or has expired")
             }
         }
     }
