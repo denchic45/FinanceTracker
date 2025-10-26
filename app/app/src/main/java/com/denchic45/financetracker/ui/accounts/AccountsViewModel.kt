@@ -5,14 +5,35 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.denchic45.financetracker.data.repository.AccountRepository
-import com.denchic45.financetracker.domain.stateInResource
+import com.denchic45.financetracker.ui.stateInCacheableResource
+import com.denchic45.financetracker.domain.usecase.FindAccountsUseCase
+import com.denchic45.financetracker.domain.usecase.RemoveAccountUseCase
+import com.denchic45.financetracker.ui.RefreshDelegate
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class AccountsViewModel(
-    private val accountRepository: AccountRepository
+    private val findAccountsUseCase: FindAccountsUseCase,
+    private val removeAccountUseCase: RemoveAccountUseCase,
 ) : ViewModel() {
-    val accounts = accountRepository.findAll().stateInResource(viewModelScope)
+    private val refreshDelegate = RefreshDelegate()
+    private val retryDelegate = RefreshDelegate()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val accounts = merge(
+        refreshDelegate.updateTrigger,
+        retryDelegate.updateTrigger
+    ).flatMapLatest {
+        findAccountsUseCase()
+    }.onEach {
+        refreshDelegate.stopRefresh()
+        retryDelegate.stopRefresh()
+    }.stateInCacheableResource(viewModelScope)
+
     var showEditor by mutableStateOf<EditingAccountConfig?>(null)
 
     fun onAddClick() {
@@ -25,7 +46,7 @@ class AccountsViewModel(
 
     fun onRemoveClick(accountId: UUID) {
         viewModelScope.launch {
-            accountRepository.remove(accountId)
+            removeAccountUseCase(accountId)
         }
     }
 
@@ -34,4 +55,4 @@ class AccountsViewModel(
     }
 }
 
-data class EditingAccountConfig(val accountId: Long?)
+data class EditingAccountConfig(val accountId: UUID?)
