@@ -6,20 +6,19 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.denchic45.financetracker.domain.Failure
-import com.denchic45.financetracker.domain.Resource
+import com.denchic45.financetracker.response.Failure
 
 @Composable
 fun <T> ResourceContent(
     resource: Resource<T>,
     onLoading: @Composable () -> Unit = { CircularLoadingBox(Modifier.fillMaxSize()) },
-    onFailed: @Composable (Failure, T?) -> Unit = { failure, value -> },
+    onFailed: @Composable (Failure) -> Unit = { failure -> },
     onSuccess: @Composable (T) -> Unit,
 ) {
     when (resource) {
         Resource.Loading -> onLoading()
         is Resource.Success -> onSuccess(resource.value)
-        is Resource.Failed -> onFailed(resource.failure, resource.value)
+        is Resource.Failed -> onFailed(resource.failure)
     }
 }
 
