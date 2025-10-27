@@ -34,21 +34,21 @@ fun Route.authRoute() {
         validate<SignUpRequest> { request ->
             val password = request.password
             buildValidationResult {
-                condition(password.length < 9, SignUpValidationMessages.PASSWORD_TOO_SHORT)
+                condition(password.length >= 8, SignUpValidationMessages.PASSWORD_TOO_SHORT)
                 condition(
-                    !Pattern.compile(".*[A-Z].*").matcher(password).matches(),
+                    Pattern.compile(".*[A-Z].*").matcher(password).matches(),
                     SignUpValidationMessages.PASSWORD_MUST_CONTAIN_UPPERCASE
                 )
                 condition(
-                    !Pattern.compile(".*[0-9].*").matcher(password).matches(),
+                    Pattern.compile(".*[0-9].*").matcher(password).matches(),
                     SignUpValidationMessages.PASSWORD_MUST_CONTAIN_DIGITS
                 )
                 condition(
-                    !Pattern.compile(".*[!@#$%^&*()\\-+=_`~,.<>/?|].*").matcher(password).matches(),
+                    Pattern.compile(".*[!@#$%^&*()\\-+=_`~,.<>/?|].*").matcher(password).matches(),
                     SignUpValidationMessages.PASSWORD_MUST_CONTAIN_SPECIAL_CHARACTERS
                 )
                 condition(
-                    request.email.isBlank() || !request.email.contains("@"),
+                    request.email.isNotBlank() && request.email.contains("@"),
                     SignUpValidationMessages.INVALID_EMAIL_FORMAT
                 )
             }
