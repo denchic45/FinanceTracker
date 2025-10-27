@@ -19,6 +19,7 @@ dependencies {
     api("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     api("io.ktor:ktor-client-logging:$ktorVersion")
     api("io.ktor:ktor-client-auth:$ktorVersion")
+    api("io.ktor:ktor-client-logging:${ktorVersion}")
 
     // arrow-kt
     api("io.arrow-kt:arrow-core:$arrowVersion")
