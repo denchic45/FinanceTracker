@@ -84,7 +84,7 @@ class SignInViewModel(
                         NoConnection -> "Нет интернет-соединения"
                         is ApiError -> {
                             when (failure.error) {
-                                is WrongEmail -> "Неверная почта"
+                                is WrongEmail -> "Аккаунта с такой почтой не существует"
                                 is WrongPassword -> "Неверный пароль"
                                 else -> "Произошла неизвестная ошибка"
                             }

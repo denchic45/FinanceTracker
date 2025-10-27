@@ -14,7 +14,7 @@ class AuthApi(private val client: HttpClient) {
 
     suspend fun signIn(request: SignInRequest): ResponseResult<String> {
         return client.safeApiCall {
-            post("/token") {
+            post("/auth/token") {
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }
@@ -23,7 +23,7 @@ class AuthApi(private val client: HttpClient) {
 
     suspend fun signUp(request: SignUpRequest): ResponseResult<String> {
         return client.safeApiCall {
-            post("/sign-up") {
+            post("/auth/sign-up") {
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }

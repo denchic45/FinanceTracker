@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -54,7 +55,7 @@ fun SignInScreen(onNavigateBack: () -> Unit) {
             imeAction = ImeAction.Done
         )
 
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(24.dp))
 
         Button(
             onClick = {
@@ -71,6 +72,19 @@ fun SignInScreen(onNavigateBack: () -> Unit) {
                 Text("Войти")
             }
         }
+
+        state.errorMessage?.let { message ->
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = message,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.error, // Use the theme's error color
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        Spacer(Modifier.height(if (state.errorMessage == null) 8.dp else 0.dp)) // Adjust spacing if no error
 
         Spacer(Modifier.height(16.dp))
 

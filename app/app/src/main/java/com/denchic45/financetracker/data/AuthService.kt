@@ -12,9 +12,12 @@ import com.denchic45.financetracker.response.toOption
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.plugin
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class AuthService(
     private val database: AppDatabase,
@@ -24,7 +27,7 @@ class AuthService(
 ) {
 
     val observeIsAuthenticated: Flow<Boolean>
-        get() = appPreferences.token
+        get() = appPreferences.accessToken
             .mapNotNull { !it.isNullOrBlank() }
             .onEach { isAuth ->
                 if (!isAuth)
@@ -32,14 +35,12 @@ class AuthService(
             }
 
     private suspend fun clearAllData() {
-        database.clearAllTables()
+        coroutineScope { launch(Dispatchers.IO) { database.clearAllTables() } }
         appPreferences.clearAll()
 
         // clear tokens
         val plugin = client.plugin(Auth)
         plugin.close()
-//        val provider = plugin.providers.filterIsInstance<BearerAuthProvider>().first()
-//        provider.clearToken()
     }
 
     suspend fun signUp(request: SignUpRequest): Option<Failure> {
@@ -47,13 +48,13 @@ class AuthService(
             .fold(
                 ifLeft = { it.some() },
                 ifRight = {
-                    appPreferences.setToken(it)
+                    appPreferences.setAccessToken(it)
                     None
                 })
     }
 
     suspend fun signIn(request: SignInRequest): Option<Failure> {
-        return authApi.signIn(request).onRight { appPreferences.setToken(it) }
+        return authApi.signIn(request).onRight { appPreferences.setAccessToken(it) }
             .toOption()
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
@@ -101,6 +102,18 @@ fun SignUpScreen(onNavigateBack: () -> Unit) {
                 Text("Зарегистрироваться")
             }
         }
+
+        state.errorMessage?.let { message ->
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = message,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.error, // Use the theme's error color
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
 
         Spacer(Modifier.height(16.dp))
 

@@ -103,7 +103,7 @@ class SignUpViewModel(
     )
 
     fun validate(): Boolean {
-        uiState.generalErrorMessage = null
+        uiState.errorMessage = null
         return formValidator.validate()
     }
 
@@ -112,7 +112,7 @@ class SignUpViewModel(
 
         viewModelScope.launch {
             uiState.isLoading = true
-            uiState.generalErrorMessage = null
+            uiState.errorMessage = null
 
             val request = SignUpRequest(
                 firstName = uiState.firstName,
@@ -124,7 +124,7 @@ class SignUpViewModel(
             signUpUseCase(request)
                 .onSome { failure ->
                     uiState.isLoading = false
-                    uiState.generalErrorMessage = when (failure) {
+                    uiState.errorMessage = when (failure) {
                         NoConnection -> "Нет интернет-соединения"
                         is ApiError -> {
                             when (failure.error) {
@@ -158,5 +158,5 @@ class SignUpUiState {
 
     // UI state for async call
     var isLoading by mutableStateOf(false)
-    var generalErrorMessage by mutableStateOf<String?>(null)
+    var errorMessage by mutableStateOf<String?>(null)
 }
