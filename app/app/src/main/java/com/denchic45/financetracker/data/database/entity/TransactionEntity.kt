@@ -45,7 +45,7 @@ data class TransactionEntity(
     @ColumnInfo("account_id")
     val accountId: UUID,
     @ColumnInfo("category_id")
-    val categoryId: Long,
+    val categoryId: Long?,
     @ColumnInfo("income_account_id")
     val incomeAccountId: UUID?,
 )

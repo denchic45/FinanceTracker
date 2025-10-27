@@ -8,6 +8,5 @@ object TransactionNotFound : NotFoundError() {
 }
 
 object TransactionValidationMessages {
-    const val INCOME_ACCOUNT_REQUIRED_ON_TRANSFER = "The income account is required on transfer"
-    const val INCOME_ACCOUNT_MUST_BE_NULL = "The income account must be null"
+    const val AMOUNT_MUST_BE_POSITIVE = "Amount must be greater than zero."
 }

@@ -93,16 +93,23 @@ fun TransactionDetailsSheet(
 
 @Composable
 private fun TransactionDetailsContent(transaction: TransactionItem) {
-    val amountColor = when (transaction.type) {
-        TransactionType.INCOME -> Color(0xFF2E7D32) // TODO Зеленый
-        TransactionType.OUTCOME -> MaterialTheme.colorScheme.onSurface
-        TransactionType.TRANSFER -> Color.Blue
-    }
-
-    val amountPrefix = when (transaction.type) {
-        TransactionType.INCOME -> "+ "
-        TransactionType.OUTCOME -> "- "
-        TransactionType.TRANSFER -> ""
+    // 1. Determine display properties based on transaction type
+    val (amountColor, amountPrefix, titleText) = when (transaction) {
+        is TransactionItem.Income -> Triple(
+            Color(0xFF2E7D32), // Custom Green (TODO fixed)
+            "+ ",
+            transaction.category.name
+        )
+        is TransactionItem.Expense -> Triple(
+            MaterialTheme.colorScheme.error, // Changed to standard error color for better visibility
+            "- ",
+            transaction.category.name
+        )
+        is TransactionItem.Transfer -> Triple(
+            Color.Blue,
+            "",
+            "Перевод"
+        )
     }
 
     Column(
@@ -119,16 +126,14 @@ private fun TransactionDetailsContent(transaction: TransactionItem) {
             color = amountColor
         )
         Text(
-            text = when (transaction.type) {
-                TransactionType.INCOME, TransactionType.OUTCOME -> transaction.category.name
-                TransactionType.TRANSFER -> "Перевод"
-            },
+            text = titleText, // Use pre-calculated title
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(24.dp))
         HorizontalDivider()
+        // Replaced deprecated HorizontalDivider
         Spacer(modifier = Modifier.height(16.dp))
 
         // 2. Детали транзакции в зависимости от типа
@@ -136,8 +141,8 @@ private fun TransactionDetailsContent(transaction: TransactionItem) {
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            when (transaction.type) {
-                TransactionType.INCOME -> {
+            when (transaction) { // FIX: Use 'when (transaction)' for type checking
+                is TransactionItem.Income -> {
                     DetailRow(
                         icon = Icons.Default.ArrowDownward,
                         label = "Зачислено на счет",
@@ -150,7 +155,7 @@ private fun TransactionDetailsContent(transaction: TransactionItem) {
                     )
                 }
 
-                TransactionType.OUTCOME -> {
+                is TransactionItem.Expense -> {
                     DetailRow(
                         icon = Icons.Default.ArrowUpward,
                         label = "Списано со счета",
@@ -163,7 +168,7 @@ private fun TransactionDetailsContent(transaction: TransactionItem) {
                     )
                 }
 
-                TransactionType.TRANSFER -> {
+                is TransactionItem.Transfer -> {
                     DetailRow(
                         icon = Icons.Default.ArrowUpward,
                         label = "Со счета",
@@ -172,17 +177,17 @@ private fun TransactionDetailsContent(transaction: TransactionItem) {
                     DetailRow(
                         icon = Icons.Default.ArrowDownward,
                         label = "На счет",
-                        value = transaction.incomeAccount.name
+                        value = transaction.incomeAccount.name // Access type-specific field
                     )
                 }
             }
 
-            // 3. Описание (если есть)
-            if (transaction.description.isNotBlank()) {
+            // 3. Описание (если есть) - Uses abstract property `note`
+            if (transaction.note.isNotBlank()) {
                 EditableDetailRow(
                     icon = Icons.AutoMirrored.Filled.Notes,
                     label = "Заметка",
-                    value = transaction.description,
+                    value = transaction.note,
                     onValueChange = {}
                 )
             }
@@ -281,14 +286,12 @@ fun TransactionDetailsOutcomePreview() {
     // Моковые данные
     val mockAccount = AccountItem(1, "Тинькофф Black", AccountType.CARD, 500000)
     val mockCategory = CategoryItem(1, "Продукты", "food", false)
-    val mockTransaction = TransactionItem(
+    val mockTransaction = TransactionItem.Expense(
         id = 1,
         amount = 12550, // 125.50
-        type = TransactionType.OUTCOME,
-        description = "Покупка в супермаркете 'Пятерочка'",
+        note = "Покупка в супермаркете 'Пятерочка'",
         account = mockAccount,
-        category = mockCategory,
-        incomeAccount = mockAccount // не используется для расхода
+        category = mockCategory
     )
     MaterialTheme {
         TransactionDetailsContent(transaction = mockTransaction)

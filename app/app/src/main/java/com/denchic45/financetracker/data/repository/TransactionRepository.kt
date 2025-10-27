@@ -22,7 +22,9 @@ import com.denchic45.financetracker.response.EmptyResponseResult
 import com.denchic45.financetracker.response.ResponseResult
 import com.denchic45.financetracker.transaction.TransactionApi
 import com.denchic45.financetracker.transaction.model.TransactionRequest
+import com.denchic45.financetracker.transaction.model.AbstractTransactionResponse
 import com.denchic45.financetracker.transaction.model.TransactionResponse
+import com.denchic45.financetracker.transaction.model.TransferTransactionResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -50,7 +52,15 @@ class TransactionRepository(
             val transactionResponse = transactionApi.getById(transactionId)
             transactionResponse.onRight { response ->
                 database.withTransaction {
-                    categoryDao.upsert(response.category.toCategoryEntity())
+                    when(response) {
+                        is TransactionResponse -> {
+                            categoryDao.upsert(response.category.toCategoryEntity())
+                        }
+                        is TransferTransactionResponse -> {
+                            accountDao.upsert(response.incomeAccount.toAccountEntity())
+                        }
+                    }
+
                     accountDao.upsert(response.account.toAccountEntity())
                     transactionDao.upsert(response.toTransactionEntity())
                 }
@@ -58,7 +68,7 @@ class TransactionRepository(
         }
     )
 
-    suspend fun add(request: TransactionRequest): ResponseResult<TransactionResponse> {
+    suspend fun add(request: TransactionRequest): ResponseResult<AbstractTransactionResponse> {
         return transactionApi.add(request)
     }
 

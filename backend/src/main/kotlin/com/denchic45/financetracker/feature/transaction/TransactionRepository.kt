@@ -1,13 +1,8 @@
 package com.denchic45.financetracker.feature.transaction
 
-import arrow.core.Either
-import arrow.core.None
-import arrow.core.Option
-import arrow.core.left
+import arrow.core.*
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
-import arrow.core.right
-import arrow.core.some
 import com.denchic45.financetracker.database.table.AccountDao
 import com.denchic45.financetracker.database.table.CategoryDao
 import com.denchic45.financetracker.database.table.TransactionDao
@@ -16,27 +11,38 @@ import com.denchic45.financetracker.error.AccountNotFound
 import com.denchic45.financetracker.error.CategoryNotFound
 import com.denchic45.financetracker.error.DomainError
 import com.denchic45.financetracker.error.TransactionNotFound
-import com.denchic45.financetracker.transaction.model.TransactionRequest
-import com.denchic45.financetracker.transaction.model.TransactionResponse
+import com.denchic45.financetracker.transaction.model.*
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class TransactionRepository() {
 
-    fun add(request: TransactionRequest): Either<DomainError, TransactionResponse> = either {
+    fun add(request: AbstractTransactionRequest): Either<DomainError, AbstractTransactionResponse> = either {
         transaction {
             TransactionDao.new {
                 datetime = request.datetime
                 amount = request.amount
-                type = request.type
-                description = request.description
+                description = request.note
                 account = ensureNotNull(AccountDao.findById(request.accountId)) { AccountNotFound }
-                category = ensureNotNull(CategoryDao.findById(request.categoryId)) { CategoryNotFound }
-                incomeAccount = request.incomeSourceId?.let {
-                    ensureNotNull(AccountDao.findById(it)) { AccountNotFound }
+                when (request) {
+                    is TransactionRequest -> {
+                        val categoryDao = ensureNotNull(CategoryDao.findById(request.categoryId)) { CategoryNotFound }
+                        type = if (request.income) TransactionType.INCOME else TransactionType.EXPENSE
+                        category = categoryDao
+                        incomeAccount = null
+                    }
+
+                    is TransferTransactionRequest -> {
+                        val incomeAccountDao = ensureNotNull(
+                            AccountDao.findById(request.incomeSourceId)
+                        ) { AccountNotFound }
+                        type = TransactionType.TRANSFER
+                        category = null
+                        incomeAccount = incomeAccountDao
+                    }
                 }
-            }.toResponse()
-        }
+            }
+        }.toResponse()
     }
 
     fun find(page: Int, pageSize: Int) = transaction {
@@ -47,29 +53,44 @@ class TransactionRepository() {
         ).toTransactionResponses()
     }
 
-    fun findById(transactionId: Long): Either<TransactionNotFound, TransactionResponse> = transaction {
+    fun findById(transactionId: Long): Either<TransactionNotFound, AbstractTransactionResponse> = transaction {
         TransactionDao.findById(transactionId)?.toResponse()?.right() ?: TransactionNotFound.left()
     }
 
     fun update(
         transactionId: Long,
-        request: TransactionRequest
-    ): Either<TransactionNotFound, TransactionResponse> = transaction {
-        TransactionDao.findById(transactionId)?.apply {
-            datetime = request.datetime
-            amount = request.amount
-            type = request.type
-            description = request.description
-            account = AccountDao[request.accountId]
-            category = CategoryDao[request.categoryId]
-            incomeAccount = request.incomeSourceId?.let { AccountDao[it] }
-        }?.toResponse()?.right() ?: TransactionNotFound.left()
+        request: AbstractTransactionRequest
+    ) = either {
+        transaction {
+            TransactionDao.findById(transactionId)?.apply {
+                datetime = request.datetime
+                amount = request.amount
+                description = request.note
+                account = ensureNotNull(AccountDao.findById(request.accountId)) { AccountNotFound }
+
+                when (request) {
+                    is TransactionRequest -> {
+                        type = if (request.income) TransactionType.INCOME else TransactionType.EXPENSE
+                        category = ensureNotNull(CategoryDao.findById(request.categoryId)) { CategoryNotFound }
+                        incomeAccount = null
+                    }
+
+                    is TransferTransactionRequest -> {
+                        type = TransactionType.TRANSFER
+                        category = null
+                        incomeAccount = ensureNotNull(
+                            AccountDao.findById(request.incomeSourceId)
+                        ) { AccountNotFound }
+                    }
+                }
+            }?.toResponse() ?: raise(TransactionNotFound)
+        }
     }
 
     fun remove(transactionId: Long): Option<TransactionNotFound> = transaction {
         TransactionDao.findById(transactionId)
             ?.delete()?.right()
             ?: return@transaction TransactionNotFound.some()
-        None
+        none()
     }
 }

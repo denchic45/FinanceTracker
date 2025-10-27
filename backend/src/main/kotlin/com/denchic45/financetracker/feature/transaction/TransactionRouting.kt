@@ -2,8 +2,7 @@ package com.denchic45.financetracker.feature.transaction
 
 import com.denchic45.financetracker.error.TransactionValidationMessages
 import com.denchic45.financetracker.feature.buildValidationResult
-import com.denchic45.financetracker.transaction.model.TransactionRequest
-import com.denchic45.financetracker.transaction.model.TransactionType
+import com.denchic45.financetracker.transaction.model.AbstractTransactionRequest
 import com.denchic45.financetracker.util.respond
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -22,21 +21,17 @@ fun Application.configureTransactions() {
                 val repository by inject<TransactionRepository>()
 
                 install(RequestValidation) {
-                    validate<TransactionRequest> { request ->
+                    validate<AbstractTransactionRequest> { request ->
                         buildValidationResult {
                             condition(
-                                request.type == TransactionType.TRANSFER && request.incomeSourceId == null,
-                                TransactionValidationMessages.INCOME_ACCOUNT_REQUIRED_ON_TRANSFER
-                            )
-                            condition(
-                                request.type != TransactionType.TRANSFER && request.incomeSourceId != null,
-                                TransactionValidationMessages.INCOME_ACCOUNT_MUST_BE_NULL
+                                request.amount > 0,
+                                TransactionValidationMessages.AMOUNT_MUST_BE_POSITIVE
                             )
                         }
                     }
                 }
                 post {
-                    call.respond(HttpStatusCode.Created, repository.add(call.receive()))
+                    repository.add(call.receive()).respond(HttpStatusCode.Created)
                 }
                 get {
                     val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1

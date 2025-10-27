@@ -1,22 +1,42 @@
 package com.denchic45.financetracker.domain.model
 
-import com.denchic45.financetracker.transaction.model.TransactionType
 import java.text.NumberFormat
 import java.util.Locale
 
-data class TransactionItem(
-    val id: Long,
-    val amount: Long,
-    val type: TransactionType,
-    val description: String,
-    val account: AccountItem,
-    val category: CategoryItem,
-    val incomeAccount: AccountItem
-) {
+sealed class TransactionItem {
+
+    abstract val id: Long
+    abstract val amount: Long
+    abstract val note: String
+    abstract val account: AccountItem
 
     val formattedAmount: String
         get() {
             val currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault())
             return currencyFormat.format(amount / 100.0)
         }
+
+    data class Expense(
+        override val id: Long,
+        override val amount: Long,
+        override val note: String,
+        override val account: AccountItem,
+        val category: CategoryItem
+    ) : TransactionItem()
+
+    data class Income(
+        override val id: Long,
+        override val amount: Long,
+        override val note: String,
+        override val account: AccountItem,
+        val category: CategoryItem
+    ) : TransactionItem()
+
+    data class Transfer(
+        override val id: Long,
+        override val amount: Long,
+        override val note: String,
+        override val account: AccountItem,
+        val incomeAccount: AccountItem
+    ) : TransactionItem()
 }

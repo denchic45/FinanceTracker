@@ -9,17 +9,36 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Serializable
+sealed class AbstractTransactionResponse() {
+    abstract val id: Long
+    abstract val datetime: LocalDateTime
+    abstract val amount: Long
+    abstract val description: String
+    abstract val account: TransactionAccount
+}
+
+@Serializable
 data class TransactionResponse(
-    val id: Long,
+    override val id: Long,
     @Serializable(LocalDateTimeSerializer::class)
-    val datetime: LocalDateTime,
-    val amount: Long,
-    val type: TransactionType,
-    val description: String,
-    val account: TransactionAccount,
+    override val datetime: LocalDateTime,
+    override val amount: Long,
+    override val description: String,
+    override val account: TransactionAccount,
     val category: CategoryResponse,
-    val incomeAccount: TransactionAccount? = null
-)
+    val income: Boolean
+) : AbstractTransactionResponse()
+
+@Serializable
+data class TransferTransactionResponse(
+    override val id: Long,
+    @Serializable(LocalDateTimeSerializer::class)
+    override val datetime: LocalDateTime,
+    override val amount: Long,
+    override val description: String,
+    override val account: TransactionAccount,
+    val incomeAccount: TransactionAccount,
+) : AbstractTransactionResponse()
 
 @Serializable
 data class TransactionAccount(

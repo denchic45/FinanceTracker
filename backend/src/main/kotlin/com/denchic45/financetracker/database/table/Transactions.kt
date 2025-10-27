@@ -13,7 +13,7 @@ object Transactions : LongIdTable("transaction", "transaction_id") {
     val type = enumerationByName<TransactionType>("transaction_type", 28)
     val description = text("description")
     val accountId = reference("source_id", Accounts)
-    val categoryId = reference("category_id", Categories)
+    val categoryId = optReference("category_id", Categories)
     val incomeAccountId = optReference("income_account", Accounts)
 }
 
@@ -25,6 +25,6 @@ class TransactionDao(id: EntityID<Long>) : LongEntity(id) {
     var type by Transactions.type
     var description by Transactions.description
     var account by AccountDao referencedOn Transactions.accountId
-    var category by CategoryDao referencedOn Transactions.categoryId
+    var category by CategoryDao optionalReferencedOn Transactions.categoryId
     var incomeAccount by AccountDao optionalReferencedOn Transactions.incomeAccountId
 }

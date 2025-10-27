@@ -4,8 +4,8 @@ import com.denchic45.financetracker.response.ResponseResult
 import com.denchic45.financetracker.response.EmptyResponseResult
 import com.denchic45.financetracker.response.safeApiCall
 import com.denchic45.financetracker.response.safeApiCallForEmpty
-import com.denchic45.financetracker.transaction.model.TransactionRequest
-import com.denchic45.financetracker.transaction.model.TransactionResponse
+import com.denchic45.financetracker.transaction.model.AbstractTransactionRequest
+import com.denchic45.financetracker.transaction.model.AbstractTransactionResponse
 import com.denchic45.financetracker.util.PagingResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -20,14 +20,14 @@ import io.ktor.http.contentType
 
 class TransactionApi(private val client: HttpClient) {
 
-    suspend fun add(request: TransactionRequest): ResponseResult<TransactionResponse> {
+    suspend fun add(request: AbstractTransactionRequest): ResponseResult<AbstractTransactionResponse> {
         return client.post("/transactions") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
     }
 
-    suspend fun getList(page: Int, pageSize: Int): ResponseResult<PagingResponse<TransactionResponse>> {
+    suspend fun getList(page: Int, pageSize: Int): ResponseResult<PagingResponse<AbstractTransactionResponse>> {
         return client.safeApiCall {
             get("/transactions") {
                 parameter("page", page)
@@ -36,14 +36,14 @@ class TransactionApi(private val client: HttpClient) {
         }
     }
 
-    suspend fun getById(transactionId: Long): ResponseResult<TransactionResponse> {
+    suspend fun getById(transactionId: Long): ResponseResult<AbstractTransactionResponse> {
         return client.safeApiCall { get("/transactions/$transactionId") }
     }
 
     suspend fun update(
         transactionId: Long,
-        request: TransactionRequest
-    ): ResponseResult<TransactionResponse> {
+        request: AbstractTransactionRequest
+    ): ResponseResult<AbstractTransactionResponse> {
         return client.safeApiCall {
             put("/transactions/$transactionId") {
                 contentType(ContentType.Application.Json)
