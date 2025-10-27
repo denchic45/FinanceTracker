@@ -1,9 +1,5 @@
 package com.denchic45.financetracker.ui.main
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -29,72 +25,56 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.denchic45.financetracker.ui.accounteditor.AccountEditorDialog
 import com.denchic45.financetracker.ui.analytics.AnalyticsScreen
-import com.denchic45.financetracker.ui.categories.LabelsScreen
+import com.denchic45.financetracker.ui.labels.CategoriesScreen
 import com.denchic45.financetracker.ui.home.HomeScreen
-import com.denchic45.financetracker.ui.theme.FinanceTrackerTheme
 import com.denchic45.financetracker.ui.transactiondetails.TransactionDetailsSheet
 import com.denchic45.financetracker.ui.transactions.TransactionsScreen
 import org.koin.compose.viewmodel.koinViewModel
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            RootContainer()
-        }
-    }
-}
 
 @Composable
-private fun RootContainer() {
-    FinanceTrackerTheme {
-        MainScreen()
-    }
-}
-
-@Composable
-private fun MainScreen() {
+fun MainScreen() {
     val viewModel = koinViewModel<MainViewModel>()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
+            val current = viewModel.backStack.last()
             NavigationBar {
                 NavigationBarItem(
-                    selected = false,
-                    onClick = {},
+                    selected = current is Screen.Home,
+                    onClick = viewModel::onHomeNavigate,
                     icon = {
                         Icon(Icons.Outlined.Home, null)
                     },
                     label = { Text("Главная") }
                 )
                 NavigationBarItem(
-                    selected = false,
-                    onClick = {},
-                    icon = {
-                        Icon(Icons.Outlined.Analytics, null)
-                    },
-                    label = { Text("Аналитика") }
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = {},
+                    selected = current is Screen.Transactions,
+                    onClick = viewModel::onTransactionsNavigate,
                     icon = {
                         Icon(Icons.Outlined.History, null)
                     },
                     label = { Text("Транзакции") }
                 )
                 NavigationBarItem(
-                    selected = false,
-                    onClick = {},
+                    selected = current is Screen.Analytics,
+                    onClick = viewModel::onAnalyticsNavigate,
+                    icon = {
+                        Icon(Icons.Outlined.Analytics, null)
+                    },
+                    label = { Text("Аналитика") }
+                )
+                NavigationBarItem(
+                    selected = current is Screen.Labels,
+                    onClick = viewModel::onLabelsNavigate,
                     icon = {
                         Icon(Icons.AutoMirrored.Outlined.Label, null)
                     },
                     label = { Text("Ярлыки") }
                 )
                 NavigationBarItem(
-                    selected = false,
-                    onClick = {},
+                    selected = current is Screen.Settings,
+                    onClick = viewModel::onSettingsNavigate,
                     icon = {
                         Icon(Icons.Outlined.Settings, null)
                     },
@@ -116,9 +96,6 @@ private fun MainScreen() {
                 entry<Screen.Home> {
                     HomeScreen()
                 }
-                entry<Screen.Analytics> {
-                    AnalyticsScreen()
-                }
                 entry<Screen.Transactions> {
                     TransactionsScreen(
                         navigateToTransactionEditor = {
@@ -129,10 +106,15 @@ private fun MainScreen() {
                         }
                     )
                 }
-                entry<Screen.Labels> {
-                    LabelsScreen()
+                entry<Screen.Analytics> {
+                    AnalyticsScreen()
                 }
+                entry<Screen.Labels> {
+                    CategoriesScreen()
+                }
+                entry<Screen.Settings> {
 
+                }
 
                 entry<Screen.AccountEditor> { key ->
                     AccountEditorDialog(

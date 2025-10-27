@@ -6,7 +6,7 @@ data class AccountItem(
     val id: Long,
     val name: String,
     val type: AccountType,
-    val balance: Int
+    val balance: Long
 ) {
     val displayedBalance = (balance / 100F).toString()
 }
