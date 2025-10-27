@@ -7,11 +7,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denchic45.financetracker.auth.model.SignUpRequest
-import com.denchic45.financetracker.response.ApiError
-import com.denchic45.financetracker.response.NoConnection
 import com.denchic45.financetracker.domain.usecase.SignUpUseCase
 import com.denchic45.financetracker.error.EmailAlreadyUsed
 import com.denchic45.financetracker.error.InvalidRequest
+import com.denchic45.financetracker.response.ApiError
+import com.denchic45.financetracker.response.NoConnection
 import com.denchic45.financetracker.ui.validator.CompositeValidator
 import com.denchic45.financetracker.ui.validator.Condition
 import com.denchic45.financetracker.ui.validator.Operator
@@ -107,7 +107,7 @@ class SignUpViewModel(
         return formValidator.validate()
     }
 
-    fun signUp(onSuccess: () -> Unit) {
+    fun onSignUpClick() {
         if (!validate()) return
 
         viewModelScope.launch {
@@ -121,8 +121,8 @@ class SignUpViewModel(
                 password = uiState.password
             )
 
-            signUpUseCase(request).fold(
-                ifSome = { failure ->
+            signUpUseCase(request)
+                .onSome { failure ->
                     uiState.isLoading = false
                     uiState.generalErrorMessage = when (failure) {
                         NoConnection -> "Нет интернет-соединения"
@@ -136,12 +136,8 @@ class SignUpViewModel(
 
                         else -> "Неизвестная ошибка"
                     }
-                },
-                ifEmpty = {
-                    uiState.isLoading = false
-                    onSuccess()
-                }
-            )
+
+                }.onNone { uiState.isLoading = false }
         }
     }
 }

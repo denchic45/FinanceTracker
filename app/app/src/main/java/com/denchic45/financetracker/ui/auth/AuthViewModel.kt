@@ -7,25 +7,25 @@ import kotlin.collections.removeLastOrNull
 
 
 class AuthViewModel() : ViewModel() {
-    private val _backStack = mutableStateListOf<AuthScreen>(AuthScreen.Welcome)
-    val backStack: List<AuthScreen> = _backStack
+    private val _backStack = mutableStateListOf<Screen>(Screen.Welcome)
+    val backStack: List<Screen> = _backStack
 
     fun onNavigateBack() {
         _backStack.removeLastOrNull()
     }
 
     fun onSignInNavigate() {
-        _backStack.add(AuthScreen.SignIn)
+        _backStack.add(Screen.SignIn)
     }
 
     fun onSignUpNavigate() {
-        _backStack.add(AuthScreen.SignUp)
+        _backStack.add(Screen.SignUp)
     }
 }
 
 @Serializable
-sealed interface AuthScreen {
-    data object Welcome : AuthScreen
-    data object SignUp : AuthScreen
-    data object SignIn : AuthScreen
+sealed interface Screen {
+    data object Welcome : Screen
+    data object SignUp : Screen
+    data object SignIn : Screen
 }
