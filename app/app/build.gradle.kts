@@ -69,12 +69,15 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor)
     implementation(libs.material3)
+    implementation(libs.androidx.compose.ui.tooling)
 
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
     implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.ktor.client.okhttp)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -84,7 +87,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(project(":api"))
 }
