@@ -4,10 +4,11 @@ import arrow.core.None
 import arrow.core.Option
 import arrow.core.some
 import com.denchic45.financetracker.auth.AuthApi
+import com.denchic45.financetracker.auth.model.AuthResponse
 import com.denchic45.financetracker.auth.model.SignInRequest
 import com.denchic45.financetracker.auth.model.SignUpRequest
 import com.denchic45.financetracker.data.database.AppDatabase
-import com.denchic45.financetracker.data.toEmptyRequestResult
+import com.denchic45.financetracker.data.repository.safeFetch
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.plugin
@@ -43,17 +44,22 @@ class AuthService(
     }
 
     suspend fun signUp(request: SignUpRequest): Option<Failure> {
-        return authApi.signUp(request)
+        return safeFetch { authApi.signUp(request) }
             .fold(
                 ifLeft = { it.some() },
                 ifRight = {
-                    appPreferences.setAccessToken(it)
+                    saveTokens(it)
                     None
                 })
     }
 
+    private suspend fun saveTokens(response: AuthResponse) {
+        appPreferences.setAccessToken(response.token)
+        appPreferences.setRefreshToken(response.refreshToken)
+    }
+
     suspend fun signIn(request: SignInRequest): Option<Failure> {
-        return authApi.signIn(request).onRight { appPreferences.setAccessToken(it) }
+        return safeFetch { authApi.signIn(request) }.onRight { saveTokens(it) }
             .toEmptyRequestResult()
     }
 }

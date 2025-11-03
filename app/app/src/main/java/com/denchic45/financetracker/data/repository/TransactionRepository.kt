@@ -6,6 +6,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import androidx.room.withTransaction
+import com.denchic45.financetracker.data.EmptyRequestResult
+import com.denchic45.financetracker.data.RequestResult
 import com.denchic45.financetracker.data.TransactionRemoteMediator
 import com.denchic45.financetracker.data.database.AppDatabase
 import com.denchic45.financetracker.data.database.dao.AccountDao
@@ -18,8 +20,6 @@ import com.denchic45.financetracker.data.mapper.toTransactionEntity
 import com.denchic45.financetracker.data.mapper.toTransactionItem
 import com.denchic45.financetracker.data.observeData
 import com.denchic45.financetracker.domain.model.TransactionItem
-import com.denchic45.financetracker.response.EmptyResponseResult
-import com.denchic45.financetracker.response.ResponseResult
 import com.denchic45.financetracker.transaction.TransactionApi
 import com.denchic45.financetracker.transaction.model.TransactionRequest
 import com.denchic45.financetracker.transaction.model.AbstractTransactionResponse
@@ -49,8 +49,7 @@ class TransactionRepository(
         query = transactionDao.observeById(transactionId)
             .map(AggregatedTransactionEntity::toTransactionItem),
         fetch = {
-            val transactionResponse = transactionApi.getById(transactionId)
-            transactionResponse.onRight { response ->
+                safeFetch { transactionApi.getById(transactionId) }.onRight { response ->
                 database.withTransaction {
                     when(response) {
                         is TransactionResponse -> {
@@ -68,11 +67,11 @@ class TransactionRepository(
         }
     )
 
-    suspend fun add(request: TransactionRequest): ResponseResult<AbstractTransactionResponse> {
-        return transactionApi.add(request)
+    suspend fun add(request: TransactionRequest): RequestResult<AbstractTransactionResponse> {
+        return safeFetch { transactionApi.create(request) }
     }
 
-    suspend fun remove(transactionId: Long): EmptyResponseResult {
-        return transactionApi.delete(transactionId)
+    suspend fun remove(transactionId: Long): EmptyRequestResult {
+        return safeFetchForEmptyResult { transactionApi.delete(transactionId) }
     }
 }
