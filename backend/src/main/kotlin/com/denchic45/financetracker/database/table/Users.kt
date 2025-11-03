@@ -1,5 +1,6 @@
 package com.denchic45.financetracker.database.table
 
+import com.denchic45.financetracker.database.util.exists
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -14,7 +15,9 @@ object Users : UUIDTable("user", "user_id") {
 }
 
 class UserDao(id: EntityID<UUID>) : UUIDEntity(id) {
-    companion object : UUIDEntityClass<UserDao>(Users)
+    companion object : UUIDEntityClass<UserDao>(Users) {
+        fun exists(userId: UUID): Boolean = Users.exists { Users.id eq userId }
+    }
 
     var firstName by Users.firstName
     var lastName by Users.lastName
