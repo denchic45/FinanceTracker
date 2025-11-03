@@ -4,14 +4,13 @@ import arrow.core.Either
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
-import arrow.core.right
-import com.denchic45.financetracker.error.DomainError
+import com.denchic45.financetracker.error.ApiError
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.RoutingContext
 
 context(routing: RoutingContext)
-suspend inline fun <reified A : Any> Either<DomainError, A>.respond(
+suspend inline fun <reified A : Any> Either<ApiError, A>.respond(
     status: HttpStatusCode = HttpStatusCode.OK
 ): Unit = when (this) {
     is Either.Left -> value.respond()
@@ -21,7 +20,7 @@ suspend inline fun <reified A : Any> Either<DomainError, A>.respond(
 }
 
 context(routing: RoutingContext)
-suspend inline fun Option<DomainError>.respond(
+suspend inline fun Option<ApiError>.respond(
     status: HttpStatusCode = HttpStatusCode.OK
 ): Unit = when (this) {
     None -> routing.call.respond(status)
@@ -29,7 +28,7 @@ suspend inline fun Option<DomainError>.respond(
 }
 
 context(routing: RoutingContext)
-suspend fun DomainError.respond(
+suspend fun ApiError.respond(
 ) {
     routing.call.respond(httpCode, this)
 }

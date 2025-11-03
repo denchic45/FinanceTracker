@@ -30,10 +30,10 @@ fun Application.configureAccounts() {
                 val repository by inject<AccountRepository>()
 
                 post {
-                    call.respond(HttpStatusCode.Created, repository.add(call.receive(), currentUserId()))
+                    repository.add(call.receive(), currentUserId()).respond(HttpStatusCode.Created)
                 }
                 get {
-                    call.respond(repository.findAll())
+                    repository.findAll(currentUserId()).respond()
                 }
                 route("/{accountId}") {
                     get {
