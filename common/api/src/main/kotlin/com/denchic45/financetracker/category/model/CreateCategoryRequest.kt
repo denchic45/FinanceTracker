@@ -3,7 +3,7 @@ package com.denchic45.financetracker.category.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CategoryRequest(
+data class CreateCategoryRequest(
     val name: String,
     val icon: String,
     val income: Boolean

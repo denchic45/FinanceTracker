@@ -1,6 +1,6 @@
 package com.denchic45.financetracker.feature.category
 
-import com.denchic45.financetracker.category.model.CategoryRequest
+import com.denchic45.financetracker.category.model.CreateCategoryRequest
 import com.denchic45.financetracker.error.CategoryValidationMessages
 import com.denchic45.financetracker.feature.buildValidationResult
 import com.denchic45.financetracker.util.respond
@@ -13,7 +13,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
-import sun.security.util.KeyUtil.validate
 
 fun Application.configureCategory() {
     routing {
@@ -22,7 +21,7 @@ fun Application.configureCategory() {
                 val repository by inject<CategoryRepository>()
 
                 install(RequestValidation) {
-                    validate<CategoryRequest> { request ->
+                    validate<CreateCategoryRequest> { request ->
                         buildValidationResult {
                             condition(
                                 request.name.isNotBlank(),
