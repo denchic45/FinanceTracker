@@ -1,9 +1,8 @@
 package com.denchic45.financetracker.transaction.model
 
-import com.denchic45.financetracker.util.LocalDateTimeSerializer
 import com.denchic45.financetracker.util.UUIDSerializer
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
 import java.util.*
 
 @Serializable
@@ -17,18 +16,17 @@ sealed class AbstractTransactionRequest {
 @Serializable
 data class TransactionRequest(
     val income: Boolean,
-    @Serializable(LocalDateTimeSerializer::class)
     override val datetime: LocalDateTime,
     override val amount: Long,
     override val note: String,
     @Serializable(UUIDSerializer::class)
     override val accountId: UUID,
     val categoryId: Long,
+    val tagIds: List<Long> = emptyList()
 ) : AbstractTransactionRequest()
 
 @Serializable
 data class TransferTransactionRequest(
-    @Serializable(LocalDateTimeSerializer::class)
     override val datetime: LocalDateTime,
     override val amount: Long,
     override val note: String,
