@@ -7,6 +7,7 @@ fun AccountDao.toAccountResponse() = AccountResponse(
     id = id.value,
     name = name,
     type = type,
+    initialBalance = initialBalance,
     balance = balance
 )
 

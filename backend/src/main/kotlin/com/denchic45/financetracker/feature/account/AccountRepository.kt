@@ -3,16 +3,21 @@ package com.denchic45.financetracker.feature.account
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.raise.either
+import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import arrow.core.right
 import com.denchic45.financetracker.account.model.AccountRequest
 import com.denchic45.financetracker.account.model.AccountResponse
 import com.denchic45.financetracker.database.table.AccountDao
+import com.denchic45.financetracker.database.table.Accounts
 import com.denchic45.financetracker.database.table.UserDao
+import com.denchic45.financetracker.database.table.Users
+import com.denchic45.financetracker.database.util.exists
 import com.denchic45.financetracker.error.AccountNotFound
 import com.denchic45.financetracker.error.UserNotFound
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.UUID
+import java.util.*
 
 class AccountRepository() {
 
@@ -21,7 +26,8 @@ class AccountRepository() {
             AccountDao.new {
                 name = request.name
                 type = request.type
-                user = ensureNotNull(UserDao.findById(userId)) { UserNotFound }
+                initialBalance = request.initialBalance
+                owner = ensureNotNull(UserDao.findById(userId)) { UserNotFound }
             }.toAccountResponse()
         }
     }
@@ -41,7 +47,10 @@ class AccountRepository() {
         AccountDao.findById(accountId)?.delete()?.right() ?: AccountNotFound.left()
     }
 
-    fun findAll() = transaction {
-        AccountDao.all().toAccountResponses()
+    fun findAll(userId: UUID) = either {
+        transaction {
+            ensure(Users.exists { Users.id eq userId }) { UserNotFound }
+            AccountDao.find(Accounts.ownerId eq userId).toAccountResponses()
+        }
     }
 }
