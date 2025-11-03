@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 
 object Transactions : LongIdTable("transaction", "transaction_id") {
-    val date = datetime("date")
+    val datetime = datetime("datetime")
     val amount = long("amount")
     val type = enumerationByName<TransactionType>("transaction_type", 28)
     val description = text("description")
@@ -20,7 +20,7 @@ object Transactions : LongIdTable("transaction", "transaction_id") {
 class TransactionDao(id: EntityID<Long>) : LongEntity(id) {
     companion object : LongEntityClass<TransactionDao>(Transactions)
 
-    var datetime by Transactions.date
+    var datetime by Transactions.datetime
     var amount by Transactions.amount
     var type by Transactions.type
     var description by Transactions.description

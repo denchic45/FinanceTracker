@@ -3,12 +3,14 @@ package com.denchic45.financetracker.feature.transaction
 import com.denchic45.financetracker.database.table.AccountDao
 import com.denchic45.financetracker.database.table.TransactionDao
 import com.denchic45.financetracker.feature.category.toCategoryResponse
+import com.denchic45.financetracker.feature.tag.toTagResponses
 import com.denchic45.financetracker.transaction.model.*
 
 fun AccountDao.toTransactionAccount() = TransactionAccount(
     id = id.value,
     name = name,
     accountType = type,
+    initialBalance = initialBalance,
     balance = balance
 )
 
@@ -18,10 +20,11 @@ fun TransactionDao.toResponse(): AbstractTransactionResponse {
             id = id.value,
             datetime = datetime,
             amount = amount,
-            description = description,
+            note = description,
             account = account.toTransactionAccount(),
-            category = category!!.toCategoryResponse(), // Assuming toCategoryResponse() exists
-            income = (type == TransactionType.INCOME)
+            category = category!!.toCategoryResponse(),
+            income = (type == TransactionType.INCOME),
+            tags = tags.toTagResponses()
         )
 
 
@@ -29,7 +32,7 @@ fun TransactionDao.toResponse(): AbstractTransactionResponse {
             id = id.value,
             datetime = datetime,
             amount = amount,
-            description = description,
+            note = description,
             account = account.toTransactionAccount(),
             incomeAccount = incomeAccount!!.toTransactionAccount()
         )

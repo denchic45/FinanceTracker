@@ -25,6 +25,8 @@ dependencies {
     api("io.arrow-kt:arrow-core:$arrowVersion")
     api("io.arrow-kt:arrow-fx-coroutines:$arrowVersion")
 
+    api("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
+    api("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1-0.6.x-compat")
     testImplementation(kotlin("test"))
 }
 
