@@ -9,7 +9,6 @@ import arrow.core.getOrElse
 import com.denchic45.financetracker.data.database.AppDatabase
 import com.denchic45.financetracker.data.database.entity.AggregatedTransactionEntity
 import com.denchic45.financetracker.data.mapper.toTransactionEntities
-import com.denchic45.financetracker.response.asThrowable
 import com.denchic45.financetracker.transaction.TransactionApi
 
 @OptIn(ExperimentalPagingApi::class)
@@ -36,7 +35,7 @@ class TransactionRemoteMediator(
         }
         val transactions = transactionApi.getList(page, 30)
             .getOrElse {
-                return MediatorResult.Error(it.asThrowable())
+                return MediatorResult.Error(ApiException(it))
             }
 
         val transactionDao = database.transactionDao
@@ -46,6 +45,6 @@ class TransactionRemoteMediator(
             }
             transactionDao.upsert(transactions.results.toTransactionEntities())
         }
-        return MediatorResult.Success(transactions.info.next == null)
+        return MediatorResult.Success(transactions.totalPages == page)
     }
 }
