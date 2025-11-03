@@ -1,7 +1,9 @@
-package com.denchic45.financetracker.response
+package com.denchic45.financetracker.data
 
-import com.denchic45.financetracker.bodyNullable
-import com.denchic45.financetracker.error.DomainError
+import com.denchic45.financetracker.error.ApiError
+import com.denchic45.financetracker.response.UnknownApiException
+import com.denchic45.financetracker.response.bodyNullable
+import com.denchic45.financetracker.response.isNetworkException
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import kotlinx.io.IOException
@@ -21,22 +23,22 @@ data object NoConnection : Failure
 
 /**
  * Represents a business logic error returned from the API, where the response body
- * was successfully parsed into a structured [DomainError] object.
+ * was successfully parsed into a structured [ApiFailure] object.
  *
  * @property error The structured domain error object.
  */
-data class ApiError(
-    val error: DomainError
+data class ApiFailure(
+    val error: ApiError
 ) : Failure
 
 /**
  * Represents an API failure where the HTTP status code (4xx/5xx) indicates an issue,
- * but the response body could not be parsed into a structured [DomainError].
+ * but the response body could not be parsed into a structured [ApiError].
  *
  * @property code The HTTP status code (e.g., 404, 500).
  * @property body The raw response body text.
  */
-data class UnknownApiError(
+data class UnknownApiFailure(
     val code: Int,
     val body: String
 ) : Failure
@@ -47,28 +49,19 @@ data class UnknownApiError(
  *
  * @property throwable The original [Throwable].
  */
-data class ThrowableError(
+data class ThrowableFailure(
     val throwable: Throwable
 ) : Failure
 
 // --- Exception Wrappers ---
 
 /**
- * A generic exception thrown to wrap an [UnknownApiError] for compatibility with
- * standard Kotlin error handling mechanisms (try-catch).
- *
- * @property code The HTTP status code.
- * @param message The raw response body or generic error message.
- */
-class ApiException(val code: Int, message: String) : Exception(message)
-
-/**
- * A specific exception thrown to wrap a structured [DomainError] for propagation
+ * A specific exception thrown to wrap a structured [ApiError] for propagation
  * up the call stack.
  *
- * @property domainError The structured domain error.
+ * @property apiError The structured domain error.
  */
-class DomainApiException(val domainError: DomainError) : Exception(domainError.message)
+class ApiException(val apiError: ApiError) : Exception(apiError.message)
 
 // --- Extension Functions ---
 
@@ -76,15 +69,15 @@ class DomainApiException(val domainError: DomainError) : Exception(domainError.m
  * Converts a generic [Throwable] caught during a suspend call into a domain-level [Failure].
  *
  * This function handles mapping common infrastructure exceptions:
- * - [ApiException] is mapped to [UnknownApiError].
+ * - [UnknownApiException] is mapped to [UnknownApiFailure].
  * - [IOException] or platform-specific network exceptions are mapped to [NoConnection].
- * - All other exceptions are mapped to [ThrowableError].
+ * - All other exceptions are mapped to [ThrowableFailure].
  *
  * @receiver The caught [Throwable].
  * @return The corresponding [Failure] object.
  */
 fun Throwable.asFailure(): Failure = when (this) {
-    is ApiException -> UnknownApiError(
+    is UnknownApiException -> UnknownApiFailure(
         this.code,
         this.message.orEmpty()
     )
@@ -92,24 +85,24 @@ fun Throwable.asFailure(): Failure = when (this) {
     is IOException -> NoConnection
     else -> {
         if (isNetworkException()) NoConnection
-        else ThrowableError(this)
+        else ThrowableFailure(this)
     }
 }
 
 /**
  * Attempts to convert an erroneous [HttpResponse] (e.g., 4xx or 5xx status) into a [Failure].
  *
- * This function first attempts to deserialize the response body into a structured [DomainError].
- * If successful, it returns [ApiError]. Otherwise, it returns [UnknownApiError] with the
+ * This function first attempts to deserialize the response body into a structured [ApiError].
+ * If successful, it returns [ApiError]. Otherwise, it returns [UnknownApiFailure] with the
  * status code and raw body text.
  *
  * @receiver The Ktor [HttpResponse] object.
- * @return An [ApiError] if the body is a [DomainError], otherwise [UnknownApiError].
+ * @return An [ApiError] if the body is a [ApiError], otherwise [UnknownApiFailure].
  */
 suspend fun HttpResponse.asFailure(): Failure {
-    return bodyNullable<DomainError>()
-        ?.let { ApiError(it) }
-        ?: UnknownApiError(
+    return bodyNullable<ApiError>()
+        ?.let { ApiFailure(it) }
+        ?: UnknownApiFailure(
             status.value,
             bodyAsText()
         )
@@ -127,8 +120,8 @@ suspend fun HttpResponse.asFailure(): Failure {
 fun Failure.asThrowable(): Throwable {
     return when (this) {
         NoConnection -> IOException()
-        is ApiError -> DomainApiException(error)
-        is UnknownApiError -> ApiException(code, body)
-        is ThrowableError -> throwable
+        is ApiFailure -> ApiException(error)
+        is UnknownApiFailure -> UnknownApiException(code, body)
+        is ThrowableFailure -> throwable
     }
 }
