@@ -32,6 +32,8 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version
 jbcrypt = { module = "org.mindrot:jbcrypt", version = "0.4" }
 kotlin-result = { module = "com.michael-bull.kotlin-result:kotlin-result", version.ref = "kotlin-result" }
 kotlin-result-coroutines = { module = "com.michael-bull.kotlin-result:kotlin-result-coroutines", version.ref = "kotlin-result" }
+koin-test-junit5 = {module = "io.insert-koin:koin-test-junit5", version.ref = "koin"}
+
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

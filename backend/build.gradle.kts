@@ -17,6 +17,10 @@ kotlin {
     }
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
+
 dependencies {
     implementation(libs.koin.ktor)
     implementation(libs.koin.logger.slf4j)
@@ -52,6 +56,8 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.koin.test.junit5)
 
     implementation(project(":api"))
+    implementation("org.junit.platform:junit-platform-launcher:1.12.2")
 }
