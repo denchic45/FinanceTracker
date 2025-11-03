@@ -1,39 +1,39 @@
 package com.denchic45.financetracker.database
 
-import com.denchic45.financetracker.database.table.Accounts
-import com.denchic45.financetracker.database.table.Categories
-import com.denchic45.financetracker.database.table.Transactions
-import com.denchic45.financetracker.database.table.Users
+import com.denchic45.financetracker.database.table.*
 import io.ktor.server.application.*
-import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.koin.core.parameter.parametersOf
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
+import org.koin.ktor.ext.inject
 
 fun Application.configureDatabase() {
+    val environmentFlag = environment.config.property("ktor.environment").getString()
+    val databaseFactory by inject<DatabaseFactory>(
+        qualifier = named(
+            when (environmentFlag) {
+                "dev" -> "default"
+                "test" -> "test"
+                else -> throw IllegalStateException("Unknown environment declared in application configuration.")
+            }
+        ),
+        parameters = { parametersOf(environment.config) }
+    )
+    databaseFactory.connect()
     println("connect to database...")
+    databaseFactory.connect()
 
-    val config = environment.config
-    val databaseUrl = config.property("database.url").getString()
-    val databaseUser = config.property("database.user").getString()
-    val databasePassword = config.property("database.password").getString()
-
-    println("connected to database")
-
-    transaction(
-        Database.connect(
-            url = databaseUrl,
-            user = databaseUser,
-            password = databasePassword
-        )
-    ) {
+    transaction {
+        SchemaUtils.create(Users, RefreshTokens, Accounts, Transactions, Categories, Tags, TransactionTags)
         if (!Users.exists() || Users.selectAll().count() == 0L) {
-            SchemaUtils.create(Users, Accounts, Transactions, Categories)
             insertInitData()
         }
     }
-    println("connection successful")
+    println("connected to database")
 }
 
 /**
@@ -41,4 +41,9 @@ fun Application.configureDatabase() {
  */
 private fun insertInitData() {
     // TODO
+}
+
+val databaseModule = module {
+    single<DatabaseFactory>(named("default")) { DatabaseFactoryImpl(get()) }
+    single<DatabaseFactory>(named("test")) { DatabaseFactoryTest() }
 }
