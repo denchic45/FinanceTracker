@@ -27,4 +27,5 @@ class TransactionDao(id: EntityID<Long>) : LongEntity(id) {
     var account by AccountDao referencedOn Transactions.accountId
     var category by CategoryDao optionalReferencedOn Transactions.categoryId
     var incomeAccount by AccountDao optionalReferencedOn Transactions.incomeAccountId
+    var tags by TagDao via TransactionTags
 }

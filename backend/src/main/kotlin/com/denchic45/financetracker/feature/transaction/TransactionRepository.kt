@@ -17,18 +17,20 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class TransactionRepository() {
 
-    fun add(request: AbstractTransactionRequest): Either<DomainError, AbstractTransactionResponse> = either {
+    fun add(request: AbstractTransactionRequest): Either<ApiError, AbstractTransactionResponse> = either {
         transaction {
             TransactionDao.new {
                 datetime = request.datetime
                 amount = request.amount
                 description = request.note
                 account = ensureNotNull(AccountDao.findById(request.accountId)) { AccountNotFound }
+
                 when (request) {
                     is TransactionRequest -> {
                         val categoryDao = ensureNotNull(CategoryDao.findById(request.categoryId)) { CategoryNotFound }
                         type = if (request.income) TransactionType.INCOME else TransactionType.EXPENSE
                         category = categoryDao
+                        tags = getTagsByIds(request.tagIds)
                         incomeAccount = null
                     }
 
@@ -41,20 +43,8 @@ class TransactionRepository() {
                         incomeAccount = incomeAccountDao
                     }
                 }
-            }
-        }.toResponse()
-    }
-
-    fun find(page: Int, pageSize: Int) = transaction {
-        TransactionDao.wrapRows(
-            Transactions.selectAll()
-                .limit(pageSize)
-                .offset((page - 1).toLong() * pageSize)
-        ).toTransactionResponses()
-    }
-
-    fun findById(transactionId: Long): Either<TransactionNotFound, AbstractTransactionResponse> = transaction {
-        TransactionDao.findById(transactionId)?.toResponse()?.right() ?: TransactionNotFound.left()
+            }.toResponse()
+        }
     }
 
     fun update(
@@ -72,6 +62,7 @@ class TransactionRepository() {
                     is TransactionRequest -> {
                         type = if (request.income) TransactionType.INCOME else TransactionType.EXPENSE
                         category = ensureNotNull(CategoryDao.findById(request.categoryId)) { CategoryNotFound }
+                        tags = getTagsByIds(request.tagIds)
                         incomeAccount = null
                     }
 
@@ -87,10 +78,38 @@ class TransactionRepository() {
         }
     }
 
+    private fun Raise<TagNotFound>.getTagsByIds(tagIds: List<Long>): SizedIterable<TagDao> {
+        return ensureNotNull(
+            TagDao.find(Tags.id inList tagIds).takeIf { it.count().toInt() == tagIds.size }) { TagNotFound }
+    }
+
+    fun find(userId: UUID, page: Int, pageSize: Int) = either {
+        transaction {
+            ensure(UserDao.exists(userId)) { UserNotFound }
+            val query = Transactions.innerJoin(Accounts, { Transactions.sourceAccountId }, { Accounts.id }).selectAll()
+                .where(Accounts.ownerId eq userId).orderBy(Transactions.datetime, SortOrder.DESC)
+
+            val count = query.count()
+
+            val transactions = TransactionDao.wrapRows(
+                query.limit(pageSize).offset((page - 1).toLong() * pageSize)
+            ).toTransactionResponses()
+
+            PagingResponse(
+                results = transactions,
+                page = page,
+                count = pageSize,
+                totalPages = ceil(count / pageSize.toDouble()).toInt()
+            )
+        }
+    }
+
+    fun findById(transactionId: Long): Either<TransactionNotFound, AbstractTransactionResponse> = transaction {
+        TransactionDao.findById(transactionId)?.toResponse()?.right() ?: TransactionNotFound.left()
+    }
+
     fun remove(transactionId: Long): Option<TransactionNotFound> = transaction {
-        TransactionDao.findById(transactionId)
-            ?.delete()?.right()
-            ?: return@transaction TransactionNotFound.some()
+        TransactionDao.findById(transactionId)?.delete()?.right() ?: return@transaction TransactionNotFound.some()
         none()
     }
 }
