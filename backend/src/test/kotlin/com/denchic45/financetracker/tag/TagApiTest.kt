@@ -18,7 +18,6 @@ class TagApiTest : KtorClientTest() {
     fun testCrud(): Unit = runBlocking {
         val initialName = "Travel"
         val updatedName = "Business Travel"
-        val nonExistentId = 999999L
 
         // 1. CREATE
         val createRequest = TagRequest(name = initialName)
