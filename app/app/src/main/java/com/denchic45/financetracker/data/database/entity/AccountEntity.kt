@@ -13,5 +13,6 @@ data class AccountEntity(
     val id: UUID,
     val name: String,
     val type: AccountType,
+    val initialBalance: Long,
     val balance: Long
 )

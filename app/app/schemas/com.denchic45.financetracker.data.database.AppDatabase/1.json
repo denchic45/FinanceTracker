@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "feefd3dc63ce39c4cfea8db92c2780a8",
+    "identityHash": "6d09d4029545251520c92a5675c47ec9",
     "entities": [
       {
         "tableName": "transaction",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transaction_id` INTEGER NOT NULL, `datetime` INTEGER NOT NULL, `amount` INTEGER NOT NULL, `type` TEXT NOT NULL, `description` TEXT NOT NULL, `account_id` BLOB NOT NULL, `category_id` INTEGER, `income_account_id` BLOB, PRIMARY KEY(`transaction_id`), FOREIGN KEY(`account_id`) REFERENCES `account`(`account_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`category_id`) REFERENCES `category`(`category_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`income_account_id`) REFERENCES `account`(`account_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transaction_id` INTEGER NOT NULL, `datetime` INTEGER NOT NULL, `amount` INTEGER NOT NULL, `type` TEXT NOT NULL, `note` TEXT NOT NULL, `account_id` BLOB NOT NULL, `category_id` INTEGER, `income_account_id` BLOB, PRIMARY KEY(`transaction_id`), FOREIGN KEY(`account_id`) REFERENCES `account`(`account_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`category_id`) REFERENCES `category`(`category_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`income_account_id`) REFERENCES `account`(`account_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
@@ -33,8 +33,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "description",
-            "columnName": "description",
+            "fieldPath": "note",
+            "columnName": "note",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -135,7 +135,7 @@
       },
       {
         "tableName": "account",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`account_id` BLOB NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `balance` INTEGER NOT NULL, PRIMARY KEY(`account_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`account_id` BLOB NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `initialBalance` INTEGER NOT NULL, `balance` INTEGER NOT NULL, PRIMARY KEY(`account_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -156,6 +156,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "initialBalance",
+            "columnName": "initialBalance",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "balance",
             "columnName": "balance",
             "affinity": "INTEGER",
@@ -172,7 +178,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'feefd3dc63ce39c4cfea8db92c2780a8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d09d4029545251520c92a5675c47ec9')"
     ]
   }
 }

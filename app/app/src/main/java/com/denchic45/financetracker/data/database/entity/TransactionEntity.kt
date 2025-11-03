@@ -41,7 +41,7 @@ data class TransactionEntity(
     val datetime: Long,
     val amount: Long,
     val type: TransactionType,
-    val description: String,
+    val note: String,
     @ColumnInfo("account_id")
     val accountId: UUID,
     @ColumnInfo("category_id")

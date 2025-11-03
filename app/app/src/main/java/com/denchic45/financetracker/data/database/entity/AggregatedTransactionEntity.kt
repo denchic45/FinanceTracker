@@ -11,7 +11,7 @@ data class AggregatedTransactionEntity(
     val datetime: Long,
     val amount: Long,
     val type: TransactionType,
-    val description: String,
+    val note: String,
     @ColumnInfo(name = "category_id")
     val categoryId: Long,
     @ColumnInfo(name = "category_name")

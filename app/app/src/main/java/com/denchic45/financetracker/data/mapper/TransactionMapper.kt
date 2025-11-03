@@ -9,7 +9,9 @@ import com.denchic45.financetracker.transaction.model.AbstractTransactionRespons
 import com.denchic45.financetracker.transaction.model.TransactionResponse
 import com.denchic45.financetracker.transaction.model.TransactionType
 import com.denchic45.financetracker.transaction.model.TransferTransactionResponse
-import java.time.ZoneOffset
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlin.time.ExperimentalTime
 
 
 private fun AbstractTransactionResponse.mapToTransactionType(): TransactionType {
@@ -19,12 +21,13 @@ private fun AbstractTransactionResponse.mapToTransactionType(): TransactionType 
     }
 }
 
+@OptIn(ExperimentalTime::class)
 fun AbstractTransactionResponse.toTransactionEntity(): TransactionEntity {
     return TransactionEntity(
         id = id,
-        datetime = datetime.atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli(),
+        datetime = datetime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
         amount = amount,
-        description = description,
+        note = note,
         accountId = account.id,
         type = mapToTransactionType(),
         categoryId = (this as? TransactionResponse)?.category?.id,
@@ -46,7 +49,7 @@ fun AggregatedTransactionEntity.toTransactionItem(): TransactionItem {
         TransactionType.EXPENSE -> TransactionItem.Expense(
             id = id,
             amount = amount,
-            note = description,
+            note = note,
             account = accountItem,
             category = categoryItem
         )
@@ -54,7 +57,7 @@ fun AggregatedTransactionEntity.toTransactionItem(): TransactionItem {
         TransactionType.INCOME -> TransactionItem.Income(
             id = id,
             amount = amount,
-            note = description,
+            note = note,
             account = accountItem,
             category = categoryItem
         )
@@ -62,7 +65,7 @@ fun AggregatedTransactionEntity.toTransactionItem(): TransactionItem {
         TransactionType.TRANSFER -> TransactionItem.Transfer(
             id = id,
             amount = amount,
-            note = description,
+            note = note,
             account = accountItem,
             incomeAccount = with(incomeAccount) {
                 AccountItem(id, name, type, balance)
