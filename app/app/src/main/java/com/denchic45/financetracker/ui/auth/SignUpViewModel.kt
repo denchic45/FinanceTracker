@@ -7,11 +7,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denchic45.financetracker.auth.model.SignUpRequest
+import com.denchic45.financetracker.data.ApiFailure
+import com.denchic45.financetracker.data.NoConnection
 import com.denchic45.financetracker.domain.usecase.SignUpUseCase
 import com.denchic45.financetracker.error.EmailAlreadyUsed
 import com.denchic45.financetracker.error.InvalidRequest
-import com.denchic45.financetracker.response.ApiError
-import com.denchic45.financetracker.response.NoConnection
 import com.denchic45.financetracker.ui.validator.CompositeValidator
 import com.denchic45.financetracker.ui.validator.Condition
 import com.denchic45.financetracker.ui.validator.Operator
@@ -126,7 +126,7 @@ class SignUpViewModel(
                     uiState.isLoading = false
                     uiState.errorMessage = when (failure) {
                         NoConnection -> "Нет интернет-соединения"
-                        is ApiError -> {
+                        is ApiFailure -> {
                             when (failure.error) {
                                 EmailAlreadyUsed -> "Почта уже используется"
                                 is InvalidRequest -> "Ошибка в веденных данных"

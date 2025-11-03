@@ -2,8 +2,6 @@ package com.denchic45.financetracker.data
 
 import arrow.core.Either
 import arrow.core.Ior
-import com.denchic45.financetracker.ui.Resource
-import com.denchic45.financetracker.response.Failure
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first

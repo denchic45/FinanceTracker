@@ -6,7 +6,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.denchic45.financetracker.response.Failure
+import com.denchic45.financetracker.data.Failure
 
 @Composable
 fun <T> ResourceContent(

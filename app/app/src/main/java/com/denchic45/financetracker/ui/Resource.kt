@@ -1,7 +1,7 @@
 package com.denchic45.financetracker.ui
 
 import arrow.core.Either
-import com.denchic45.financetracker.response.Failure
+import com.denchic45.financetracker.data.Failure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
