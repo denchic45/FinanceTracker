@@ -7,8 +7,7 @@ import com.denchic45.financetracker.auth.AuthApi
 import com.denchic45.financetracker.auth.model.SignInRequest
 import com.denchic45.financetracker.auth.model.SignUpRequest
 import com.denchic45.financetracker.data.database.AppDatabase
-import com.denchic45.financetracker.response.Failure
-import com.denchic45.financetracker.response.toOption
+import com.denchic45.financetracker.data.toEmptyRequestResult
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.plugin
@@ -55,6 +54,6 @@ class AuthService(
 
     suspend fun signIn(request: SignInRequest): Option<Failure> {
         return authApi.signIn(request).onRight { appPreferences.setAccessToken(it) }
-            .toOption()
+            .toEmptyRequestResult()
     }
 }

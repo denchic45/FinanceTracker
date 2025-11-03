@@ -4,7 +4,7 @@ import io.ktor.http.*
 import kotlinx.serialization.Serializable
 
 @Serializable
-object EmailAlreadyUsed : DomainError {
+object EmailAlreadyUsed : ApiError {
     override val httpCode: HttpStatusCode get() = HttpStatusCode.Conflict
     override val message: String = "Email already used by another person."
 }
@@ -17,6 +17,16 @@ object WrongPassword : BadRequestError() {
 @Serializable
 object WrongEmail : BadRequestError() {
     override val message: String = "A user with this email address doesn't exist."
+}
+
+@Serializable
+object InvalidGrantType : BadRequestError() {
+    override val message: String = "The grant type provided does not exist."
+}
+
+@Serializable
+object InvalidRefreshToken : BadRequestError() {
+    override val message: String = "The refresh token is invalid or expired."
 }
 
 
