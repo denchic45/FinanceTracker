@@ -45,49 +45,43 @@ android {
     }
 }
 
+configurations.implementation{
+    exclude(group = "com.intellij", module = "annotations")
+}
+
 dependencies {
+    implementation(libs.financetracker.common)
+
+    // Android Core & Lifecycle
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
+
+    // Compose BOM & UI
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    implementation(libs.bundles.compose.ui)
 
-    implementation(libs.icondialog)
-    implementation(libs.androidx.material.icons.extended)
-    implementation(libs.androidx.paging.compose)
-    implementation(libs.androidx.paging.runtime)
-    implementation(libs.androidx.navigation3.runtime)
-    implementation(libs.androidx.navigation3.ui)
-    implementation(libs.androidx.navigation3.viewmodel)
-    implementation(libs.androidx.adaptive)
-    implementation(libs.androidx.adaptive.layout)
-    implementation(libs.androidx.adaptive.navigation)
-    implementation(libs.koin.androidx.compose)
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network.ktor)
-    implementation(libs.material3)
-    implementation(libs.androidx.compose.ui.tooling)
+    // Compose Material & Adaptive Layout
+    implementation(libs.bundles.compose.material)
+    implementation(libs.bundles.compose.adaptive)
 
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.room.paging)
+    // Navigation & Paging
+    implementation(libs.bundles.navigation)
+
+    implementation(libs.bundles.paging)
+
+    // Data Persistence (Room & Datastore)
+    implementation(libs.bundles.room)
     implementation(libs.androidx.datastore.preferences)
 
+    // Networking & Image Loading
     implementation(libs.ktor.client.okhttp)
+    implementation(libs.bundles.coil)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    // Dependency Injection
+    implementation(libs.koin.androidx.compose)
 
+    // Desugaring
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    implementation(project(":api"))
+    implementation(libs.bundles.testing)
 }

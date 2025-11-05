@@ -1,39 +1,86 @@
 [versions]
-exposed = "0.61.0"
-h2 = "2.3.232"
-koin = "4.1.1"
 kotlin = "2.1.21"
 ktor = "3.3.1"
-kotlin-result = "1.1.17"
+exposed = "0.61.0"
+koin = "4.1.1"
+hikariCP = "5.1.0"
+postgresql = "42.7.7"
+h2 = "2.3.232"
 logback = "1.4.14"
+junitPlatformLauncher = "1.12.2"
+
 
 [libraries]
+# Koin
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
 koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }
+
+# Ktor Server Core & Hosting
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
+ktor-server-auto-head-response = { module = "io.ktor:ktor-server-auto-head-response", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
+ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor" }
+
+# Ktor Features
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
-ktor-server-auth-jvm = { module = "io.ktor:ktor-server-auth-jvm", version.ref = "ktor" }
-ktor-server-auth-jwt-jvm = { module = "io.ktor:ktor-server-auth-jwt-jvm", version.ref = "ktor" }
+ktor-server-auth = { module = "io.ktor:ktor-server-auth-jvm", version.ref = "ktor" }
+ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt-jvm", version.ref = "ktor" }
 ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
 ktor-server-request-validation = { module = "io.ktor:ktor-server-request-validation", version.ref = "ktor" }
+
+# Exposed
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
 exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 exposed-java-time = { module = "org.jetbrains.exposed:exposed-java-time", version.ref = "exposed" }
+exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
 exposed-json = { module = "org.jetbrains.exposed:exposed-json", version.ref = "exposed" }
-h2 = { module = "com.h2database:h2", version.ref = "h2" }
-ktor-server-auto-head-response = { module = "io.ktor:ktor-server-auto-head-response", version.ref = "ktor" }
-ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
-ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor" }
-ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
-kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
-jbcrypt = { module = "org.mindrot:jbcrypt", version = "0.4" }
-kotlin-result = { module = "com.michael-bull.kotlin-result:kotlin-result", version.ref = "kotlin-result" }
-kotlin-result-coroutines = { module = "com.michael-bull.kotlin-result:kotlin-result-coroutines", version.ref = "kotlin-result" }
-koin-test-junit5 = {module = "io.insert-koin:koin-test-junit5", version.ref = "koin"}
+exposed-migration = { module = "org.jetbrains.exposed:exposed-migration", version.ref = "exposed" }
 
+# Database - Drivers & Pool
+hikari-cp = { module = "com.zaxxer:HikariCP", version.ref = "hikariCP" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
+
+# Utilities & Logging
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+jbcrypt = { module = "org.mindrot:jbcrypt", version = "0.4" }
+
+# Testing
+ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
+koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junitPlatformLauncher" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+
+financetracker-common = { module = "com.denchic45:financetracker-common" }
+
+[bundles]
+koin = [
+    "koin-ktor",
+    "koin-logger-slf4j"
+]
+ktor-server = [
+    "ktor-server-core",
+    "ktor-server-netty",
+    "ktor-serialization-kotlinx-json",
+    "ktor-server-content-negotiation",
+    "ktor-server-auth",
+    "ktor-server-auth-jwt",
+    "ktor-server-status-pages",
+    "ktor-server-request-validation",
+    "ktor-server-auto-head-response",
+    "ktor-server-config-yaml"
+]
+exposed = [
+    "exposed-core",
+    "exposed-dao",
+    "exposed-jdbc",
+    "exposed-java-time",
+    "exposed-kotlin-datetime",
+    "exposed-json",
+    "exposed-migration"
+]
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
