@@ -3,9 +3,9 @@ package com.denchic45.com.denchic45.financetracker.category
 import com.denchic45.financetracker.assertedNone
 import com.denchic45.financetracker.assertedRight
 import com.denchic45.financetracker.KtorClientTest
-import com.denchic45.financetracker.category.CategoryApi
-import com.denchic45.financetracker.category.model.CreateCategoryRequest
-import com.denchic45.financetracker.category.model.UpdateCategoryRequest
+import com.denchic45.financetracker.api.category.CategoryApi
+import com.denchic45.financetracker.api.category.model.CreateCategoryRequest
+import com.denchic45.financetracker.api.category.model.UpdateCategoryRequest
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

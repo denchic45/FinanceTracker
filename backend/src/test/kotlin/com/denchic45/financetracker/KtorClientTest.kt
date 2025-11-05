@@ -1,8 +1,8 @@
 package com.denchic45.financetracker
 
-import com.denchic45.financetracker.auth.AuthApi
-import com.denchic45.financetracker.auth.model.RefreshTokenRequest
-import com.denchic45.financetracker.auth.model.SignInRequest
+import com.denchic45.financetracker.api.auth.AuthApi
+import com.denchic45.financetracker.api.auth.model.RefreshTokenRequest
+import com.denchic45.financetracker.api.auth.model.SignInRequest
 import com.denchic45.financetracker.database.table.UserDao
 import com.denchic45.financetracker.di.apiModule
 import io.ktor.client.*
