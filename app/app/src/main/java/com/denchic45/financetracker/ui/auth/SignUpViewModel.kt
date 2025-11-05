@@ -6,12 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.denchic45.financetracker.auth.model.SignUpRequest
+import com.denchic45.financetracker.api.auth.model.SignUpRequest
 import com.denchic45.financetracker.data.ApiFailure
 import com.denchic45.financetracker.data.NoConnection
 import com.denchic45.financetracker.domain.usecase.SignUpUseCase
-import com.denchic45.financetracker.error.EmailAlreadyUsed
-import com.denchic45.financetracker.error.InvalidRequest
+import com.denchic45.financetracker.api.error.EmailAlreadyUsed
+import com.denchic45.financetracker.api.error.InvalidRequest
 import com.denchic45.financetracker.ui.validator.CompositeValidator
 import com.denchic45.financetracker.ui.validator.Condition
 import com.denchic45.financetracker.ui.validator.Operator

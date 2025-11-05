@@ -3,10 +3,10 @@ package com.denchic45.financetracker.data
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.some
-import com.denchic45.financetracker.auth.AuthApi
-import com.denchic45.financetracker.auth.model.AuthResponse
-import com.denchic45.financetracker.auth.model.SignInRequest
-import com.denchic45.financetracker.auth.model.SignUpRequest
+import com.denchic45.financetracker.api.auth.AuthApi
+import com.denchic45.financetracker.api.auth.model.AuthResponse
+import com.denchic45.financetracker.api.auth.model.SignInRequest
+import com.denchic45.financetracker.api.auth.model.SignUpRequest
 import com.denchic45.financetracker.data.database.AppDatabase
 import com.denchic45.financetracker.data.repository.safeFetch
 import io.ktor.client.HttpClient

@@ -25,8 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.denchic45.financetracker.account.model.AccountResponse
-import com.denchic45.financetracker.account.model.AccountType
+import com.denchic45.financetracker.api.account.model.AccountType
+import com.denchic45.financetracker.domain.model.AccountItem
 
 @Composable
 fun AccountListItem(account: AccountResponse, onEditClick: () -> Unit, onRemoveClick: () -> Unit) {

@@ -20,11 +20,11 @@ import com.denchic45.financetracker.data.mapper.toTransactionEntity
 import com.denchic45.financetracker.data.mapper.toTransactionItem
 import com.denchic45.financetracker.data.observeData
 import com.denchic45.financetracker.domain.model.TransactionItem
-import com.denchic45.financetracker.transaction.TransactionApi
-import com.denchic45.financetracker.transaction.model.TransactionRequest
-import com.denchic45.financetracker.transaction.model.AbstractTransactionResponse
-import com.denchic45.financetracker.transaction.model.TransactionResponse
-import com.denchic45.financetracker.transaction.model.TransferTransactionResponse
+import com.denchic45.financetracker.api.transaction.TransactionApi
+import com.denchic45.financetracker.api.transaction.model.AbstractTransactionResponse
+import com.denchic45.financetracker.api.transaction.model.TransactionRequest
+import com.denchic45.financetracker.api.transaction.model.TransactionResponse
+import com.denchic45.financetracker.api.transaction.model.TransferTransactionResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

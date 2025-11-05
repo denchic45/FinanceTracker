@@ -1,8 +1,9 @@
 package com.denchic45.financetracker.data.mapper
 
-import com.denchic45.financetracker.account.model.AccountResponse
+import com.denchic45.financetracker.api.account.model.AccountResponse
 import com.denchic45.financetracker.data.database.entity.AccountEntity
-import com.denchic45.financetracker.transaction.model.TransactionAccount
+import com.denchic45.financetracker.domain.model.AccountItem
+import com.denchic45.financetracker.api.transaction.model.TransactionAccount
 
 fun List<AccountResponse>.toAccountEntities() = map { response ->
     response.toAccountEntity()
@@ -24,13 +25,12 @@ fun TransactionAccount.toAccountEntity() = AccountEntity(
     balance = balance
 )
 
-fun AccountEntity.toAccountResponse() = AccountResponse(
+fun AccountEntity.toAccountItem() = AccountItem(
     id = id,
     name = name,
     type = type,
-    balance = balance,
-    initialBalance = initialBalance
+    balance = balance
 )
 
-fun List<AccountEntity>.toAccountResponses() = map(AccountEntity::toAccountResponse)
+fun List<AccountEntity>.toAccountItems() = map(AccountEntity::toAccountItem)
 

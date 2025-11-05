@@ -1,6 +1,6 @@
 package com.denchic45.financetracker.data.mapper
 
-import com.denchic45.financetracker.category.model.CategoryResponse
+import com.denchic45.financetracker.api.category.model.CategoryResponse
 import com.denchic45.financetracker.data.database.entity.CategoryEntity
 
 fun List<CategoryResponse>.toCategoryEntities() = map { response ->

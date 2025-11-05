@@ -4,12 +4,11 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import androidx.room.withTransaction
 import arrow.core.getOrElse
-import com.denchic45.financetracker.data.database.AppDatabase
 import com.denchic45.financetracker.data.database.entity.AggregatedTransactionEntity
-import com.denchic45.financetracker.data.mapper.toTransactionEntities
-import com.denchic45.financetracker.transaction.TransactionApi
+import com.denchic45.financetracker.data.repository.safeFetch
+import com.denchic45.financetracker.api.transaction.TransactionApi
+import com.denchic45.financetracker.api.transaction.model.AbstractTransactionResponse
 
 @OptIn(ExperimentalPagingApi::class)
 class TransactionRemoteMediator(

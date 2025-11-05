@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.denchic45.financetracker.account.model.AccountType
+import com.denchic45.financetracker.api.account.model.AccountType
 import com.denchic45.financetracker.domain.model.AccountItem
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TransactionItem

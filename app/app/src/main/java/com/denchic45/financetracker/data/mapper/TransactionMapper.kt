@@ -5,10 +5,10 @@ import com.denchic45.financetracker.data.database.entity.TransactionEntity
 import com.denchic45.financetracker.domain.model.AccountItem
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TransactionItem
-import com.denchic45.financetracker.transaction.model.AbstractTransactionResponse
-import com.denchic45.financetracker.transaction.model.TransactionResponse
-import com.denchic45.financetracker.transaction.model.TransactionType
-import com.denchic45.financetracker.transaction.model.TransferTransactionResponse
+import com.denchic45.financetracker.api.transaction.model.AbstractTransactionResponse
+import com.denchic45.financetracker.api.transaction.model.TransactionResponse
+import com.denchic45.financetracker.api.transaction.model.TransactionType
+import com.denchic45.financetracker.api.transaction.model.TransferTransactionResponse
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlin.time.ExperimentalTime

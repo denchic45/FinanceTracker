@@ -7,8 +7,8 @@ import com.denchic45.financetracker.data.ApiFailure
 import com.denchic45.financetracker.data.EmptyRequestResult
 import com.denchic45.financetracker.data.RequestResult
 import com.denchic45.financetracker.data.asFailure
-import com.denchic45.financetracker.response.ApiResult
-import com.denchic45.financetracker.response.EmptyApiResult
+import com.denchic45.financetracker.api.response.ApiResult
+import com.denchic45.financetracker.api.response.EmptyApiResult
 
 
 suspend inline fun <reified T> safeFetch(

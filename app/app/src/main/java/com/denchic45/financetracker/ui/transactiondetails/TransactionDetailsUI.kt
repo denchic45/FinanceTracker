@@ -33,13 +33,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.denchic45.financetracker.account.model.AccountType
+import com.denchic45.financetracker.api.account.model.AccountType
 import com.denchic45.financetracker.domain.model.AccountItem
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TransactionItem
-import com.denchic45.financetracker.transaction.model.TransactionType
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

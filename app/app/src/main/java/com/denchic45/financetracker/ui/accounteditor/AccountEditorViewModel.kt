@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.denchic45.financetracker.Field
 import com.denchic45.financetracker.FieldEditor
-import com.denchic45.financetracker.account.model.AccountType
+import com.denchic45.financetracker.api.account.model.AccountType
 
 class AccountEditorViewModel(val accountId: Long?) : ViewModel() {
     val state = EditableAccountState()

@@ -2,8 +2,9 @@ package com.denchic45.financetracker.data.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
-import com.denchic45.financetracker.account.model.AccountType
-import com.denchic45.financetracker.transaction.model.TransactionType
+import com.denchic45.financetracker.api.account.model.AccountType
+import com.denchic45.financetracker.api.transaction.model.TransactionType
+import java.util.UUID
 
 data class AggregatedTransactionEntity(
     @ColumnInfo("transaction_id")

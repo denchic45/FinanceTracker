@@ -1,9 +1,9 @@
 package com.denchic45.financetracker.data
 
-import com.denchic45.financetracker.error.ApiError
-import com.denchic45.financetracker.response.UnknownApiException
-import com.denchic45.financetracker.response.bodyNullable
-import com.denchic45.financetracker.response.isNetworkException
+import com.denchic45.financetracker.api.error.ApiError
+import com.denchic45.financetracker.api.response.UnknownApiException
+import com.denchic45.financetracker.api.response.bodyNullable
+import com.denchic45.financetracker.api.response.isNetworkException
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import kotlinx.io.IOException
@@ -82,8 +82,8 @@ fun Throwable.asFailure(): Failure = when (this) {
         this.message.orEmpty()
     )
 
-    is IOException -> NoConnection
     else -> {
+        printStackTrace()
         if (isNetworkException()) NoConnection
         else ThrowableFailure(this)
     }
