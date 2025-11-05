@@ -1,8 +1,0 @@
-package com.denchic45.financetracker.tag.model
-
-import kotlinx.serialization.Serializable
-
-@Serializable
-data class TagRequest(
-    val name: String
-)

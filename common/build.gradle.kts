@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.1.21"
-    kotlin("plugin.serialization") version "2.1.21"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 group = "com.denchic45"
@@ -17,4 +17,12 @@ tasks.withType<KotlinCompile> {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_21)
     }
+}
+
+dependencies {
+    api(libs.bundles.ktor.client)
+    api(libs.bundles.arrow)
+    api(libs.kotlinx.datetime)
+    api(libs.kotlinx.datetime.compat)
+    testImplementation(libs.kotlin.test)
 }
