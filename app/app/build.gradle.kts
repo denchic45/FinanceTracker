@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -20,6 +22,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        //load the values from .properties file
+        val keystoreFile = project.rootProject.file("local.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+        val apiKey = properties["BASE_URL"].toString()
+
+        buildConfigField(
+            type = "String",
+            name = "BASE_URL",
+            value = apiKey
+        )
     }
 
     buildTypes {
@@ -39,6 +53,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     room {
         schemaDirectory("$projectDir/schemas")
@@ -71,6 +86,7 @@ dependencies {
 
     // Data Persistence (Room & Datastore)
     implementation(libs.bundles.room)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.datastore.preferences)
 
     // Networking & Image Loading

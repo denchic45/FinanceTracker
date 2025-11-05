@@ -1,5 +1,6 @@
 package com.denchic45.financetracker.di
 
+import com.denchic45.financetracker.BuildConfig
 import com.denchic45.financetracker.api.account.AccountApi
 import com.denchic45.financetracker.api.auth.AuthApi
 import com.denchic45.financetracker.api.auth.model.RefreshTokenRequest
@@ -28,7 +29,7 @@ val networkModule = module {
         val appPreferences = get<AppPreferences>()
         HttpClient(OkHttp) {
             defaultRequest {
-                url("http://192.168.0.102:80/")
+                url(BuildConfig.BASE_URL)
             }
             install(Logging)
             install(ContentNegotiation) {
@@ -39,22 +40,38 @@ val networkModule = module {
                 })
             }
             install(Auth) {
+                var bearerTokens: BearerTokens? = null
                 bearer {
+
                     loadTokens {
                         val accessToken = appPreferences.accessToken.first()
                         val refreshToken = appPreferences.refreshToken.first()
 
                         if (accessToken != null && refreshToken != null) {
-                            BearerTokens(accessToken, refreshToken)
+                            bearerTokens = BearerTokens(accessToken, refreshToken)
+                            bearerTokens
                         } else null
+                    }
+                    refreshTokens {
+                        get<AuthApi>().refreshToken(
+                            RefreshTokenRequest(oldTokens!!.refreshToken!!)
+                        ).fold(
+                            ifLeft = { null },
+                            ifRight = { result ->
+                                bearerTokens = BearerTokens(result.token, result.refreshToken)
+                                bearerTokens
+                            }
+                        )
                     }
                 }
             }
         }
     }
 
+    singleOf(::AuthApi)
     singleOf(::AccountApi)
     singleOf(::TransactionApi)
     singleOf(::CategoryApi)
-    singleOf(::AuthApi)
+    singleOf(::TagApi)
+    singleOf(::StatisticsApi)
 }
