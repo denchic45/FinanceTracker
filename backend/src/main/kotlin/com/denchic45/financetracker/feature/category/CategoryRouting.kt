@@ -1,7 +1,7 @@
 package com.denchic45.financetracker.feature.category
 
-import com.denchic45.financetracker.category.model.CreateCategoryRequest
-import com.denchic45.financetracker.error.CategoryValidationMessages
+import com.denchic45.financetracker.api.category.model.CreateCategoryRequest
+import com.denchic45.financetracker.api.error.CategoryValidationMessages
 import com.denchic45.financetracker.feature.buildValidationResult
 import com.denchic45.financetracker.util.respond
 import io.ktor.http.*

@@ -1,9 +1,8 @@
-package com.denchic45.com.denchic45.financetracker.category
+package com.denchic45.financetracker.api.category
 
-import com.denchic45.financetracker.assertedNone
-import com.denchic45.financetracker.assertedRight
-import com.denchic45.financetracker.KtorClientTest
-import com.denchic45.financetracker.api.category.CategoryApi
+import com.denchic45.financetracker.api.assertedNone
+import com.denchic45.financetracker.api.assertedRight
+import com.denchic45.financetracker.api.KtorClientTest
 import com.denchic45.financetracker.api.category.model.CreateCategoryRequest
 import com.denchic45.financetracker.api.category.model.UpdateCategoryRequest
 import kotlinx.coroutines.runBlocking

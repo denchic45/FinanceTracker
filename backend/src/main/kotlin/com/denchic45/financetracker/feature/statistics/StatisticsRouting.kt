@@ -4,8 +4,8 @@ import com.denchic45.financetracker.ktor.currentUserId
 import com.denchic45.financetracker.ktor.getEnumOrFail
 import com.denchic45.financetracker.ktor.getLocalDate
 import com.denchic45.financetracker.ktor.getLocalDateOrFail
-import com.denchic45.financetracker.statistic.model.GroupingPeriod
-import com.denchic45.financetracker.statistic.model.StatisticsField
+import com.denchic45.financetracker.api.statistic.model.GroupingPeriod
+import com.denchic45.financetracker.api.statistic.model.StatisticsField
 import com.denchic45.financetracker.util.respond
 import com.denchic45.financetracker.util.toUUID
 import io.ktor.server.application.*

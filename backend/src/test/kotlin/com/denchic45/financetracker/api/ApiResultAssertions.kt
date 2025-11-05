@@ -1,8 +1,8 @@
-package com.denchic45.financetracker
+package com.denchic45.financetracker.api
 
 import arrow.core.right
-import com.denchic45.financetracker.response.ApiResult
-import com.denchic45.financetracker.response.EmptyApiResult
+import com.denchic45.financetracker.api.response.ApiResult
+import com.denchic45.financetracker.api.response.EmptyApiResult
 import com.denchic45.financetracker.util.leftValue
 import com.denchic45.financetracker.util.rightValue
 import com.denchic45.financetracker.util.rightValueOrNull

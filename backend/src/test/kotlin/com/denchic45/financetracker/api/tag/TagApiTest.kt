@@ -1,9 +1,8 @@
-package com.denchic45.financetracker.tag
+package com.denchic45.financetracker.api.tag
 
-import com.denchic45.financetracker.KtorClientTest
-import com.denchic45.financetracker.api.tag.TagApi
-import com.denchic45.financetracker.assertedNone
-import com.denchic45.financetracker.assertedRight
+import com.denchic45.financetracker.api.KtorClientTest
+import com.denchic45.financetracker.api.assertedNone
+import com.denchic45.financetracker.api.assertedRight
 import com.denchic45.financetracker.api.tag.model.TagRequest
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals

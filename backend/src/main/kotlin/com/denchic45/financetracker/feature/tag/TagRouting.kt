@@ -1,8 +1,8 @@
 package com.denchic45.financetracker.feature.tag
 
-import com.denchic45.financetracker.error.TagValidationMessages
+import com.denchic45.financetracker.api.error.TagValidationMessages
 import com.denchic45.financetracker.feature.buildValidationResult
-import com.denchic45.financetracker.tag.model.TagRequest
+import com.denchic45.financetracker.api.tag.model.TagRequest
 import com.denchic45.financetracker.util.respond
 import io.ktor.http.*
 import io.ktor.server.application.*

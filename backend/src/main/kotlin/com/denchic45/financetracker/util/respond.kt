@@ -4,7 +4,7 @@ import arrow.core.Either
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
-import com.denchic45.financetracker.error.ApiError
+import com.denchic45.financetracker.api.error.ApiError
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.RoutingContext

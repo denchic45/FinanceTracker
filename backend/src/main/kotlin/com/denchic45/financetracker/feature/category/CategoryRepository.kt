@@ -6,11 +6,11 @@ import arrow.core.left
 import arrow.core.none
 import arrow.core.right
 import arrow.core.some
-import com.denchic45.financetracker.category.model.CreateCategoryRequest
-import com.denchic45.financetracker.category.model.CategoryResponse
-import com.denchic45.financetracker.category.model.UpdateCategoryRequest
+import com.denchic45.financetracker.api.category.model.CreateCategoryRequest
+import com.denchic45.financetracker.api.category.model.CategoryResponse
+import com.denchic45.financetracker.api.category.model.UpdateCategoryRequest
 import com.denchic45.financetracker.database.table.CategoryDao
-import com.denchic45.financetracker.error.CategoryNotFound
+import com.denchic45.financetracker.api.error.CategoryNotFound
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CategoryRepository() {

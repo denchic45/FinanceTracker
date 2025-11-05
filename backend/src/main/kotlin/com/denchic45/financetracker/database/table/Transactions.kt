@@ -1,15 +1,15 @@
 package com.denchic45.financetracker.database.table
 
-import com.denchic45.financetracker.transaction.model.TransactionType
+import com.denchic45.financetracker.api.transaction.model.TransactionType
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.case
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.kotlin.datetime.datetime
-import java.util.*
+import org.jetbrains.exposed.sql.longLiteral
+import org.jetbrains.exposed.sql.sum
 
 object Transactions : LongIdTable("transaction", "transaction_id") {
     val datetime = datetime("datetime")
@@ -20,15 +20,9 @@ object Transactions : LongIdTable("transaction", "transaction_id") {
     val categoryId = optReference("category_id", Categories)
     val incomeAccountId = optReference("income_account_id", Accounts)
 
-    val expenseSum = case()
-        .When(type eq TransactionType.EXPENSE, amount)
-        .Else(longLiteral(0))
-        .sum()
+    val expenseSum = case().When(type eq TransactionType.EXPENSE, amount).Else(longLiteral(0)).sum()
 
-    val incomeSum = case()
-        .When(type eq TransactionType.INCOME, amount)
-        .Else(longLiteral(0))
-        .sum()
+    val incomeSum = case().When(type eq TransactionType.INCOME, amount).Else(longLiteral(0)).sum()
 }
 
 class TransactionDao(id: EntityID<Long>) : LongEntity(id) {

@@ -1,20 +1,19 @@
-package com.denchic45.financetracker.transaction
+package com.denchic45.financetracker.api.transaction
 
-import com.denchic45.financetracker.KtorClientTest
+import com.denchic45.financetracker.api.KtorClientTest
 import com.denchic45.financetracker.api.account.AccountApi
 import com.denchic45.financetracker.api.account.model.AccountRequest
 import com.denchic45.financetracker.api.account.model.AccountType
 import com.denchic45.financetracker.api.category.CategoryApi
 import com.denchic45.financetracker.api.category.model.CreateCategoryRequest
 import com.denchic45.financetracker.api.error.InvalidPageSize
-import com.denchic45.financetracker.api.transaction.TransactionApi
 import com.denchic45.financetracker.api.transaction.model.TransactionRequest
 import com.denchic45.financetracker.api.transaction.model.TransactionResponse
 import com.denchic45.financetracker.api.transaction.model.TransferTransactionRequest
 import com.denchic45.financetracker.api.transaction.model.TransferTransactionResponse
-import com.denchic45.financetracker.assertedLeft
-import com.denchic45.financetracker.assertedNone
-import com.denchic45.financetracker.assertedRight
+import com.denchic45.financetracker.api.assertedLeft
+import com.denchic45.financetracker.api.assertedNone
+import com.denchic45.financetracker.api.assertedRight
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDateTime
 import org.junit.jupiter.api.AfterAll

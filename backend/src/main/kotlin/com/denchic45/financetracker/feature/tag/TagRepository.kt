@@ -2,9 +2,9 @@ package com.denchic45.financetracker.feature.tag
 
 import arrow.core.*
 import com.denchic45.financetracker.database.table.TagDao
-import com.denchic45.financetracker.error.TagNotFound
-import com.denchic45.financetracker.tag.model.TagRequest
-import com.denchic45.financetracker.tag.model.TagResponse
+import com.denchic45.financetracker.api.error.TagNotFound
+import com.denchic45.financetracker.api.tag.model.TagRequest
+import com.denchic45.financetracker.api.tag.model.TagResponse
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class TagRepository() {

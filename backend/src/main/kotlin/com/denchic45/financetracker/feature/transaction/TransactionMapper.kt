@@ -4,7 +4,7 @@ import com.denchic45.financetracker.database.table.AccountDao
 import com.denchic45.financetracker.database.table.TransactionDao
 import com.denchic45.financetracker.feature.category.toCategoryResponse
 import com.denchic45.financetracker.feature.tag.toTagResponses
-import com.denchic45.financetracker.transaction.model.*
+import com.denchic45.financetracker.api.transaction.model.*
 
 fun AccountDao.toTransactionAccount() = TransactionAccount(
     id = id.value,

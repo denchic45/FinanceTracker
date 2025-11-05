@@ -5,10 +5,10 @@ import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
-import com.denchic45.financetracker.PagingResponse
+import com.denchic45.financetracker.api.PagingResponse
 import com.denchic45.financetracker.database.table.*
-import com.denchic45.financetracker.error.*
-import com.denchic45.financetracker.transaction.model.*
+import com.denchic45.financetracker.api.error.*
+import com.denchic45.financetracker.api.transaction.model.*
 import org.jetbrains.exposed.sql.SizedIterable
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -93,7 +93,7 @@ class TransactionRepository() {
             val query = Transactions.innerJoin(Accounts, { Transactions.sourceAccountId }, { Accounts.id }).selectAll()
                 .where(Accounts.ownerId eq userId).orderBy(Transactions.datetime, SortOrder.DESC)
 
-            val count = query.count()
+            val count = query.count().toInt()
 
             val transactions = TransactionDao.wrapRows(
                 query.limit(pageSize).offset((page - 1).toLong() * pageSize)
@@ -102,7 +102,7 @@ class TransactionRepository() {
             PagingResponse(
                 results = transactions,
                 page = page,
-                count = pageSize,
+                count = count,
                 totalPages = ceil(count / pageSize.toDouble()).toInt()
             )
         }

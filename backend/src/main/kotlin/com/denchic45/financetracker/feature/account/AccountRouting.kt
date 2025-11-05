@@ -1,7 +1,7 @@
 package com.denchic45.financetracker.feature.account
 
-import com.denchic45.financetracker.account.model.AccountRequest
-import com.denchic45.financetracker.error.AccountValidationMessages
+import com.denchic45.financetracker.api.account.model.AccountRequest
+import com.denchic45.financetracker.api.error.AccountValidationMessages
 import com.denchic45.financetracker.feature.buildValidationResult
 import com.denchic45.financetracker.ktor.currentUserId
 import com.denchic45.financetracker.ktor.getUuidOrFail

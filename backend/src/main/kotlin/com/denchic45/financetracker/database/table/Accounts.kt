@@ -1,8 +1,8 @@
 package com.denchic45.financetracker.database.table
 
-import com.denchic45.financetracker.account.model.AccountType
+import com.denchic45.financetracker.api.account.model.AccountType
 import com.denchic45.financetracker.database.table.Transactions.amount
-import com.denchic45.financetracker.transaction.model.TransactionType
+import com.denchic45.financetracker.api.transaction.model.TransactionType
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

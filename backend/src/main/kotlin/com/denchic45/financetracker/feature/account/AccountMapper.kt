@@ -1,6 +1,6 @@
 package com.denchic45.financetracker.feature.account
 
-import com.denchic45.financetracker.account.model.AccountResponse
+import com.denchic45.financetracker.api.account.model.AccountResponse
 import com.denchic45.financetracker.database.table.AccountDao
 
 fun AccountDao.toAccountResponse() = AccountResponse(

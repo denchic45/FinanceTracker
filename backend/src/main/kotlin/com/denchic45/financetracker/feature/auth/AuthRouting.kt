@@ -3,10 +3,10 @@ package com.denchic45.financetracker.feature.auth
 import arrow.core.raise.either
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.denchic45.financetracker.auth.model.AuthResponse
-import com.denchic45.financetracker.auth.model.SignUpRequest
-import com.denchic45.financetracker.error.InvalidGrantType
-import com.denchic45.financetracker.error.SignUpValidationMessages
+import com.denchic45.financetracker.api.auth.model.AuthResponse
+import com.denchic45.financetracker.api.auth.model.SignUpRequest
+import com.denchic45.financetracker.api.error.InvalidGrantType
+import com.denchic45.financetracker.api.error.SignUpValidationMessages
 import com.denchic45.financetracker.feature.buildValidationResult
 import com.denchic45.financetracker.util.respond
 import io.ktor.server.plugins.requestvalidation.*
