@@ -1,4 +1,4 @@
-package com.denchic45.financetracker.ui
+package com.denchic45.financetracker.ui.resource
 
 import arrow.core.Ior
 import com.denchic45.financetracker.data.Failure
@@ -15,6 +15,8 @@ sealed interface CacheableResource<out A> {
     data class Failed(val error: Failure) : CacheableResource<Nothing>
     data class Cached<A>(val error: Failure, val value: A) : CacheableResource<A>
 }
+
+fun <T> CacheableResource<T>.hasResult(): Boolean = this !is CacheableResource.Loading
 
 // --- Constructors ---
 
@@ -51,43 +53,53 @@ fun <T> CacheableResource<T>.failureOrNull(): Failure? = when (this) {
 
 // --- Side-Effect Handlers ---
 
-inline infix fun <T> CacheableResource<T>.onNewest(action: (T) -> Unit): CacheableResource<T> = apply {
-    if (this is CacheableResource.Newest) {
-        action(value)
+inline infix fun <T> CacheableResource<T>.onNewest(action: (T) -> Unit): CacheableResource<T> =
+    apply {
+        if (this is CacheableResource.Newest) {
+            action(value)
+        }
     }
-}
 
-inline infix fun <T> CacheableResource<T>.onFailed(action: (Failure) -> Unit): CacheableResource<T> = apply {
-    if (this is CacheableResource.Failed) {
-        action(error)
+inline infix fun <T> CacheableResource<T>.onFailed(action: (Failure) -> Unit): CacheableResource<T> =
+    apply {
+        if (this is CacheableResource.Failed) {
+            action(error)
+        }
     }
-}
 
-inline infix fun <T> CacheableResource<T>.onLoading(action: () -> Unit): CacheableResource<T> = apply {
-    if (this is CacheableResource.Loading) {
-        action()
+inline infix fun <T> CacheableResource<T>.onLoading(action: () -> Unit): CacheableResource<T> =
+    apply {
+        if (this is CacheableResource.Loading) {
+            action()
+        }
     }
-}
 
 /**
  * Executes action if data is present, regardless of whether it's new or cached with an error.
  */
-inline infix fun <T> CacheableResource<T>.onData(action: (T) -> Unit): CacheableResource<T> = apply {
-    when (this) {
-        is CacheableResource.Newest -> action(value)
-        is CacheableResource.Cached -> action(value)
-        else -> Unit
+inline infix fun <T> CacheableResource<T>.onData(action: (Failure?, T) -> Unit): CacheableResource<T> =
+    apply {
+        when (this) {
+            is CacheableResource.Newest -> action(null,value)
+            is CacheableResource.Cached -> action(error,value)
+            else -> Unit
+        }
     }
-}
 
 /**
  * Executes action only if data is cached (i.e., data is present but fetch failed).
  */
-inline infix fun <T> CacheableResource<T>.onCached(action: (Failure, T) -> Unit): CacheableResource<T> = apply {
-    if (this is CacheableResource.Cached) {
-        action(error, value)
+inline infix fun <T> CacheableResource<T>.onCached(action: (Failure, T) -> Unit): CacheableResource<T> =
+    apply {
+        if (this is CacheableResource.Cached) {
+            action(error, value)
+        }
     }
-}
+
+/**
+ * Check the cacheable resource is [CacheableResource.Loading].
+ */
+fun <T> CacheableResource<T>.isLoading(): Boolean = this is CacheableResource.Loading
 
 // --- Transformation ---
 
@@ -119,10 +131,11 @@ fun <T> Flow<Ior<Failure, T>>.stateInCacheableResource(
     scope: CoroutineScope,
     started: SharingStarted = SharingStarted.Lazily,
     initialValue: CacheableResource<T> = CacheableResource.Loading,
-): StateFlow<CacheableResource<T>> = map {
-    it.fold(
-        fa = { CacheableResource.Failed(it) },
-        fb = { CacheableResource.Newest(it) },
-        fab = { error, value -> CacheableResource.Cached(error, value) }
-    )
-}.stateIn(scope, started, initialValue)
+): StateFlow<CacheableResource<T>> = map(Ior<Failure, T>::toCacheableResource)
+    .stateIn(scope, started, initialValue)
+
+fun <T> Ior<Failure, T>.toCacheableResource(): CacheableResource<T> = fold(
+    fa = { CacheableResource.Failed(it) },
+    fb = { CacheableResource.Newest(it) },
+    fab = { error, value -> CacheableResource.Cached(error, value) }
+)
