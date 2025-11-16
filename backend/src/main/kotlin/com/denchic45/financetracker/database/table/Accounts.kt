@@ -7,6 +7,7 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.case
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
@@ -21,7 +22,8 @@ object Accounts : UUIDTable("account", "account_id") {
     val name = text("name")
     val type = enumerationByName<AccountType>("type", 16)
     val initialBalance = long("initial_balance")
-    val ownerId = reference("user_id", Users)
+    val ownerId = reference("user_id", Users,
+        onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.CASCADE)
 
 }
 
