@@ -1,5 +1,6 @@
 package com.denchic45.financetracker.ui.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,49 +17,68 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ListAlt
-import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.denchic45.financetracker.api.account.model.AccountType
+import com.denchic45.financetracker.api.statistic.model.TotalsAmount
 import com.denchic45.financetracker.domain.model.AccountItem
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TransactionItem
+import com.denchic45.financetracker.domain.model.displayedGeneralBalance
+import com.denchic45.financetracker.ui.HeaderItem
+import com.denchic45.financetracker.ui.NoDataContent
+import com.denchic45.financetracker.ui.SmallTextButton
+import com.denchic45.financetracker.ui.TransactionListItem
+import com.denchic45.financetracker.ui.resource.isLoading
+import com.denchic45.financetracker.ui.resource.onData
+import com.denchic45.financetracker.ui.resource.onSuccess
 import com.denchic45.financetracker.ui.theme.FinanceTrackerTheme
 import com.denchic45.financetracker.ui.transactions.ExpenseColor
 import com.denchic45.financetracker.ui.transactions.IncomeColor
-import com.denchic45.financetracker.ui.transactions.TransactionListItem
 import com.denchic45.financetracker.ui.transactions.TransferColor
+import com.denchic45.financetracker.ui.util.convertToCurrency
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.koin.androidx.compose.koinViewModel
+import java.util.UUID
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
-    val viewModel = koinViewModel<HomeViewModel>()
-    val state = viewModel.uiState
+fun HomeScreen(
+    viewModel: HomeViewModel = koinViewModel()
+) {
+    val monthStatistics by viewModel.monthStatistics.collectAsState()
+    val accounts by viewModel.accounts.collectAsState()
+    val latestTransactions by viewModel.latestTransactions.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Обзор финансов") })
-        }
-    ) { paddingValues ->
-        if (state.isLoading) {
+        }) { paddingValues ->
+        if (monthStatistics.isLoading() || accounts.isLoading() || latestTransactions.isLoading()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -72,48 +92,89 @@ fun HomeScreen() {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 item {
                     Spacer(modifier = Modifier.height(8.dp))
-                    GeneralBalanceCard(balance = state.generalBalance)
+                    accounts.onData { failure, items ->
+                        GeneralBalanceCard(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            displayedBalance = items.displayedGeneralBalance
+                        )
+                    }
                 }
 
-                item {
-                    MonthStatRow(stat = state.monthStats)
+                monthStatistics.onSuccess {
+                    item {
+                        MonthStatRow(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            totalsAmount = it
+                        )
+                    }
                 }
 
-                item {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.AccountBalanceWallet, contentDescription = "Счета")
-                        Spacer(Modifier.width(8.dp))
-                        Text("Ваши счета", style = MaterialTheme.typography.titleLarge)
+                item { HeaderItem("Счета") }
+
+                accounts.onData { failure, accounts ->
+                    item {
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp)
+                        ) {
+                            items(accounts) { account ->
+                                AccountCard(
+                                    account = account,
+                                    onClick = { viewModel.onAccountClick(account.id) })
+                            }
+
+                            item {
+                                OutlinedCard(
+                                    modifier = Modifier
+                                        .width(160.dp)
+                                        .height(100.dp)
+                                        .clickable(onClick = viewModel::onCreateAccountClick),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Row(
+                                        Modifier.fillMaxSize(),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(Icons.Default.Add, null)
+                                        Spacer(Modifier.width(8.dp))
+                                        Text("Добавить")
+                                    }
+                                }
+                            }
+                        }
+                        Spacer(Modifier.height(8.dp))
                     }
                 }
 
                 item {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        contentPadding = PaddingValues(bottom = 8.dp)
-                    ) {
-                        items(state.accounts) { account ->
-                            AccountCard(account = account)
+                    HeaderItem(
+                        name = "Операции", action = {
+                            SmallTextButton(onClick = viewModel::onShowMoreTransactionsClick) {
+                                Text("Все")
+                            }
+                        })
+                }
+
+                latestTransactions.onData { failure, latestTransactions ->
+                    if (latestTransactions.isNotEmpty()) {
+                        items(latestTransactions, key = { it.id }) { transaction ->
+                            TransactionListItem(
+                                transaction = transaction,
+                                onClick = { viewModel.onTransactionClick(transaction.id) })
+                        }
+                    } else {
+                        item {
+                            NoDataContent(
+                                title = {
+                                    Text("У вас не было добавлено ни одной операции")
+                                }
+                            )
                         }
                     }
-                }
-
-                item {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.AutoMirrored.Filled.ListAlt, contentDescription = "Транзакции")
-                        Spacer(Modifier.width(8.dp))
-                        Text("Последние операции", style = MaterialTheme.typography.titleLarge)
-                    }
-                }
-
-                // 6. Вертикальный список последних транзакций (TransactionItem)
-                items(state.latestTransactions, key = { it.id }) { transaction ->
-                    TransactionListItem(transaction = transaction)
                 }
             }
         }
@@ -122,10 +183,9 @@ fun HomeScreen() {
 
 
 @Composable
-fun GeneralBalanceCard(balance: Double) {
+fun GeneralBalanceCard(modifier: Modifier = Modifier, displayedBalance: String) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
+        modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
@@ -140,7 +200,7 @@ fun GeneralBalanceCard(balance: Double) {
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
             Text(
-                balance.toString(),
+                displayedBalance,
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold),
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
@@ -149,28 +209,25 @@ fun GeneralBalanceCard(balance: Double) {
 }
 
 @Composable
-fun MonthStatRow(stat: MonthStat) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
+fun MonthStatRow(modifier: Modifier = Modifier, totalsAmount: TotalsAmount) {
+    Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         StatBox(
             label = "Доходы",
-            amountText = stat.income.toString(),
+            amountText = totalsAmount.incomes.convertToCurrency(),
             color = IncomeColor,
             modifier = Modifier.weight(1f)
         )
         Spacer(Modifier.width(8.dp))
         StatBox(
             label = "Расходы",
-            amountText = stat.expense.toString(),
+            amountText = totalsAmount.expenses.convertToCurrency(),
             color = ExpenseColor,
             modifier = Modifier.weight(1f)
         )
         Spacer(Modifier.width(8.dp))
         StatBox(
-            label = "Прибыль",
-            amountText = stat.profit.toString(),
+            label = "Остаток",
+            amountText = totalsAmount.profit.convertToCurrency(),
             color = TransferColor,
             modifier = Modifier.weight(1f)
         )
@@ -200,7 +257,7 @@ fun StatBox(label: String, amountText: String, color: Color, modifier: Modifier 
 }
 
 @Composable
-fun AccountCard(account: AccountItem) {
+fun AccountCard(account: AccountItem, onClick: () -> Unit) {
     // Determine color based on the new AccountType
     val cardColor = when (account.type) {
         AccountType.CARD -> Color(0xFF673AB7).copy(alpha = 0.8f) // Primary color for Cards
@@ -211,7 +268,8 @@ fun AccountCard(account: AccountItem) {
     Card(
         modifier = Modifier
             .width(160.dp)
-            .height(100.dp),
+            .height(100.dp)
+            .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(containerColor = cardColor),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -226,12 +284,14 @@ fun AccountCard(account: AccountItem) {
                 "${account.name} (${account.type.displayName})",
                 color = Color.White,
                 style = MaterialTheme.typography.titleMedium.copy(fontSize = 14.sp),
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
                 account.displayedBalance,
                 color = Color.White,
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -243,7 +303,7 @@ fun AccountCard(account: AccountItem) {
 @Composable
 fun GeneralBalanceCardPreview() {
     FinanceTrackerTheme {
-        GeneralBalanceCard(balance = 125000.50)
+        GeneralBalanceCard(displayedBalance = "125000")
     }
 }
 
@@ -252,9 +312,9 @@ fun GeneralBalanceCardPreview() {
 @Preview(name = "2. Month Stat Row")
 @Composable
 fun MonthStatRowPreview() {
-    val mockStat = MonthStat(expense = 35000.00, income = 60000.00, profit = 25000.00)
+    val mockStat = TotalsAmount(expenses = 35000, incomes = 60000, profit = 25000)
     FinanceTrackerTheme {
-        MonthStatRow(stat = mockStat)
+        MonthStatRow(totalsAmount = mockStat)
     }
 }
 
@@ -277,46 +337,52 @@ fun StatBoxIncomePreview() {
 @Composable
 fun AccountCardPreview() {
     val mockAccount = AccountItem(
-        id = 1,
+        id = UUID.randomUUID(),
         name = "Основная",
         type = AccountType.CARD,
         balance = 9500000L // 95 000.00
     )
     FinanceTrackerTheme {
-        AccountCard(account = mockAccount)
+        AccountCard(
+            account = mockAccount, onClick = {})
     }
 }
 
 // ---
 
+@OptIn(ExperimentalTime::class)
 @Preview(name = "5. Transaction List Item (Expense)")
 @Composable
 fun TransactionListItemExpensePreview() {
-    val mockAccount = AccountItem(1, "СберБанк", AccountType.CARD, 9500000L)
+    val mockAccount = AccountItem(UUID.randomUUID(), "СберБанк", AccountType.CARD, 9500000L)
     val mockCategory = CategoryItem(101, "Продукты", "", false)
     val mockTransaction = TransactionItem.Expense(
         id = 1,
         amount = 150000L, // 1500.00
+        datetime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
         note = "Супермаркет 'Лента'",
         account = mockAccount,
         category = mockCategory,
+        tags = emptyList()
     )
 
     FinanceTrackerTheme {
         Column(Modifier.padding(16.dp)) {
-            TransactionListItem(transaction = mockTransaction)
+            TransactionListItem(transaction = mockTransaction, onClick = {})
         }
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Preview(name = "6. Transaction List Item (Transfer)")
 @Composable
 fun TransactionListItemTransferPreview() {
-    val cardAccount = AccountItem(1, "СберБанк", AccountType.CARD, 9500000L)
-    val cashAccount = AccountItem(2, "Кошелек", AccountType.CASH, 500000L)
+    val cardAccount = AccountItem(UUID.randomUUID(), "СберБанк", AccountType.CARD, 9500000L)
+    val cashAccount = AccountItem(UUID.randomUUID(), "Кошелек", AccountType.CASH, 500000L)
     val mockTransaction = TransactionItem.Transfer(
         id = 2,
         amount = 1000000L, // 10 000.00
+        datetime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
         note = "Снятие наличных",
         account = cardAccount,
         incomeAccount = cashAccount
@@ -324,7 +390,8 @@ fun TransactionListItemTransferPreview() {
 
     FinanceTrackerTheme {
         Column(Modifier.padding(16.dp)) {
-            TransactionListItem(transaction = mockTransaction)
+            TransactionListItem(
+                transaction = mockTransaction, onClick = {})
         }
     }
 }

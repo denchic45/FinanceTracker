@@ -1,52 +1,44 @@
 package com.denchic45.financetracker.ui.home
 
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.denchic45.financetracker.domain.model.AccountItem
-import com.denchic45.financetracker.domain.model.TransactionItem
-import kotlinx.coroutines.launch
+import com.denchic45.financetracker.di.AppRouter
+import com.denchic45.financetracker.domain.usecase.FindTotalStatisticsUseCase
+import com.denchic45.financetracker.domain.usecase.ObserveAccountsUseCase
+import com.denchic45.financetracker.domain.usecase.ObserveLatestTransactionsUseCase
+import com.denchic45.financetracker.ui.main.NavEntry
+import com.denchic45.financetracker.ui.navigation.router.push
+import com.denchic45.financetracker.ui.resource.stateInCacheableResource
+import com.denchic45.financetracker.ui.resource.stateInResource
+import kotlinx.coroutines.flow.map
+import java.util.UUID
 
-class HomeViewModel: ViewModel() {
+class HomeViewModel(
+    private val findTotalStatisticsUseCase: FindTotalStatisticsUseCase,
+    observeAccountsUseCase: ObserveAccountsUseCase,
+    observeLatestTransactionsUseCase: ObserveLatestTransactionsUseCase,
+    private val router: AppRouter
+) : ViewModel() {
 
-    val uiState = HomeUiState()
+    val accounts = observeAccountsUseCase().stateInCacheableResource(viewModelScope)
 
-    private fun loadInitialData() {
-        viewModelScope.launch {
-            uiState.isLoading = true
-            uiState.generalErrorMessage = null
+    val monthStatistics = accounts.map { findTotalStatisticsUseCase() }
+        .stateInResource(viewModelScope)
 
-            TODO()
-        }
+    val latestTransactions = observeLatestTransactionsUseCase()
+        .stateInCacheableResource(viewModelScope)
+
+    fun onAccountClick(accountId: UUID) = router.push(NavEntry.AccountDetails(accountId))
+
+    fun onTransactionClick(transactionId: Long) {
+        router.push(NavEntry.TransactionDetails(transactionId))
+    }
+
+    fun onShowMoreTransactionsClick() {
+        router.push(NavEntry.Transactions)
+    }
+
+    fun onCreateAccountClick() {
+        router.push(NavEntry.AccountEditor(null))
     }
 }
-
-@Stable
-class HomeUiState {
-    // --- Data Properties ---
-
-    // General Balance (e.g., sum of all bills)
-    var generalBalance by mutableStateOf(0.0)
-
-    // Monthly Summary Stats
-    var monthStats by mutableStateOf(MonthStat(expense = 0.0, income = 0.0, profit = 0.0))
-
-    // Horizontal list of Bills/Accounts
-    var accounts by mutableStateOf(emptyList<AccountItem>())
-
-    // Vertical list of latest transactions
-    var latestTransactions by mutableStateOf(emptyList<TransactionItem>())
-
-    // --- UI/Async State ---
-
-    // General loading indicator for initial data fetch or sync
-    var isLoading by mutableStateOf(true)
-
-    // Error message related to data fetch or synchronization
-    var generalErrorMessage by mutableStateOf<String?>(null)
-}
-
-data class MonthStat(val expense: Double, val income: Double, val profit: Double)
