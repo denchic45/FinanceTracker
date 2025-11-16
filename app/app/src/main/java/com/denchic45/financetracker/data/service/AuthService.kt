@@ -1,4 +1,4 @@
-package com.denchic45.financetracker.data
+package com.denchic45.financetracker.data.service
 
 import arrow.core.None
 import arrow.core.Option
@@ -7,8 +7,11 @@ import com.denchic45.financetracker.api.auth.AuthApi
 import com.denchic45.financetracker.api.auth.model.AuthResponse
 import com.denchic45.financetracker.api.auth.model.SignInRequest
 import com.denchic45.financetracker.api.auth.model.SignUpRequest
+import com.denchic45.financetracker.data.AppPreferences
+import com.denchic45.financetracker.data.Failure
 import com.denchic45.financetracker.data.database.AppDatabase
-import com.denchic45.financetracker.data.repository.safeFetch
+import com.denchic45.financetracker.data.safeFetch
+import com.denchic45.financetracker.data.toEmptyRequestResult
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.plugin

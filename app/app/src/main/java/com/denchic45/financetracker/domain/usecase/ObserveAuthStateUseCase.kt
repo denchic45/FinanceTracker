@@ -1,6 +1,6 @@
 package com.denchic45.financetracker.domain.usecase
 
-import com.denchic45.financetracker.data.AuthService
+import com.denchic45.financetracker.data.service.AuthService
 import kotlinx.coroutines.flow.Flow
 
 class ObserveAuthStateUseCase(
