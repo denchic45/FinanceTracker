@@ -1,6 +1,5 @@
 package com.denchic45.financetracker.ui.accounts
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -23,13 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.api.account.model.AccountType
 import com.denchic45.financetracker.domain.model.AccountItem
 
 @Composable
-fun AccountListItem(account: AccountResponse, onEditClick: () -> Unit, onRemoveClick: () -> Unit) {
+fun AccountListItem(account: AccountItem, onEditClick: () -> Unit, onRemoveClick: () -> Unit) {
     ListItem(
         headlineContent = {
             Column {
@@ -42,7 +40,6 @@ fun AccountListItem(account: AccountResponse, onEditClick: () -> Unit, onRemoveC
                 Modifier
                     .padding(24.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color.Cyan)
             ) {
                 AccountTypeIcon(account.type)
             }
