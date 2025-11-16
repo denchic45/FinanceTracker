@@ -1,47 +1,64 @@
 package com.denchic45.financetracker.ui.main
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.navigation3.runtime.NavKey
+import com.denchic45.financetracker.di.AppRouter
+import com.denchic45.financetracker.ui.AppEventHandler
+import com.denchic45.financetracker.ui.navigation.router.Router
+import com.denchic45.financetracker.ui.navigation.router.bringToFront
+import com.denchic45.financetracker.ui.navigation.router.push
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
 
-class MainViewModel() : ViewModel() {
-    private val _backStack = mutableStateListOf<Screen>(Screen.Home)
-    val backStack: List<Screen> = _backStack
-    fun onTransactionEditorNavigate(transactionId: Long) {
-        _backStack.add(Screen.TransactionEditor(transactionId))
-    }
+class MainViewModel(
+    appEventHandler: AppEventHandler,
+    private val router: AppRouter
+) : ViewModel() {
+    private val navbarRouter: Router<NavigationBarScreen> = Router(NavigationBarScreen.Home)
+    val navbarBackStack = navbarRouter.backstack
 
-    fun onTransactionDetailsNavigate(transactionId: Long) {
-        _backStack.add(Screen.TransactionDetails(transactionId))
-    }
+    val events = appEventHandler.events
 
-    fun onHomeNavigate() = _backStack.add(Screen.Home)
+    fun onHomeNavigate() = navbarRouter.bringToFront(NavigationBarScreen.Home)
 
-    fun onTransactionsNavigate() = _backStack.add(Screen.Transactions)
+    fun onAnalyticsNavigate() = navbarRouter.bringToFront(NavigationBarScreen.Analytics)
 
-    fun onAnalyticsNavigate() = _backStack.add(Screen.Analytics)
+    fun onLabelsNavigate() = navbarRouter.bringToFront(NavigationBarScreen.Labels)
 
-    fun onLabelsNavigate() = _backStack.add(Screen.Labels)
+    fun onMenuNavigate() = navbarRouter.bringToFront(NavigationBarScreen.Menu)
 
-    fun onSettingsNavigate() = _backStack.add(Screen.Settings)
-
-
-    fun onNavigateBack() {
-        _backStack.removeLastOrNull()
+    fun onCreateTransactionClick() {
+        router.push(NavEntry.TransactionEditor(null))
     }
 }
 
 @Serializable
-sealed interface Screen {
-    data object Home : Screen
-    data object Analytics : Screen
-    data object Transactions : Screen
-    data object Labels : Screen
+sealed interface NavigationBarScreen : NavKey {
+    data object Home : NavigationBarScreen, NavKey
+    data object Analytics : NavigationBarScreen, NavKey
+    data object Labels : NavigationBarScreen, NavKey
+    data object Menu : NavigationBarScreen, NavKey
+}
 
-    data object Settings : Screen
-    data class TransactionEditor(val transactionId: Long) : Screen
-    data class TransactionDetails(val transactionId: Long) : Screen
-    data class AccountEditor(val accountId: UUID) : Screen
+@Serializable
+sealed interface NavEntry : NavKey {
+    data object Main : NavEntry
+
+    data class AccountDetails(val accountId: UUID) : NavEntry
+
+    data object Transactions : NavEntry
+    data class TransactionEditor(val transactionId: Long?) : NavEntry
+    data class TransactionDetails(val transactionId: Long) : NavEntry
+
+    data class CategoryDetails(val categoryId: Long) : NavEntry
+    data class CategoryEditor(val categoryId: Long?, val income: Boolean?) : NavEntry
+    data class CategoryPicker(val income: Boolean) : NavEntry
+
+    data class AccountEditor(val accountId: UUID?) : NavEntry
+    data class AccountPicker(val selectedIds: List<UUID>?) : NavEntry
+
+
+    data class TagsPicker(val selectedIds: List<Long>) : NavEntry
+    data class TagEditor(val tagId: Long?) : NavEntry
 }
