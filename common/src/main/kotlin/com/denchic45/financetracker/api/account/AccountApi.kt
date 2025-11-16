@@ -1,7 +1,8 @@
 package com.denchic45.financetracker.api.account
 
-import com.denchic45.financetracker.api.account.model.AccountRequest
 import com.denchic45.financetracker.api.account.model.AccountResponse
+import com.denchic45.financetracker.api.account.model.CreateAccountRequest
+import com.denchic45.financetracker.api.account.model.UpdateAccountRequest
 import com.denchic45.financetracker.api.response.ApiResult
 import com.denchic45.financetracker.api.response.EmptyApiResult
 import com.denchic45.financetracker.api.response.toEmptyResult
@@ -13,7 +14,7 @@ import java.util.*
 
 class AccountApi(private val client: HttpClient) {
 
-    suspend fun create(request: AccountRequest): ApiResult<AccountResponse> {
+    suspend fun create(request: CreateAccountRequest): ApiResult<AccountResponse> {
         return client.post("/accounts") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -28,7 +29,7 @@ class AccountApi(private val client: HttpClient) {
         return client.get("/accounts/$accountId").toResult()
     }
 
-    suspend fun update(accountId: UUID, request: AccountRequest): ApiResult<AccountResponse> {
+    suspend fun update(accountId: UUID, request: UpdateAccountRequest): ApiResult<AccountResponse> {
         return client.put("/accounts/$accountId") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -36,6 +37,6 @@ class AccountApi(private val client: HttpClient) {
     }
 
     suspend fun delete(accountId: UUID): EmptyApiResult {
-        return  client.delete("/accounts/$accountId").toEmptyResult()
+        return client.delete("/accounts/$accountId").toEmptyResult()
     }
 }

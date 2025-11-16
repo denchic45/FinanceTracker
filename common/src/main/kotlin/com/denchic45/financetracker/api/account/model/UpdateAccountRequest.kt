@@ -3,8 +3,8 @@ package com.denchic45.financetracker.api.account.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AccountRequest(
+data class UpdateAccountRequest(
     val name: String,
     val type: AccountType,
-    val initialBalance: Long
+    val adjustBalance: AdjustAccountBalanceRequest?
 )

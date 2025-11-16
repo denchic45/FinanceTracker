@@ -1,8 +1,11 @@
 package com.denchic45.financetracker.feature.account
 
-import com.denchic45.financetracker.api.account.model.AccountRequest
+import arrow.core.raise.either
+import com.denchic45.financetracker.api.account.model.CreateAccountRequest
+import com.denchic45.financetracker.api.account.model.UpdateAccountRequest
 import com.denchic45.financetracker.api.error.AccountValidationMessages
 import com.denchic45.financetracker.feature.buildValidationResult
+import com.denchic45.financetracker.feature.transaction.TransactionRepository
 import com.denchic45.financetracker.ktor.currentUserId
 import com.denchic45.financetracker.ktor.getUuidOrFail
 import com.denchic45.financetracker.util.respond
@@ -11,7 +14,6 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.request.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
@@ -20,35 +22,50 @@ fun Application.configureAccounts() {
         authenticate("auth-jwt") {
             route("/accounts") {
                 install(RequestValidation) {
-                    validate<AccountRequest> { request ->
+                    validate<CreateAccountRequest> { request ->
+                        buildValidationResult {
+                            condition(request.name.isNotEmpty(), AccountValidationMessages.INVALID_NAME)
+                        }
+                    }
+                    validate<UpdateAccountRequest> { request ->
                         buildValidationResult {
                             condition(request.name.isNotEmpty(), AccountValidationMessages.INVALID_NAME)
                         }
                     }
                 }
 
-                val repository by inject<AccountRepository>()
+                val accountRepository by inject<AccountRepository>()
 
                 post {
-                    repository.add(call.receive(), currentUserId()).respond(HttpStatusCode.Created)
+                    accountRepository.add(call.receive(), currentUserId()).respond(HttpStatusCode.Created)
                 }
                 get {
-                    repository.findAll(currentUserId()).respond()
+                    accountRepository.findAll(currentUserId()).respond()
                 }
                 route("/{accountId}") {
                     get {
-                        repository.findById(
+                        accountRepository.findById(
                             call.parameters.getUuidOrFail("accountId")
                         ).respond()
                     }
                     put {
-                        repository.update(
-                            call.parameters.getUuidOrFail("accountId"),
-                            call.receive()
-                        ).respond()
+                        either {
+                            val request = call.receive<UpdateAccountRequest>()
+                            val account = accountRepository.update(
+                                call.parameters.getUuidOrFail("accountId"),
+                                request
+                            ).bind()
+                            request.adjustBalance?.let { adjustBalance ->
+                                TODO("Later...")
+//                                val balance = account.balance
+//                                if (adjustBalance.createTransaction) {
+//                                    transactionRepository.addAdjustBalanceTransaction()
+//                                }
+                            } ?: account
+                        }.respond()
                     }
                     delete {
-                        repository.remove(
+                        accountRepository.remove(
                             call.parameters.getUuidOrFail("accountId")
                         ).respond(HttpStatusCode.NoContent)
                     }
