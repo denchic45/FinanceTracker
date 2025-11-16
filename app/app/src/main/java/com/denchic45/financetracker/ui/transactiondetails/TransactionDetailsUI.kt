@@ -1,5 +1,7 @@
 package com.denchic45.financetracker.ui.transactiondetails
 
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +17,6 @@ import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -24,6 +25,11 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,62 +43,65 @@ import com.denchic45.financetracker.api.account.model.AccountType
 import com.denchic45.financetracker.domain.model.AccountItem
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TransactionItem
+import com.denchic45.financetracker.ui.RemoveTransactionConfirmDialog
+import com.denchic45.financetracker.ui.icon.AppIcons
+import com.denchic45.financetracker.ui.icon.appicons.`Clipboard-copy`
+import com.denchic45.financetracker.ui.icon.appicons.Edit
+import com.denchic45.financetracker.ui.icon.appicons.Trash
+import com.denchic45.financetracker.ui.resource.CircularLoadingBox
+import com.denchic45.financetracker.ui.resource.onData
+import com.denchic45.financetracker.ui.resource.onLoading
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import java.util.UUID
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionDetailsSheet(
     transactionId: Long,
-    navigateBack: () -> Unit,
-) {
-    val viewModel = koinViewModel<TransactionDetailsViewModel> {
+    viewModel: TransactionDetailsViewModel = koinViewModel<TransactionDetailsViewModel> {
         parametersOf(transactionId)
     }
-
-//    AlertDialog(
-//        onDismissRequest = { confirmToRemoveItemId = -1L },
-//        confirmButton = {},
-//        dismissButton = {},
-//        title = { Text("Удалить операцию?") },
-//        text = { Text("Операция будет удалена без возможности восстановления") }
-//    )
-
-    ModalBottomSheet(onDismissRequest = navigateBack) {
-//        ResourceContent(
-//            resource,
-//            onLoading = { BottomSheetLoading() },
-//            onFailed = { failure, value ->
-//                value?.let {
-//
-//                } ?: ResultFailedBox(failure = failure)
-//            }) { state ->
-//
-//        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TransactionDetailsSheet(
-    transaction: TransactionItem?,
-    onDismiss: () -> Unit
 ) {
+    val transaction by viewModel.transaction.collectAsState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+    if (showDeleteConfirmation)
+        RemoveTransactionConfirmDialog(
+            onConfirm = {
+                showDeleteConfirmation = false
+                viewModel.onRemoveClick()
+            },
+            onDismiss = { showDeleteConfirmation = false }
+        )
+    Log.d("TAG", "TransactionDetailsSheet: $transaction")
 
-    if (transaction != null) {
-        ModalBottomSheet(
-            onDismissRequest = onDismiss,
-            sheetState = sheetState
-        ) {
-            TransactionDetailsContent(transaction = transaction)
-        }
+    ModalBottomSheet(
+        onDismissRequest = viewModel::onDismissClick,
+        sheetState = sheetState
+    ) {
+        transaction.onLoading { CircularLoadingBox(Modifier.height(160.dp)) }
+            .onData { failure, item ->
+                TransactionDetailsContent(
+                    transaction = item,
+                    onEditClick = viewModel::onEditClick,
+                    onRemoveClick = { showDeleteConfirmation = true }
+                )
+            }
     }
 }
 
 @Composable
-private fun TransactionDetailsContent(transaction: TransactionItem) {
+private fun TransactionDetailsContent(
+    transaction: TransactionItem,
+    onEditClick: () -> Unit,
+    onRemoveClick: () -> Unit
+) {
     // 1. Determine display properties based on transaction type
     val (amountColor, amountPrefix, titleText) = when (transaction) {
         is TransactionItem.Income -> Triple(
@@ -100,11 +109,13 @@ private fun TransactionDetailsContent(transaction: TransactionItem) {
             "+ ",
             transaction.category.name
         )
+
         is TransactionItem.Expense -> Triple(
             MaterialTheme.colorScheme.error, // Changed to standard error color for better visibility
             "- ",
             transaction.category.name
         )
+
         is TransactionItem.Transfer -> Triple(
             Color.Blue,
             "",
@@ -120,7 +131,7 @@ private fun TransactionDetailsContent(transaction: TransactionItem) {
     ) {
         // 1. Заголовок с суммой
         Text(
-            text = "$amountPrefix${transaction.formattedAmount}",
+            text = "$amountPrefix${transaction.displayedAmount}",
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
             color = amountColor
@@ -149,7 +160,7 @@ private fun TransactionDetailsContent(transaction: TransactionItem) {
                         value = transaction.account.name
                     )
                     DetailRow(
-                        icon = getIconByName(transaction.category.icon),
+                        icon = getIconByName(transaction.category.iconName),
                         label = "Категория",
                         value = transaction.category.name
                     )
@@ -162,7 +173,7 @@ private fun TransactionDetailsContent(transaction: TransactionItem) {
                         value = transaction.account.name
                     )
                     DetailRow(
-                        icon = getIconByName(transaction.category.icon),
+                        icon = getIconByName(transaction.category.iconName),
                         label = "Категория",
                         value = transaction.category.name
                     )
@@ -193,6 +204,51 @@ private fun TransactionDetailsContent(transaction: TransactionItem) {
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Column(
+                modifier = Modifier
+                    .clickable(onClick = onRemoveClick)
+                    .height(56.dp)
+                    .weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = AppIcons.Trash,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
+                )
+                Text("Delete", style = MaterialTheme.typography.labelSmall)
+            }
+
+            Column(
+                Modifier
+                    .clickable(onClick = onEditClick)
+                    .height(56.dp)
+                    .weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(AppIcons.Edit, null)
+                Text("Edit", style = MaterialTheme.typography.labelSmall)
+            }
+
+            Column(
+                Modifier
+                    .clickable(onClick = { /*TODO*/ })
+                    .height(56.dp)
+                    .weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(AppIcons.`Clipboard-copy`, null)
+                Text("Duplicate", style = MaterialTheme.typography.labelSmall)
+            }
+
+        }
     }
 }
 
@@ -280,20 +336,27 @@ private fun getIconByName(name: String): ImageVector {
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Preview(showBackground = true, name = "Outcome Details")
 @Composable
 fun TransactionDetailsOutcomePreview() {
     // Моковые данные
-    val mockAccount = AccountItem(1, "Тинькофф Black", AccountType.CARD, 500000)
+    val mockAccount = AccountItem(UUID.randomUUID(), "Тинькофф Black", AccountType.CARD, 500000)
     val mockCategory = CategoryItem(1, "Продукты", "food", false)
     val mockTransaction = TransactionItem.Expense(
         id = 1,
         amount = 12550, // 125.50
+        datetime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
         note = "Покупка в супермаркете 'Пятерочка'",
         account = mockAccount,
-        category = mockCategory
+        category = mockCategory,
+        tags = emptyList()
     )
     MaterialTheme {
-        TransactionDetailsContent(transaction = mockTransaction)
+        TransactionDetailsContent(
+            transaction = mockTransaction,
+            onEditClick = { },
+            onRemoveClick = { }
+        )
     }
 }
