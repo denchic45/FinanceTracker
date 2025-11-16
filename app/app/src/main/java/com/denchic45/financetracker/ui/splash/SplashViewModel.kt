@@ -1,6 +1,8 @@
-package com.denchic45.financetracker.ui.root
+package com.denchic45.financetracker.ui.splash
 
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denchic45.financetracker.domain.usecase.ObserveAuthStateUseCase
@@ -10,21 +12,17 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 
 
-class RootViewModel(
+class SplashViewModel(
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
 ) : ViewModel() {
-    private val _backStack = mutableStateListOf<Screen>(Screen.Splash)
-    val backStack: List<Screen> = _backStack
+
+    var screen: Screen by mutableStateOf(Screen.Splash)
 
     init {
         viewModelScope.launch {
             observeAuthStateUseCase().collect { isAuth ->
                 withContext(Dispatchers.Main) {
-                    if (isAuth) {
-                        _backStack.add(Screen.Main)
-                    } else {
-                        _backStack.add(Screen.Auth)
-                    }
+                    screen = if (isAuth) Screen.Main else Screen.Auth
                 }
             }
         }
