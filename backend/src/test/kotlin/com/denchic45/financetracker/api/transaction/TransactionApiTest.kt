@@ -2,8 +2,8 @@ package com.denchic45.financetracker.api.transaction
 
 import com.denchic45.financetracker.api.KtorClientTest
 import com.denchic45.financetracker.api.account.AccountApi
-import com.denchic45.financetracker.api.account.model.AccountRequest
 import com.denchic45.financetracker.api.account.model.AccountType
+import com.denchic45.financetracker.api.account.model.CreateAccountRequest
 import com.denchic45.financetracker.api.category.CategoryApi
 import com.denchic45.financetracker.api.category.model.CreateCategoryRequest
 import com.denchic45.financetracker.api.error.InvalidPageSize
@@ -44,7 +44,7 @@ class TransactionApiTest : KtorClientTest() {
         super.beforeAll()
         // Create Primary Account
         val createdPrimaryAccount = accountApi.create(
-            AccountRequest(
+            CreateAccountRequest(
                 name = "Primary Account",
                 type = AccountType.CARD,
                 initialBalance = initialPrimaryBalance
@@ -54,7 +54,7 @@ class TransactionApiTest : KtorClientTest() {
 
         // Create Secondary Account for transfers
         val createdSecondaryAccount = accountApi.create(
-            AccountRequest(
+            CreateAccountRequest(
                 name = "Savings Account",
                 type = AccountType.BILL,
                 initialBalance = initialSecondaryBalance

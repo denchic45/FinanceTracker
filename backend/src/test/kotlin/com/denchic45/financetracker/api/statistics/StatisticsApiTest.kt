@@ -2,8 +2,8 @@ package com.denchic45.financetracker.api.statistics
 
 import com.denchic45.financetracker.api.KtorClientTest
 import com.denchic45.financetracker.api.account.AccountApi
-import com.denchic45.financetracker.api.account.model.AccountRequest
 import com.denchic45.financetracker.api.account.model.AccountType
+import com.denchic45.financetracker.api.account.model.CreateAccountRequest
 import com.denchic45.financetracker.api.assertedNone
 import com.denchic45.financetracker.api.assertedRight
 import com.denchic45.financetracker.api.category.CategoryApi
@@ -55,11 +55,15 @@ class StatisticsApiTest : KtorClientTest() {
         super.beforeAll()
         // Create Accounts
         primaryAccountId = accountApi.create(
-            AccountRequest(name = "Primary Account", type = AccountType.BILL, initialBalance = initialPrimaryBalance)
+            CreateAccountRequest(
+                name = "Primary Account",
+                type = AccountType.BILL,
+                initialBalance = initialPrimaryBalance
+            )
         ).assertedRight().id
 
         secondaryAccountId = accountApi.create(
-            AccountRequest(
+            CreateAccountRequest(
                 name = "Secondary Account", type = AccountType.CASH, initialBalance = initialSecondaryBalance
             )
         ).assertedRight().id
