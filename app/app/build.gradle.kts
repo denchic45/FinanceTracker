@@ -60,7 +60,7 @@ android {
     }
 }
 
-configurations.implementation{
+configurations.implementation {
     exclude(group = "com.intellij", module = "annotations")
 }
 
@@ -74,6 +74,7 @@ dependencies {
     // Compose BOM & UI
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.ui)
+    implementation(libs.compose.resources)
 
     // Compose Material & Adaptive Layout
     implementation(libs.bundles.compose.material)
@@ -94,7 +95,7 @@ dependencies {
     implementation(libs.bundles.coil)
 
     // Dependency Injection
-    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.compose)
 
     // Desugaring
     coreLibraryDesugaring(libs.desugar.jdk.libs)
