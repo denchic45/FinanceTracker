@@ -5,6 +5,7 @@ build/
 !**/src/test/**/build/
 .kotlin
 src/main/resources/application.conf
+src/test/resources/application.conf
 
 ### STS ###
 .apt_generated
