@@ -1,4 +1,4 @@
-package com.denchic45.financetracker.ui
+package com.denchic45.financetracker.ui.resource
 
 import arrow.core.Either
 import com.denchic45.financetracker.data.Failure
@@ -51,7 +51,7 @@ inline infix fun <T> Resource<T>.onSuccess(action: (T) -> Unit): Resource<T> = a
 /**
  * Executes the [action] with the [Failure] if the resource is [Resource.Failed].
  */
-inline infix fun <T> Resource<T>.onFailure(action: (Failure) -> Unit): Resource<T> = apply {
+inline infix fun <T> Resource<T>.onFailed(action: (Failure) -> Unit): Resource<T> = apply {
     if (this is Resource.Failed) {
         action(failure)
     }
@@ -65,6 +65,11 @@ inline infix fun <T> Resource<T>.onLoading(action: () -> Unit): Resource<T> = ap
         action()
     }
 }
+
+/**
+ * Check the resource is [Resource.Loading].
+ */
+fun <T> Resource<T>.isLoading(): Boolean = this is Resource.Loading
 
 
 // --- Transformation ---

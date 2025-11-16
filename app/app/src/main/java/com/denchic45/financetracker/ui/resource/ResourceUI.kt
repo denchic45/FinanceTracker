@@ -1,7 +1,8 @@
-package com.denchic45.financetracker.ui
+package com.denchic45.financetracker.ui.resource
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,7 +25,7 @@ fun <T> ResourceContent(
 
 @Composable
 fun CircularLoadingBox(modifier: Modifier = Modifier) {
-    Box(modifier, contentAlignment = Alignment.Center) {
+    Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         CircularProgressIndicator()
     }
 }
