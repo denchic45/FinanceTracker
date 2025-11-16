@@ -22,7 +22,7 @@ class AppPreferences(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun setRefreshToken(token: String) {
-        dataStore.edit { it[accessTokenKey] = token }
+        dataStore.edit { it[refreshTokenKey] = token }
     }
 
     suspend fun clearAll() {
