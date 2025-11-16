@@ -1,19 +1,20 @@
-package com.denchic45.financetracker.data
+package com.denchic45.financetracker.data.mediator
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import arrow.core.getOrElse
-import com.denchic45.financetracker.data.database.entity.AggregatedTransactionEntity
-import com.denchic45.financetracker.data.repository.safeFetch
 import com.denchic45.financetracker.api.transaction.TransactionApi
 import com.denchic45.financetracker.api.transaction.model.AbstractTransactionResponse
+import com.denchic45.financetracker.data.asThrowable
+import com.denchic45.financetracker.data.database.entity.AggregatedTransactionEntity
+import com.denchic45.financetracker.data.safeFetch
 
 @OptIn(ExperimentalPagingApi::class)
 class TransactionRemoteMediator(
     private val transactionApi: TransactionApi,
-    private val database: AppDatabase
+    private val onUpsert: suspend (List<AbstractTransactionResponse>) -> Unit
 ) : RemoteMediator<Int, AggregatedTransactionEntity>() {
 
     private var page = 0
@@ -32,18 +33,12 @@ class TransactionRemoteMediator(
                 else page + 1
             }
         }
-        val transactions = transactionApi.getList(page, 30)
+        val transactions = safeFetch { transactionApi.getList(page, state.config.pageSize) }
             .getOrElse {
-                return MediatorResult.Error(ApiException(it))
+                return MediatorResult.Error(it.asThrowable())
             }
 
-        val transactionDao = database.transactionDao
-        database.withTransaction {
-            if (loadType == LoadType.REFRESH) {
-                transactionDao.deleteAll()
-            }
-            transactionDao.upsert(transactions.results.toTransactionEntities())
-        }
+        onUpsert(transactions.results)
         return MediatorResult.Success(transactions.totalPages == page)
     }
 }

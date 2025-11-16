@@ -1,17 +1,18 @@
 package com.denchic45.financetracker.data.mapper
 
-import com.denchic45.financetracker.data.database.entity.AggregatedTransactionEntity
-import com.denchic45.financetracker.data.database.entity.TransactionEntity
-import com.denchic45.financetracker.domain.model.AccountItem
-import com.denchic45.financetracker.domain.model.CategoryItem
-import com.denchic45.financetracker.domain.model.TransactionItem
 import com.denchic45.financetracker.api.transaction.model.AbstractTransactionResponse
 import com.denchic45.financetracker.api.transaction.model.TransactionResponse
 import com.denchic45.financetracker.api.transaction.model.TransactionType
 import com.denchic45.financetracker.api.transaction.model.TransferTransactionResponse
+import com.denchic45.financetracker.data.database.entity.AggregatedTransactionEntity
+import com.denchic45.financetracker.data.database.entity.TransactionEntity
+import com.denchic45.financetracker.domain.model.AccountItem
+import com.denchic45.financetracker.domain.model.TransactionItem
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 
 private fun AbstractTransactionResponse.mapToTransactionType(): TransactionType {
@@ -35,39 +36,43 @@ fun AbstractTransactionResponse.toTransactionEntity(): TransactionEntity {
     )
 }
 
+@OptIn(ExperimentalTime::class)
 fun AggregatedTransactionEntity.toTransactionItem(): TransactionItem {
     val accountItem = with(account) {
         AccountItem(id, name, type, balance)
     }
-    val categoryItem = CategoryItem(
-        id = categoryId,
-        name = categoryName,
-        icon = categoryIcon,
-        income = categoryIncome
-    )
+
     return when (type) {
         TransactionType.EXPENSE -> TransactionItem.Expense(
             id = id,
             amount = amount,
+            datetime = Instant.fromEpochMilliseconds(datetime)
+                .toLocalDateTime(TimeZone.currentSystemDefault()),
             note = note,
             account = accountItem,
-            category = categoryItem
+            category = category!!.toCategoryItem(),
+            tags = tags.toTagItems()
         )
 
         TransactionType.INCOME -> TransactionItem.Income(
             id = id,
             amount = amount,
+            datetime = Instant.fromEpochMilliseconds(datetime)
+                .toLocalDateTime(TimeZone.currentSystemDefault()),
             note = note,
             account = accountItem,
-            category = categoryItem
+            category = category!!.toCategoryItem(),
+            tags = tags.toTagItems()
         )
 
         TransactionType.TRANSFER -> TransactionItem.Transfer(
             id = id,
             amount = amount,
+            datetime = Instant.fromEpochMilliseconds(datetime)
+                .toLocalDateTime(TimeZone.currentSystemDefault()),
             note = note,
             account = accountItem,
-            incomeAccount = with(incomeAccount) {
+            incomeAccount = with(incomeAccount!!) {
                 AccountItem(id, name, type, balance)
             }
         )
