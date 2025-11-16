@@ -9,7 +9,10 @@ data class CategoryEntity(
     @PrimaryKey
     @ColumnInfo(name = "category_id")
     val id: Long,
+    @ColumnInfo(name = "category_name")
     val name: String,
+    @ColumnInfo(name = "icon")
     val icon: String,
+    @ColumnInfo(name = "income")
     val income: Boolean
 )
