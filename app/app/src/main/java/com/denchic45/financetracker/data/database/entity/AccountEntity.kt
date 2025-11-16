@@ -11,6 +11,7 @@ data class AccountEntity(
     @PrimaryKey
     @ColumnInfo(name = "account_id")
     val id: UUID,
+    @ColumnInfo(name = "account_name")
     val name: String,
     val type: AccountType,
     val initialBalance: Long,
