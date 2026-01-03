@@ -15,7 +15,6 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,13 +24,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.ui.CategoryListItem
+import com.denchic45.financetracker.ui.MainTopAppBar
 import com.denchic45.financetracker.ui.resource.CacheableResourceListContent
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun CategoriesScreen(viewModel: CategoriesViewModel = koinViewModel()) {
+fun CategoriesScreen(
+    viewModel: CategoriesViewModel = koinViewModel(),
+    onNavigationDrawerClick: () -> Unit
+) {
     val incomeCategories by viewModel.incomeCategories.collectAsState()
     val expenseCategories by viewModel.expenseCategories.collectAsState()
 
@@ -39,7 +42,12 @@ fun CategoriesScreen(viewModel: CategoriesViewModel = koinViewModel()) {
     val scope = rememberCoroutineScope()
     val tabTitles = listOf("Расход", "Доход")
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Categories") }) }) { padding ->
+    Scaffold(topBar = {
+        MainTopAppBar(
+            onNavigationIconClick = onNavigationDrawerClick,
+            actions = {}
+        )
+    }) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
                 tabTitles.forEachIndexed { index, title ->
