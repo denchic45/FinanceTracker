@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denchic45.financetracker.api.category.model.CreateCategoryRequest
 import com.denchic45.financetracker.api.category.model.UpdateCategoryRequest
+import com.denchic45.financetracker.data.onRightHasNull
+import com.denchic45.financetracker.data.onRightHasValue
 import com.denchic45.financetracker.di.AppRouter
 import com.denchic45.financetracker.domain.usecase.AddCategoryUseCase
 import com.denchic45.financetracker.domain.usecase.ObserveCategoryByIdUseCase
@@ -22,7 +24,9 @@ import com.denchic45.financetracker.ui.validator.Operator
 import com.denchic45.financetracker.ui.validator.ValueValidator
 import com.denchic45.financetracker.ui.validator.getIfNot
 import com.denchic45.financetracker.ui.validator.observable
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
 class CategoryEditorViewModel(
@@ -50,18 +54,19 @@ class CategoryEditorViewModel(
     )
 
     init {
-        viewModelScope.launch {
-            categoryId?.let { id ->
-                val result = observeCategoryByIdUseCase(id).first()
-                result.getOrNull()?.let { category ->
-                    state.name = category.name
-                    state.iconName = category.iconName
-                } ?: run {
-                    router.pop()
-                    appEventHandler.sendEvent(AppUIEvent.AlertMessage(uiTextOf("Category not found")))
-                }
-            } ?: run { state.income = income ?: false }
-        }
+        categoryId?.let { id ->
+            observeCategoryByIdUseCase(id)
+                .take(1)
+                .onEach {
+                    it.onRightHasNull {
+                        appEventHandler.sendEvent(AppUIEvent.AlertMessage(uiTextOf("Category not found")))
+                        router.pop()
+                    }.onRightHasValue { category ->
+                        state.name = category.name
+                        state.iconName = category.iconName
+                    }
+                }.launchIn(viewModelScope)
+        } ?: run { state.income = income ?: false }
     }
 
     fun onNameChange(name: String) {
@@ -81,6 +86,7 @@ class CategoryEditorViewModel(
         if (!formValidator.validate()) return
 
         state.isLoading = true
+        appEventHandler.showLongLoading(viewModelScope)
         viewModelScope.launch {
             val result = if (categoryId == null) {
                 addCategoryUseCase(state.toCreateRequest())
@@ -88,6 +94,7 @@ class CategoryEditorViewModel(
                 updateCategoryUseCase(categoryId, state.toUpdateRequest())
             }
             state.isLoading = false
+            appEventHandler.hideLongLoading()
             result.onLeft { failure -> appEventHandler.handleFailure(failure) }
                 .onRight { router.pop() }
         }

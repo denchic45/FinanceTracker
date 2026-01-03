@@ -9,12 +9,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.ui.icon.AppIcons
 import com.denchic45.financetracker.ui.icon.CategorizedIcons
+import com.denchic45.financetracker.ui.icon.appicons.Check
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -42,7 +44,7 @@ fun CategoryEditorScreen(
     categoryId: Long?,
     income: Boolean?,
     viewModel: CategoryEditorViewModel = koinViewModel {
-        parametersOf(categoryId,income)
+        parametersOf(categoryId, income)
     }
 ) {
     val state = viewModel.state
@@ -57,8 +59,15 @@ fun CategoryEditorScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = viewModel::onSaveClick) {
-                        Icon(Icons.Default.Done, contentDescription = "Save")
+                    if (state.isLoading)
+                        IconButton(onClick = {}) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.dp
+                            )
+                        }
+                    else IconButton(onClick = viewModel::onSaveClick) {
+                        Icon(AppIcons.Check, contentDescription = "Save changes")
                     }
                 }
             )
