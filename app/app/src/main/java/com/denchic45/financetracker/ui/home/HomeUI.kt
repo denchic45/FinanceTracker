@@ -260,9 +260,9 @@ fun StatBox(label: String, amountText: String, color: Color, modifier: Modifier 
 fun AccountCard(account: AccountItem, onClick: () -> Unit) {
     // Determine color based on the new AccountType
     val cardColor = when (account.type) {
-        AccountType.CARD -> Color(0xFF673AB7).copy(alpha = 0.8f) // Primary color for Cards
-        AccountType.CASH -> Color(0xFF8BC34A).copy(alpha = 0.8f) // Lighter green for Cash
-        AccountType.BILL -> Color(0xFF00BCD4).copy(alpha = 0.8f) // Cyan for Bills
+        AccountType.ORDINARY -> Color(0xFF673AB7).copy(alpha = 0.8f) // Primary color for Cards
+        AccountType.DEBT -> Color(0xFF8BC34A).copy(alpha = 0.8f) // Lighter green for Cash
+        AccountType.SAVINGS -> Color(0xFF00BCD4).copy(alpha = 0.8f) // Cyan for Bills
     }
 
     Card(
@@ -281,7 +281,7 @@ fun AccountCard(account: AccountItem, onClick: () -> Unit) {
         ) {
             Text(
                 // Display the type's displayName next to the account name
-                "${account.name} (${account.type.displayName})",
+                "${account.name} (${account.type.displayName.get()})",
                 color = Color.White,
                 style = MaterialTheme.typography.titleMedium.copy(fontSize = 14.sp),
                 fontWeight = FontWeight.SemiBold,
@@ -339,7 +339,7 @@ fun AccountCardPreview() {
     val mockAccount = AccountItem(
         id = UUID.randomUUID(),
         name = "Основная",
-        type = AccountType.CARD,
+        type = AccountType.ORDINARY,
         balance = 9500000L // 95 000.00
     )
     FinanceTrackerTheme {
@@ -354,7 +354,7 @@ fun AccountCardPreview() {
 @Preview(name = "5. Transaction List Item (Expense)")
 @Composable
 fun TransactionListItemExpensePreview() {
-    val mockAccount = AccountItem(UUID.randomUUID(), "СберБанк", AccountType.CARD, 9500000L)
+    val mockAccount = AccountItem(UUID.randomUUID(), "СберБанк", AccountType.ORDINARY, 9500000L)
     val mockCategory = CategoryItem(101, "Продукты", "", false)
     val mockTransaction = TransactionItem.Expense(
         id = 1,
@@ -377,8 +377,8 @@ fun TransactionListItemExpensePreview() {
 @Preview(name = "6. Transaction List Item (Transfer)")
 @Composable
 fun TransactionListItemTransferPreview() {
-    val cardAccount = AccountItem(UUID.randomUUID(), "СберБанк", AccountType.CARD, 9500000L)
-    val cashAccount = AccountItem(UUID.randomUUID(), "Кошелек", AccountType.CASH, 500000L)
+    val cardAccount = AccountItem(UUID.randomUUID(), "СберБанк", AccountType.DEBT, 9500000L)
+    val cashAccount = AccountItem(UUID.randomUUID(), "Кошелек", AccountType.ORDINARY, 500000L)
     val mockTransaction = TransactionItem.Transfer(
         id = 2,
         amount = 1000000L, // 10 000.00

@@ -1,7 +1,7 @@
 package com.denchic45.financetracker.api.account.model
 
-enum class AccountType(val displayName: String) {
-    CASH("Наличные"),
-    CARD("Карта"),
-    BILL("Счет")
+enum class AccountType() {
+    ORDINARY,
+    DEBT,
+    SAVINGS
 }

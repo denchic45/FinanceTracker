@@ -76,9 +76,9 @@ fun AccountListItem(account: AccountItem, onEditClick: () -> Unit, onRemoveClick
 fun AccountTypeIcon(type: AccountType, modifier: Modifier = Modifier) {
     Icon(
         imageVector = when (type) {
-            AccountType.CASH -> Icons.AutoMirrored.Outlined.Note
-            AccountType.CARD -> Icons.Outlined.CreditCard
-            AccountType.BILL -> Icons.Outlined.Savings
+            AccountType.ORDINARY -> Icons.AutoMirrored.Outlined.Note
+            AccountType.DEBT -> Icons.Outlined.CreditCard
+            AccountType.SAVINGS -> Icons.Outlined.Savings
         },
         contentDescription = "Account type",
         modifier = modifier
