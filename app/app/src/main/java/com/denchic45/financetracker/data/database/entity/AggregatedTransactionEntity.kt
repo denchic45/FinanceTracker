@@ -35,14 +35,3 @@ data class TransactionAccountEntity(
     val type: AccountType,
     val balance: Long
 )
-
-data class TransactionCategoryEntity(
-//    @ColumnInfo(name = "category_id")
-    val id: Long,
-//    @ColumnInfo(name = "category_name")
-    val name: String,
-//    @ColumnInfo(name = "category_icon")
-    val icon: String,
-//    @ColumnInfo(name = "category_income")
-    val income: Boolean,
-)
