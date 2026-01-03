@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -16,17 +17,17 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.InputChip
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -97,9 +98,7 @@ fun TransactionEditorScreen(
                 TextButton(onClick = {
                     viewModel.onDateChange(
                         Instant.fromEpochMilliseconds(datePickerState.selectedDateMillis!!)
-                            .toLocalDateTime(
-                                TimeZone.currentSystemDefault()
-                            ).date
+                            .toLocalDateTime(TimeZone.currentSystemDefault()).date
                     )
                     showDatePicker = false
                 }) {
@@ -172,7 +171,14 @@ fun TransactionEditorScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = viewModel::onSaveClick) {
+                    if (state.isLoading)
+                        IconButton(onClick = {}) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.dp
+                            )
+                        }
+                    else IconButton(onClick = viewModel::onSaveClick) {
                         Icon(AppIcons.Check, contentDescription = "Save changes")
                     }
                 }
@@ -389,16 +395,9 @@ private fun TagsSelector(
                 if (selectedTags.isEmpty()) Text("Теги")
 
                 selectedTags.forEach { tag ->
-                    InputChip(
-                        selected = true,
-                        onClick = { },
-                        label = { Text(tag.name) },
-                        trailingIcon = {
-                            Icon(
-                                Icons.Default.Close,
-                                contentDescription = "Remove tag"
-                            )
-                        }
+                    AssistChip(
+                        onClick = onClick,
+                        label = { Text(tag.name) }
                     )
                 }
             }

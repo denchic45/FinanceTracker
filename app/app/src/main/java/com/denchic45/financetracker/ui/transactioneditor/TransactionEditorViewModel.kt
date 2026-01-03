@@ -12,6 +12,8 @@ import com.denchic45.financetracker.api.transaction.model.AbstractTransactionReq
 import com.denchic45.financetracker.api.transaction.model.TransactionRequest
 import com.denchic45.financetracker.api.transaction.model.TransactionType
 import com.denchic45.financetracker.api.transaction.model.TransferTransactionRequest
+import com.denchic45.financetracker.data.onRightHasNull
+import com.denchic45.financetracker.data.onRightHasValue
 import com.denchic45.financetracker.di.AppRouter
 import com.denchic45.financetracker.domain.model.AccountItem
 import com.denchic45.financetracker.domain.model.CategoryItem
@@ -22,11 +24,13 @@ import com.denchic45.financetracker.domain.usecase.ObserveTransactionByIdUseCase
 import com.denchic45.financetracker.domain.usecase.RemoveTransactionUseCase
 import com.denchic45.financetracker.domain.usecase.UpdateTransactionUseCase
 import com.denchic45.financetracker.ui.AppEventHandler
+import com.denchic45.financetracker.ui.AppUIEvent
 import com.denchic45.financetracker.ui.accountpicker.AccountPickerInteractor
 import com.denchic45.financetracker.ui.categorypicker.CategoryPickerInteractor
 import com.denchic45.financetracker.ui.main.NavEntry
 import com.denchic45.financetracker.ui.navigation.router.pop
 import com.denchic45.financetracker.ui.navigation.router.push
+import com.denchic45.financetracker.ui.resource.uiTextOf
 import com.denchic45.financetracker.ui.tagspicker.TagsPickerInteractor
 import com.denchic45.financetracker.ui.util.convertToMonetaryFormat
 import com.denchic45.financetracker.ui.util.currencyRegex
@@ -36,7 +40,10 @@ import com.denchic45.financetracker.ui.validator.Operator
 import com.denchic45.financetracker.ui.validator.ValueValidator
 import com.denchic45.financetracker.ui.validator.getIfNot
 import com.denchic45.financetracker.ui.validator.observable
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -46,6 +53,7 @@ import kotlinx.datetime.atDate
 import kotlinx.datetime.atTime
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
 class TransactionEditorViewModel(
@@ -124,40 +132,44 @@ class TransactionEditorViewModel(
     )
 
     init {
-        viewModelScope.launch {
             transactionId?.let {
-                val result = observeTransactionByIdUseCase(transactionId).first()
-                result.getOrNull()?.let { transaction ->
-                    state.datetime = transaction.datetime
-                    state.amountText = transaction.amount.convertToMonetaryFormat()
-                    state.note = transaction.note
-                    state.sourceAccount = transaction.account
-                    when (transaction) {
-                        is TransactionItem.Expense -> {
-                            state.transactionType = TransactionType.EXPENSE
-                            state.category = transaction.category
-                            state.tags = transaction.tags
-                            state.incomeAccount = null
-                        }
+                observeTransactionByIdUseCase(transactionId)
+                    .take(1)
+                    .onEach { ior ->
+                        ior.onRightHasValue { transaction ->
+                            state.datetime = transaction.datetime
+                            state.amountText = transaction.amount.convertToMonetaryFormat()
+                            state.note = transaction.note
+                            state.sourceAccount = transaction.account
+                            when (transaction) {
+                                is TransactionItem.Expense -> {
+                                    state.transactionType = TransactionType.EXPENSE
+                                    state.category = transaction.category
+                                    state.tags = transaction.tags
+                                    state.incomeAccount = null
+                                }
 
-                        is TransactionItem.Income -> {
-                            state.transactionType = TransactionType.INCOME
-                            state.category = transaction.category
-                            state.tags = transaction.tags
-                            state.incomeAccount = null
-                            state.tags = emptyList()
-                        }
+                                is TransactionItem.Income -> {
+                                    state.transactionType = TransactionType.INCOME
+                                    state.category = transaction.category
+                                    state.tags = transaction.tags
+                                    state.incomeAccount = null
+                                    state.tags = emptyList()
+                                }
 
-                        is TransactionItem.Transfer -> {
-                            state.transactionType = TransactionType.TRANSFER
-                            state.incomeAccount = transaction.incomeAccount
-                            state.category = null
-                            state.tags = emptyList()
+                                is TransactionItem.Transfer -> {
+                                    state.transactionType = TransactionType.TRANSFER
+                                    state.incomeAccount = transaction.incomeAccount
+                                    state.category = null
+                                    state.tags = emptyList()
+                                }
+                            }
+                        }.onRightHasNull {
+                            appEventHandler.sendEvent(AppUIEvent.AlertMessage(uiTextOf("Transaction not found")))
+                            router.pop()
                         }
-                    }
-                }
+                    }.launchIn(viewModelScope)
             }
-        }
     }
 
     fun onTransactionTypeChange(type: TransactionType) {
@@ -194,7 +206,9 @@ class TransactionEditorViewModel(
     fun onSaveClick() {
         if (!formValidator.validate()) return
         state.isLoading = true
+        appEventHandler.showLongLoading(viewModelScope)
         viewModelScope.launch {
+            delay(5.seconds)
             val result = transactionId?.let {
                 updateTransactionUseCase(
                     transactionId,
@@ -202,6 +216,7 @@ class TransactionEditorViewModel(
                 )
             } ?: addTransactionUseCase(state.toRequest())
             state.isLoading = false
+            appEventHandler.hideLongLoading()
             result.onLeft { failure ->
                 appEventHandler.handleFailure(failure)
             }.onRight { router.pop() }
@@ -221,7 +236,6 @@ class TransactionEditorViewModel(
                 amount = parseAmountToMinorUnits(amountText),
                 note = note,
                 accountId = sourceAccount!!.id,
-
                 categoryId = category!!.id,
                 tagIds = tags.map { it.id }
             )
@@ -282,11 +296,13 @@ class TransactionEditorViewModel(
     fun onRemoveClick() {
         viewModelScope.launch {
             state.isLoading = true
+            appEventHandler.showLongLoading(viewModelScope)
             removeTransactionUseCase(transactionId!!)
                 .onNone { router.pop() }
                 .onSome { failure ->
                     appEventHandler.handleFailure(failure)
                 }
+            appEventHandler.hideLongLoading()
             state.isLoading = false
         }
     }
@@ -321,8 +337,6 @@ class EditingTransactionState(val isNew: Boolean) {
     var incomeAccountMessage: String? by mutableStateOf(null)
     var noteMessage: String? by mutableStateOf(null)
 
-    // 5. Generic UI State
     var isLoading by mutableStateOf(false)
-    var errorMessage by mutableStateOf<String?>(null)
 }
 
