@@ -4,11 +4,12 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -30,7 +31,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.api.account.model.AccountType
+import com.denchic45.financetracker.domain.model.displayName
 import com.denchic45.financetracker.ui.CurrencyVisualTransformation
+import com.denchic45.financetracker.ui.icon.AppIcons
+import com.denchic45.financetracker.ui.icon.appicons.Check
+import com.denchic45.financetracker.ui.resource.get
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import java.util.UUID
@@ -63,8 +68,15 @@ fun AccountEditorScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = viewModel::onSaveClick) {
-                        Icon(imageVector = Icons.Default.Check, contentDescription = "Сохранить")
+                    if (state.isLoading)
+                        IconButton(onClick = {}) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.dp
+                            )
+                        }
+                    else IconButton(onClick = viewModel::onSaveClick) {
+                        Icon(AppIcons.Check, contentDescription = "Save changes")
                     }
                 }
             )
@@ -91,7 +103,7 @@ fun AccountEditorScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
-                    value = state.type.displayName,
+                    value = state.type.displayName.get(),
                     onValueChange = { },
                     readOnly = true,
                     singleLine = true,
@@ -108,7 +120,7 @@ fun AccountEditorScreen(
                     expanded = accountTypesExpanded,
                     onDismissRequest = { accountTypesExpanded = false }) {
                     AccountType.entries.forEach {
-                        DropdownMenuItem(text = { Text(it.displayName) }, onClick = {
+                        DropdownMenuItem(text = { Text(it.displayName.get()) }, onClick = {
                             accountTypesExpanded = false
                             viewModel.onAccountTypeChange(it)
                         })

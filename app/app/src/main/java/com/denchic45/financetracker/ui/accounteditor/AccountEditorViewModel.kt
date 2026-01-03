@@ -110,6 +110,7 @@ class AccountEditorViewModel(
         if (!formValidator.validate()) return
 
         state.isLoading = true
+        appEventHandler.showLongLoading(viewModelScope)
         viewModelScope.launch {
             val result = if (accountId == null) {
                 addAccountUseCase(state.toCreateRequest())
@@ -120,6 +121,7 @@ class AccountEditorViewModel(
                 )
             }
             state.isLoading = false
+            appEventHandler.hideLongLoading()
             result.onLeft { failure -> appEventHandler.handleFailure(failure) }
                 .onRight { router.pop() }
         }
@@ -135,7 +137,7 @@ class AccountEditorViewModel(
 @Stable
 class EditingAccountState {
     var name by mutableStateOf("")
-    var type by mutableStateOf(AccountType.CASH)
+    var type by mutableStateOf(AccountType.ORDINARY)
     var balance by mutableStateOf("")
     var createTransactionForUpdateBalance by mutableStateOf(false)
     var nameMessage: String? by mutableStateOf(null)
