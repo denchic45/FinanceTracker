@@ -57,14 +57,14 @@ class StatisticsApiTest : KtorClientTest() {
         primaryAccountId = accountApi.create(
             CreateAccountRequest(
                 name = "Primary Account",
-                type = AccountType.BILL,
+                type = AccountType.SAVINGS,
                 initialBalance = initialPrimaryBalance
             )
         ).assertedRight().id
 
         secondaryAccountId = accountApi.create(
             CreateAccountRequest(
-                name = "Secondary Account", type = AccountType.CASH, initialBalance = initialSecondaryBalance
+                name = "Secondary Account", type = AccountType.ORDINARY, initialBalance = initialSecondaryBalance
             )
         ).assertedRight().id
 

@@ -46,7 +46,7 @@ class TransactionApiTest : KtorClientTest() {
         val createdPrimaryAccount = accountApi.create(
             CreateAccountRequest(
                 name = "Primary Account",
-                type = AccountType.CARD,
+                type = AccountType.DEBT,
                 initialBalance = initialPrimaryBalance
             )
         ).assertedRight()
@@ -56,7 +56,7 @@ class TransactionApiTest : KtorClientTest() {
         val createdSecondaryAccount = accountApi.create(
             CreateAccountRequest(
                 name = "Savings Account",
-                type = AccountType.BILL,
+                type = AccountType.SAVINGS,
                 initialBalance = initialSecondaryBalance
             )
         ).assertedRight()
