@@ -20,6 +20,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "financetracker-app"
-include(":app")
+include(":shared")
+include(":androidApp")
 
 includeBuild("../common")
