@@ -1,14 +1,25 @@
 package com.denchic45.financetracker.data
 
 import arrow.core.Ior
+import arrow.core.Ior.Both
+import arrow.core.Ior.Left
+import arrow.core.Ior.Right
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transform
 
-inline fun <T> Ior<Failure, T>.ifHasRightValue(action: (T) -> Unit) = apply {
+inline fun <T> Ior<Failure, T?>.onRightHasValue(action: (T) -> Unit) = apply {
     when (this) {
-        is Ior.Left<Failure> -> Unit
-        is Ior.Both<Failure, T> -> action(rightValue)
-        is Ior.Right<T> -> action(value)
+        is Left<Failure> -> Unit
+        is Both<Failure, T?> -> rightValue?.let { action(it) }
+        is Right<T?> -> value?.let { action(it) }
+    }
+}
+
+inline fun <T : Any?> Ior<Failure, T>.onRightHasNull(action: () -> Unit) = apply {
+    when (this) {
+        is Left<Failure> -> Unit
+        is Both<Failure, T> -> if (rightValue == null) action()
+        is Right<T> -> if (value == null) action()
     }
 }
 
