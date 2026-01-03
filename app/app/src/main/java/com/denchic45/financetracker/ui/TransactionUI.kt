@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.domain.model.TransactionItem
+import com.denchic45.financetracker.domain.model.displayName
 import com.denchic45.financetracker.ui.dialog.ConfirmDeletionDialog
 import com.denchic45.financetracker.ui.transactions.ExpenseColor
 import com.denchic45.financetracker.ui.transactions.IncomeColor
