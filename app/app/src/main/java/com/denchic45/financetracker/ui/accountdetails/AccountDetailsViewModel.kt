@@ -2,8 +2,8 @@ package com.denchic45.financetracker.ui.accountdetails
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.getOrElse
 import com.denchic45.financetracker.data.filterNotNullValue
+import com.denchic45.financetracker.data.onRightHasNull
 import com.denchic45.financetracker.di.AppRouter
 import com.denchic45.financetracker.domain.usecase.ObserveAccountByIdUseCase
 import com.denchic45.financetracker.domain.usecase.RemoveAccountUseCase
@@ -28,9 +28,9 @@ class AccountDetailsViewModel(
 
     val account = observeAccountByIdUseCase(accountId)
         .onEach {
-            it.getOrElse {
-                router.pop()
+            it.onRightHasNull {
                 appEventHandler.sendEvent(AppUIEvent.AlertMessage(uiTextOf("Account not found")))
+                router.pop()
             }
         }
         .filterNotNullValue()

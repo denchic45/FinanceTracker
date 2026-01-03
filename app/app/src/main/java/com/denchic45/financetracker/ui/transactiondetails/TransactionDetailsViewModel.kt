@@ -2,8 +2,8 @@ package com.denchic45.financetracker.ui.transactiondetails
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.getOrElse
 import com.denchic45.financetracker.data.filterNotNullValue
+import com.denchic45.financetracker.data.onRightHasNull
 import com.denchic45.financetracker.di.AppRouter
 import com.denchic45.financetracker.domain.usecase.ObserveTransactionByIdUseCase
 import com.denchic45.financetracker.domain.usecase.RemoveTransactionUseCase
@@ -27,9 +27,9 @@ class TransactionDetailsViewModel(
 
     val transaction = observeTransactionByIdUseCase(transactionId)
         .onEach {
-            it.getOrElse {
-                router.pop()
+            it.onRightHasNull {
                 appEventHandler.sendEvent(AppUIEvent.AlertMessage(uiTextOf("Transaction not found")))
+                router.pop()
             }
 
         }
