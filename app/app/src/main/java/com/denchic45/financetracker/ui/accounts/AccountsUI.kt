@@ -21,19 +21,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.denchic45.financetracker.account.model.AccountResponse
-import com.denchic45.financetracker.ui.CacheableResource
-import com.denchic45.financetracker.ui.CircularLoadingBox
-import com.denchic45.financetracker.ui.accounteditor.AccountEditorDialog
+import com.denchic45.financetracker.domain.model.AccountItem
+import com.denchic45.financetracker.ui.resource.CacheableResourceListContent
 import org.koin.compose.viewmodel.koinViewModel
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountsScreen(viewModel: AccountsViewModel = koinViewModel()) {
-    val accountsResource by viewModel.accounts.collectAsState()
+    val accounts by viewModel.accounts.collectAsState()
     var confirmToRemoveAccount by remember { mutableStateOf<UUID?>(null) }
-    val showEditor = viewModel.showEditor
 
     if (confirmToRemoveAccount != null) {
         AlertDialog(
@@ -54,10 +51,6 @@ fun AccountsScreen(viewModel: AccountsViewModel = koinViewModel()) {
         )
     }
 
-    showEditor?.let { config ->
-        AccountEditorDialog(accountId = config.accountId, onFinish = viewModel::onEditorFinish)
-    }
-
     Scaffold(topBar = {
         TopAppBar(
             title = { Text("Счета") },
@@ -68,35 +61,23 @@ fun AccountsScreen(viewModel: AccountsViewModel = koinViewModel()) {
             })
     }) { padding ->
         Box(Modifier.padding(padding)) {
-            when (val resource = accountsResource) {
-                CacheableResource.Loading -> CircularLoadingBox()
-                is CacheableResource.Newest -> {
+            CacheableResourceListContent(
+                resource = accounts,
+                dataContent = {
                     AccountsList(
-                        accounts = resource.value,
+                        accounts = it,
                         onEditClick = viewModel::onEditClick,
                         onRemoveClick = viewModel::onRemoveClick
                     )
                 }
-
-                is CacheableResource.Cached -> {
-                    AccountsList(
-                        accounts = resource.value,
-                        onEditClick = viewModel::onEditClick,
-                        onRemoveClick = viewModel::onRemoveClick
-                    )
-                }
-                is CacheableResource.Failed -> {
-                    TODO()
-                }
-            }
-
+            )
         }
     }
 }
 
 @Composable
 private fun AccountsList(
-    accounts: List<AccountResponse>,
+    accounts: List<AccountItem>,
     onEditClick: (UUID) -> Unit,
     onRemoveClick: (UUID) -> Unit,
 ) {

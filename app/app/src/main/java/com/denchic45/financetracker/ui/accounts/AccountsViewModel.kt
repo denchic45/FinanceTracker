@@ -1,47 +1,38 @@
 package com.denchic45.financetracker.ui.accounts
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.denchic45.financetracker.ui.stateInCacheableResource
-import com.denchic45.financetracker.domain.usecase.FindAccountsUseCase
+import com.denchic45.financetracker.di.AppRouter
+import com.denchic45.financetracker.domain.usecase.ObserveAccountsUseCase
 import com.denchic45.financetracker.domain.usecase.RemoveAccountUseCase
 import com.denchic45.financetracker.ui.RefreshDelegate
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.onEach
+import com.denchic45.financetracker.ui.main.NavEntry
+import com.denchic45.financetracker.ui.navigation.router.push
+import com.denchic45.financetracker.ui.refreshableFlow
+import com.denchic45.financetracker.ui.resource.stateInCacheableResource
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 class AccountsViewModel(
-    private val findAccountsUseCase: FindAccountsUseCase,
+    private val observeAccountsUseCase: ObserveAccountsUseCase,
     private val removeAccountUseCase: RemoveAccountUseCase,
+    private val router: AppRouter
 ) : ViewModel() {
     private val refreshDelegate = RefreshDelegate()
     private val retryDelegate = RefreshDelegate()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val accounts = merge(
-        refreshDelegate.updateTrigger,
-        retryDelegate.updateTrigger
-    ).flatMapLatest {
-        findAccountsUseCase()
-    }.onEach {
-        refreshDelegate.stopRefresh()
-        retryDelegate.stopRefresh()
+
+    val accounts = refreshableFlow(refreshDelegate, retryDelegate) {
+        observeAccountsUseCase()
     }.stateInCacheableResource(viewModelScope)
 
-    var showEditor by mutableStateOf<EditingAccountConfig?>(null)
 
     fun onAddClick() {
-        showEditor = EditingAccountConfig(null)
+        router.push(NavEntry.AccountEditor(null))
     }
 
     fun onEditClick(accountId: UUID) {
-        showEditor = EditingAccountConfig(accountId)
+        router.push(NavEntry.AccountEditor(accountId))
     }
 
     fun onRemoveClick(accountId: UUID) {
@@ -49,10 +40,4 @@ class AccountsViewModel(
             removeAccountUseCase(accountId)
         }
     }
-
-    fun onEditorFinish() {
-        showEditor = null
-    }
 }
-
-data class EditingAccountConfig(val accountId: UUID?)
