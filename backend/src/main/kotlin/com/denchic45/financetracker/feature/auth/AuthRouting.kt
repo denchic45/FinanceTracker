@@ -8,6 +8,7 @@ import com.denchic45.financetracker.api.auth.model.SignUpRequest
 import com.denchic45.financetracker.api.error.InvalidGrantType
 import com.denchic45.financetracker.api.error.SignUpValidationMessages
 import com.denchic45.financetracker.feature.buildValidationResult
+import com.denchic45.financetracker.feature.category.CategoryRepository
 import com.denchic45.financetracker.util.respond
 import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.request.*
@@ -22,6 +23,7 @@ import java.util.regex.Pattern
 
 fun Route.authRoute() {
     val authService: AuthService by inject()
+    val categoryRepository: CategoryRepository by inject()
     val config = environment.config
 
     fun generateToken(userId: UUID): String {
@@ -82,6 +84,7 @@ fun Route.authRoute() {
     post("/sign-up") {
         either {
             val (userId, refreshToken) = authService.signUp(call.receive()).bind()
+            categoryRepository.addDefaultsFor(userId)
             AuthResponse(
                 token = generateToken(userId),
                 refreshToken = refreshToken

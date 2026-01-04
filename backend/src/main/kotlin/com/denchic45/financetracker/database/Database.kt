@@ -29,18 +29,8 @@ fun Application.configureDatabase() {
 
     transaction {
         SchemaUtils.create(Users, RefreshTokens, Accounts, Transactions, Categories, Tags, TransactionTags)
-        if (!Users.exists() || Users.selectAll().count() == 0L) {
-            insertInitData()
-        }
     }
     println("connected to database")
-}
-
-/**
- * Init data if database does not exist
- */
-private fun insertInitData() {
-    // TODO
 }
 
 val databaseModule = module {
