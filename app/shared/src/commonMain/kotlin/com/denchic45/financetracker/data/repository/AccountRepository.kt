@@ -39,7 +39,8 @@ class AccountRepository(
                     accountDao.upsert(it.toAccountEntities())
                 }
             }
-        }
+        },
+        waitFetchResult = false
     )
 
     fun observeById(accountId: UUID): Flow<Ior<Failure, AccountItem?>> = observeData(

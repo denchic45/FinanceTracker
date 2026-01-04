@@ -43,7 +43,8 @@ class CategoryRepository(
                     categoryDao.upsert(it.toCategoryEntities())
                 }
             }.onLeft { println("left: $it") }
-        }
+        },
+        waitFetchResult = false
     )
 
     fun observeById(categoryId: Long): Flow<Ior<Failure, CategoryItem?>> {
