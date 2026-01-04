@@ -24,13 +24,11 @@ import com.denchic45.financetracker.domain.usecase.ObserveTransactionByIdUseCase
 import com.denchic45.financetracker.domain.usecase.RemoveTransactionUseCase
 import com.denchic45.financetracker.domain.usecase.UpdateTransactionUseCase
 import com.denchic45.financetracker.ui.AppEventHandler
-import com.denchic45.financetracker.ui.AppUIEvent
 import com.denchic45.financetracker.ui.accountpicker.AccountPickerInteractor
 import com.denchic45.financetracker.ui.categorypicker.CategoryPickerInteractor
 import com.denchic45.financetracker.ui.main.NavEntry
 import com.denchic45.financetracker.ui.navigation.router.pop
 import com.denchic45.financetracker.ui.navigation.router.push
-import com.denchic45.financetracker.ui.resource.uiTextOf
 import com.denchic45.financetracker.ui.tagspicker.TagsPickerInteractor
 import com.denchic45.financetracker.ui.util.convertToMonetaryFormat
 import com.denchic45.financetracker.ui.util.currencyRegex
@@ -40,7 +38,6 @@ import com.denchic45.financetracker.ui.validator.Operator
 import com.denchic45.financetracker.ui.validator.ValueValidator
 import com.denchic45.financetracker.ui.validator.getIfNot
 import com.denchic45.financetracker.ui.validator.observable
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
@@ -53,7 +50,6 @@ import kotlinx.datetime.atDate
 import kotlinx.datetime.atTime
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
 class TransactionEditorViewModel(
@@ -165,7 +161,6 @@ class TransactionEditorViewModel(
                                 }
                             }
                         }.onRightHasNull {
-                            appEventHandler.sendEvent(AppUIEvent.AlertMessage(uiTextOf("Transaction not found")))
                             router.pop()
                         }
                     }.launchIn(viewModelScope)
@@ -208,7 +203,6 @@ class TransactionEditorViewModel(
         state.isLoading = true
         appEventHandler.showLongLoading(viewModelScope)
         viewModelScope.launch {
-            delay(5.seconds)
             val result = transactionId?.let {
                 updateTransactionUseCase(
                     transactionId,
@@ -277,7 +271,8 @@ class TransactionEditorViewModel(
                     TransactionType.INCOME -> true
                     TransactionType.EXPENSE -> false
                     TransactionType.TRANSFER -> throw IllegalStateException("It is forbidden to select a category")
-                }
+                },
+                state.category?.id
             )
         )
         viewModelScope.launch {

@@ -8,12 +8,10 @@ import com.denchic45.financetracker.di.AppRouter
 import com.denchic45.financetracker.domain.usecase.ObserveTransactionByIdUseCase
 import com.denchic45.financetracker.domain.usecase.RemoveTransactionUseCase
 import com.denchic45.financetracker.ui.AppEventHandler
-import com.denchic45.financetracker.ui.AppUIEvent
 import com.denchic45.financetracker.ui.main.NavEntry
 import com.denchic45.financetracker.ui.navigation.router.pop
 import com.denchic45.financetracker.ui.navigation.router.push
 import com.denchic45.financetracker.ui.resource.stateInCacheableResource
-import com.denchic45.financetracker.ui.resource.uiTextOf
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
@@ -28,7 +26,6 @@ class TransactionDetailsViewModel(
     val transaction = observeTransactionByIdUseCase(transactionId)
         .onEach {
             it.onRightHasNull {
-                appEventHandler.sendEvent(AppUIEvent.AlertMessage(uiTextOf("Transaction not found")))
                 router.pop()
             }
 

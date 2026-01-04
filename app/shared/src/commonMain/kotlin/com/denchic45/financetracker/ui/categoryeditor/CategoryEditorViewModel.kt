@@ -15,9 +15,7 @@ import com.denchic45.financetracker.domain.usecase.AddCategoryUseCase
 import com.denchic45.financetracker.domain.usecase.ObserveCategoryByIdUseCase
 import com.denchic45.financetracker.domain.usecase.UpdateCategoryUseCase
 import com.denchic45.financetracker.ui.AppEventHandler
-import com.denchic45.financetracker.ui.AppUIEvent
 import com.denchic45.financetracker.ui.navigation.router.pop
-import com.denchic45.financetracker.ui.resource.uiTextOf
 import com.denchic45.financetracker.ui.validator.CompositeValidator
 import com.denchic45.financetracker.ui.validator.Condition
 import com.denchic45.financetracker.ui.validator.Operator
@@ -59,7 +57,6 @@ class CategoryEditorViewModel(
                 .take(1)
                 .onEach {
                     it.onRightHasNull {
-                        appEventHandler.sendEvent(AppUIEvent.AlertMessage(uiTextOf("Category not found")))
                         router.pop()
                     }.onRightHasValue { category ->
                         state.name = category.name

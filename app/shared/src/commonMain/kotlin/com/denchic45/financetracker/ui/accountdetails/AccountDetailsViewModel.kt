@@ -8,12 +8,10 @@ import com.denchic45.financetracker.di.AppRouter
 import com.denchic45.financetracker.domain.usecase.ObserveAccountByIdUseCase
 import com.denchic45.financetracker.domain.usecase.RemoveAccountUseCase
 import com.denchic45.financetracker.ui.AppEventHandler
-import com.denchic45.financetracker.ui.AppUIEvent
 import com.denchic45.financetracker.ui.main.NavEntry
 import com.denchic45.financetracker.ui.navigation.router.pop
 import com.denchic45.financetracker.ui.navigation.router.push
 import com.denchic45.financetracker.ui.resource.stateInCacheableResource
-import com.denchic45.financetracker.ui.resource.uiTextOf
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -29,7 +27,6 @@ class AccountDetailsViewModel(
     val account = observeAccountByIdUseCase(accountId)
         .onEach {
             it.onRightHasNull {
-                appEventHandler.sendEvent(AppUIEvent.AlertMessage(uiTextOf("Account not found")))
                 router.pop()
             }
         }

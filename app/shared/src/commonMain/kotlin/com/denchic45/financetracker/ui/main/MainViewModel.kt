@@ -72,7 +72,7 @@ sealed interface NavEntry : NavKey {
 
     data class CategoryDetails(val categoryId: Long) : NavEntry
     data class CategoryEditor(val categoryId: Long?, val income: Boolean?) : NavEntry
-    data class CategoryPicker(val income: Boolean) : NavEntry
+    data class CategoryPicker(val income: Boolean, val selectedId: Long?) : NavEntry
 
     data class AccountEditor(val accountId: UUID?) : NavEntry
     data class AccountPicker(val selectedIds: List<UUID>?) : NavEntry
