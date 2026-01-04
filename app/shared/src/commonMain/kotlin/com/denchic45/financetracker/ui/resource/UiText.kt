@@ -1,11 +1,7 @@
 package com.denchic45.financetracker.ui.resource
 
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-
 
 sealed class UiText {
     class Raw(val value: String) : UiText()
@@ -58,20 +54,6 @@ fun uiTextOf(value: Int, quantity: Int) = UiText.PluralResourceText(value, quant
 fun uiTextOf(value: Int, quantity: Int, args: Array<Any>) =
     UiText.PluralResourceText(value, quantity, args)
 
-fun UiText.get(context: Context): String = when (this) {
-    is UiText.Raw -> value
-    is UiText.ResourceText -> args?.let {
-        context.getString(value, *args)
-    } ?: context.getString(value)
-
-    is UiText.PluralResourceText -> args?.let {
-        context.resources.getString(value, quantity, *args)
-    } ?: context.resources.getString(value, quantity)
-}
-
 @Composable
 @ReadOnlyComposable
-fun UiText.get(): String {
-    LocalConfiguration.current // ensures recomposition on configuration change
-    return get(context = LocalContext.current)
-}
+expect fun UiText.get(): String
