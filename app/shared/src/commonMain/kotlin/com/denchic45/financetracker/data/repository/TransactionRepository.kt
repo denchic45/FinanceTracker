@@ -22,6 +22,7 @@ import com.denchic45.financetracker.data.database.entity.AccountEntity
 import com.denchic45.financetracker.data.database.entity.AggregatedTransactionEntity
 import com.denchic45.financetracker.data.database.entity.CategoryEntity
 import com.denchic45.financetracker.data.database.entity.TagEntity
+import com.denchic45.financetracker.data.database.entity.TransactionTagCrossRef
 import com.denchic45.financetracker.data.mapper.toAccountEntity
 import com.denchic45.financetracker.data.mapper.toCategoryEntity
 import com.denchic45.financetracker.data.mapper.toTagEntities
@@ -72,17 +73,24 @@ class TransactionRepository(
         val accounts = mutableSetOf<AccountEntity>()
         val categories = mutableSetOf<CategoryEntity>()
         val tags = mutableSetOf<TagEntity>()
-        val transactions = responses.map { response ->
-            accounts.add(response.account.toAccountEntity())
-            when (response) {
+        val tagsCrossRefs = mutableListOf<TransactionTagCrossRef>()
+        val transactions = responses.map { transactionResponse ->
+            accounts.add(transactionResponse.account.toAccountEntity())
+            when (transactionResponse) {
                 is TransactionResponse -> {
-                    categories.add(response.category.toCategoryEntity())
-                    tags.addAll(response.tags.toTagEntities())
+                    categories.add(transactionResponse.category.toCategoryEntity())
+                    tags.addAll(transactionResponse.tags.toTagEntities())
+                    tagsCrossRefs.addAll(transactionResponse.tags.map {
+                        TransactionTagCrossRef(
+                            transactionResponse.id,
+                            it.id
+                        )
+                    })
                 }
 
-                is TransferTransactionResponse -> accounts.add(response.incomeAccount.toAccountEntity())
+                is TransferTransactionResponse -> accounts.add(transactionResponse.incomeAccount.toAccountEntity())
             }
-            response.toTransactionEntity()
+            transactionResponse.toTransactionEntity()
         }
 
         database.withTransaction {
@@ -95,9 +103,11 @@ class TransactionRepository(
             } else transactionDao.deleteAll()
 
             categoryDao.upsert(categories)
-            tagDao.upsert(tags)
             accountDao.upsert(accounts)
+            tagDao.upsert(tags)
             transactionDao.upsert(transactions)
+            tagDao.deleteByTransactionIds(transactions.map { it.id })
+            tagDao.insertTransactionTags(tagsCrossRefs)
         }
     }
 
@@ -131,6 +141,7 @@ class TransactionRepository(
         database.withTransaction {
             when (response) {
                 is TransactionResponse -> {
+                    tagDao.upsert(response.tags.toTagEntities())
                     categoryDao.upsert(response.category.toCategoryEntity())
                 }
 
@@ -141,6 +152,13 @@ class TransactionRepository(
 
             accountDao.upsert(response.account.toAccountEntity())
             transactionDao.upsert(response.toTransactionEntity())
+            if (response is TransactionResponse) {
+                tagDao.deleteByTransactionId(response.id)
+                tagDao.insertTransactionTags(
+                    response.tags.map {
+                        TransactionTagCrossRef(response.id, it.id)
+                    })
+            }
         }
     }
 

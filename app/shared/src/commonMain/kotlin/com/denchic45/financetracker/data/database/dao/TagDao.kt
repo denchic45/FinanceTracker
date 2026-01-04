@@ -36,11 +36,14 @@ interface TagDao {
     @Query("DELETE FROM tag WHERE tag_id = :id")
     suspend fun deleteById(id: Long)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTransactionTags(crossRefs: List<TransactionTagCrossRef>)
 
     @Query("DELETE FROM transaction_tag WHERE transaction_id = :transactionId")
-    suspend fun deleteForTransaction(transactionId: Long)
+    suspend fun deleteByTransactionId(transactionId: Long)
+
+    @Query("DELETE FROM transaction_tag WHERE transaction_id IN (:transactionIds)")
+    suspend fun deleteByTransactionIds(transactionIds: List<Long>)
 
     @Query(
         """
