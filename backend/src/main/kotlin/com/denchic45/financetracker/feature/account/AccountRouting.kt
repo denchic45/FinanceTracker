@@ -5,7 +5,6 @@ import com.denchic45.financetracker.api.account.model.CreateAccountRequest
 import com.denchic45.financetracker.api.account.model.UpdateAccountRequest
 import com.denchic45.financetracker.api.error.AccountValidationMessages
 import com.denchic45.financetracker.feature.buildValidationResult
-import com.denchic45.financetracker.feature.transaction.TransactionRepository
 import com.denchic45.financetracker.ktor.currentUserId
 import com.denchic45.financetracker.ktor.getUuidOrFail
 import com.denchic45.financetracker.util.respond
@@ -14,6 +13,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
@@ -40,7 +40,7 @@ fun Application.configureAccounts() {
                     accountRepository.add(call.receive(), currentUserId()).respond(HttpStatusCode.Created)
                 }
                 get {
-                    accountRepository.findAll(currentUserId()).respond()
+                    call.respond(accountRepository.findAll(currentUserId()))
                 }
                 route("/{accountId}") {
                     get {
