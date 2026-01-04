@@ -8,17 +8,44 @@ import com.denchic45.financetracker.data.UnknownApiFailure
 import com.denchic45.financetracker.ui.resource.UiImage
 import com.denchic45.financetracker.ui.resource.UiText
 import com.denchic45.financetracker.ui.resource.uiTextOf
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class AppEventHandler {
-
     private val _events = Channel<AppUIEvent>()
     val events: Flow<AppUIEvent> get() = _events.receiveAsFlow()
 
+    private var loadingJob: Job? = null
+    private val _loading = MutableStateFlow<LoadingState?>(null)
+    val loading get() = _loading.asStateFlow()
+
     suspend fun handleFailure(failure: Failure) {
         handleFailure(failure, ::defaultApiFailure, ::defaultHandle)
+    }
+
+    fun showLongLoading(
+        coroutineScope: CoroutineScope,
+        state: LoadingState = LoadingState(uiTextOf("Требуется больше времени..."))
+    ) {
+        loadingJob?.cancel()
+        loadingJob = coroutineScope.launch {
+            delay(3.seconds)
+            _loading.value = state
+        }
+    }
+
+    fun hideLongLoading() {
+        loadingJob?.cancel()
+        loadingJob = null
+        _loading.value = null
     }
 
     suspend fun handleFailure(
@@ -64,3 +91,5 @@ sealed interface AppUIEvent {
 
     data class Toast(val message: UiText) : AppUIEvent
 }
+
+data class LoadingState(val message: UiText)
