@@ -26,3 +26,7 @@ dependencies {
     api(libs.kotlinx.datetime.compat)
     testImplementation(libs.kotlin.test)
 }
+
+kotlin {
+    jvmToolchain(21)
+}
