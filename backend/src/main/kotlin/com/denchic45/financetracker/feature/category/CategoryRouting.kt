@@ -3,6 +3,7 @@ package com.denchic45.financetracker.feature.category
 import com.denchic45.financetracker.api.category.model.CreateCategoryRequest
 import com.denchic45.financetracker.api.error.CategoryValidationMessages
 import com.denchic45.financetracker.feature.buildValidationResult
+import com.denchic45.financetracker.ktor.currentUserId
 import com.denchic45.financetracker.util.respond
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -35,10 +36,15 @@ fun Application.configureCategory() {
                     }
                 }
                 get {
-                    call.respond(repository.findByType(call.queryParameters.getOrFail<Boolean>("income")))
+                    call.respond(
+                        repository.findByType(
+                            call.queryParameters.getOrFail<Boolean>("income"),
+                            currentUserId()
+                        )
+                    )
                 }
                 post {
-                    call.respond(HttpStatusCode.Created, repository.add(call.receive()))
+                    repository.add(call.receive(), currentUserId()).respond(HttpStatusCode.Created)
                 }
                 route("/{categoryId}") {
                     get {
