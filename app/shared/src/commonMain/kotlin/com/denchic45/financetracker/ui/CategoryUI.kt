@@ -11,8 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.domain.model.CategoryItem
-import com.denchic45.financetracker.ui.icon.AllIconsNamed
-import com.denchic45.financetracker.ui.icon.AppIcons
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.allDrawableResources
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun CategoryListItem(
@@ -24,7 +25,7 @@ fun CategoryListItem(
         modifier = modifier.clickable(onClick = onClick),
         leadingContent = {
             Icon(
-                imageVector = AppIcons.AllIconsNamed.getValue(category.iconName),
+                painter = painterResource(Res.allDrawableResources.getValue(category.iconName)),
                 contentDescription = category.name,
                 modifier = Modifier.size(40.dp)
             )

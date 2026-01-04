@@ -289,7 +289,7 @@ private fun DetailRow(
         modifier = Modifier.fillMaxWidth()
     ) {
         Icon(
-            imageVector = icon,
+            painter = painterResource(iconResource),
             contentDescription = label,
             modifier = Modifier.size(24.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
