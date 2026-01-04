@@ -83,7 +83,6 @@ fun TransactionDetailsSheet(
             },
             onDismiss = { showDeleteConfirmation = false }
         )
-    Log.d("TAG", "TransactionDetailsSheet: $transaction")
 
     ModalBottomSheet(
         onDismissRequest = viewModel::onDismissClick,
@@ -109,13 +108,13 @@ private fun TransactionDetailsContent(
     // 1. Determine display properties based on transaction type
     val (amountColor, amountPrefix, titleText) = when (transaction) {
         is TransactionItem.Income -> Triple(
-            Color(0xFF2E7D32), // Custom Green (TODO fixed)
+            Color(0xFF2E7D32),
             "+ ",
             transaction.category.name
         )
 
         is TransactionItem.Expense -> Triple(
-            MaterialTheme.colorScheme.error, // Changed to standard error color for better visibility
+            MaterialTheme.colorScheme.error,
             "- ",
             transaction.category.name
         )
@@ -133,7 +132,6 @@ private fun TransactionDetailsContent(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 1. Заголовок с суммой
         Text(
             text = "$amountPrefix${transaction.displayedAmount}",
             style = MaterialTheme.typography.headlineLarge,
@@ -148,15 +146,13 @@ private fun TransactionDetailsContent(
 
         Spacer(modifier = Modifier.height(24.dp))
         HorizontalDivider()
-        // Replaced deprecated HorizontalDivider
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 2. Детали транзакции в зависимости от типа
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            when (transaction) { // FIX: Use 'when (transaction)' for type checking
+            when (transaction) {
                 is TransactionItem.Income -> {
                     DetailRow(
                         iconResource = Res.drawable.arrow_down,
@@ -168,6 +164,7 @@ private fun TransactionDetailsContent(
                         label = "Категория",
                         value = transaction.category.name
                     )
+                    if (transaction.tags.isNotEmpty()) TagsRow(transaction.tags)
                 }
 
                 is TransactionItem.Expense -> {
@@ -181,6 +178,7 @@ private fun TransactionDetailsContent(
                         label = "Категория",
                         value = transaction.category.name
                     )
+                    if (transaction.tags.isNotEmpty()) TagsRow(transaction.tags)
                 }
 
                 is TransactionItem.Transfer -> {
@@ -197,7 +195,6 @@ private fun TransactionDetailsContent(
                 }
             }
 
-            // 3. Описание (если есть) - Uses abstract property `note`
             if (transaction.note.isNotBlank()) {
                 EditableDetailRow(
                     iconResource = Res.drawable.note,
@@ -354,20 +351,12 @@ fun EditableDetailRow(
     }
 }
 
-private fun getIconByName(name: String): ImageVector {
-    // В реальном приложении здесь может быть маппинг строк на реальные ресурсы иконок
-    return when (name) {
-        "food" -> Icons.Default.Category // Пример
-        else -> Icons.Default.Category
-    }
-}
-
 @OptIn(ExperimentalTime::class)
 @Preview(showBackground = true, name = "Outcome Details")
 @Composable
 fun TransactionDetailsOutcomePreview() {
     // Моковые данные
-    val mockAccount = AccountItem(UUID.randomUUID(), "Тинькофф Black", AccountType.CARD, 500000)
+    val mockAccount = AccountItem(UUID.randomUUID(), "Тинькофф Black", AccountType.ORDINARY, 500000)
     val mockCategory = CategoryItem(1, "Продукты", "food", false)
     val mockTransaction = TransactionItem.Expense(
         id = 1,
@@ -376,7 +365,7 @@ fun TransactionDetailsOutcomePreview() {
         note = "Покупка в супермаркете 'Пятерочка'",
         account = mockAccount,
         category = mockCategory,
-        tags = emptyList()
+        tags = listOf(TagItem(1, "Еда"), TagItem(2, "Пятерочка"))
     )
     MaterialTheme {
         TransactionDetailsContent(

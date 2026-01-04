@@ -14,7 +14,6 @@ import com.denchic45.financetracker.ui.resource.onData
 import com.denchic45.financetracker.ui.resource.stateInCacheableResource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.UUID
 
