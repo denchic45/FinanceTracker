@@ -1,18 +1,16 @@
 package com.denchic45.financetracker.ui.categorypicker
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -23,13 +21,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.ui.NoDataContent
-import com.denchic45.financetracker.ui.categorizedIcons
+import com.denchic45.financetracker.ui.categoryeditor.CategoryIconGridItem
 import com.denchic45.financetracker.ui.resource.CacheableResourceListContent
 import com.denchic45.financetracker.ui.resource.CircularLoadingBox
-import org.jetbrains.compose.resources.painterResource
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.allDrawableResources
+import financetracker_app.shared.generated.resources.category_add
+import financetracker_app.shared.generated.resources.category_list_empty
+import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -38,7 +41,9 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun CategoryPickerSheet(
     income: Boolean,
+    selectedId: Long?,
     viewModel: CategoryPickerViewModel = koinViewModel {
+        parametersOf(selectedId)
         parametersOf(income)
     }
 ) {
@@ -53,14 +58,15 @@ fun CategoryPickerSheet(
             loadingContent = { CircularLoadingBox(Modifier.height(160.dp)) },
             dataContent = { items ->
                 LazyVerticalGrid(
-                    columns = GridCells.Adaptive(82.dp),
                     contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    columns = GridCells.Fixed(4),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(items, key = { it.id }) { category ->
                         CategoryGridItem(
                             category = category,
+                            selected = category.id == selectedId,
                             onClick = { viewModel.onSelect(category) }
                         )
                     }
@@ -69,10 +75,10 @@ fun CategoryPickerSheet(
             emptyDataContent = {
                 NoDataContent(
                     modifier = Modifier.height(160.dp),
-                    title = { Text(text = "У вас нет ни одной категории") },
+                    title = { Text(text = stringResource(Res.string.category_list_empty)) },
                     action = {
                         Button(onClick = viewModel::onCreateCategoryClick) {
-                            Text("Создать категорию")
+                            Text(stringResource(Res.string.category_add))
                         }
                     }
                 )
@@ -84,28 +90,22 @@ fun CategoryPickerSheet(
 @Composable
 fun CategoryGridItem(
     category: CategoryItem,
+    selected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier.clickable(onClick = onClick),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Card(
-            modifier = Modifier.size(56.dp)
-        ) {
-            println("Category: ${category.iconName}")
-            Icon(
-                painter = painterResource(categorizedIcons.getValue(category.iconName)),
-                contentDescription = "category icon",
-                modifier = modifier
-            )
-        }
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        CategoryIconGridItem(
+            iconResource = Res.allDrawableResources.getValue(category.iconName),
+            selected = selected,
+            onClick = onClick
+        )
         Text(
             text = category.name,
-            style = MaterialTheme.typography.labelSmall,
-            textAlign = TextAlign.Center
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

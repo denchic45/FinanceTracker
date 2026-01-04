@@ -27,6 +27,11 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.domain.model.AccountItem
 import com.denchic45.financetracker.ui.resource.CacheableResourceListContent
 import com.denchic45.financetracker.ui.resource.onData
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.account_add
+import financetracker_app.shared.generated.resources.accounts_select
+import financetracker_app.shared.generated.resources.common_done
+import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import java.util.UUID
@@ -72,11 +77,14 @@ fun AccountPickerSheet(
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(title = { Text("Select Accounts") })
+                TopAppBar(title = { Text(stringResource(Res.string.accounts_select)) })
             },
             floatingActionButton = {
                 FloatingActionButton(onClick = viewModel::onAddAccountClick) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Account")
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = stringResource(Res.string.account_add)
+                    )
                 }
             }
         ) { padding ->
@@ -96,7 +104,7 @@ fun AccountPickerSheet(
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-                            Text("Confirm Selection")
+                            Text(stringResource(Res.string.common_done))
                         }
                     }
                 )

@@ -7,6 +7,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.common_delete
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ConfirmDeletionDialog(
@@ -19,7 +22,7 @@ fun ConfirmDeletionDialog(
         title = title,
         text = text,
         icon = { Icon(Icons.Outlined.Delete, null) },
-        confirmText = "Удалить",
+        confirmText = stringResource(Res.string.common_delete),
         onConfirm = onConfirm,
         onDismiss = onDismiss,
         modifier = Modifier.widthIn(max = 412.dp)

@@ -25,6 +25,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.api.account.model.AccountType
 import com.denchic45.financetracker.domain.model.AccountItem
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.account_type
+import financetracker_app.shared.generated.resources.common_delete
+import financetracker_app.shared.generated.resources.common_edit
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AccountListItem(account: AccountItem, onEditClick: () -> Unit, onRemoveClick: () -> Unit) {
@@ -54,14 +59,14 @@ fun AccountListItem(account: AccountItem, onEditClick: () -> Unit, onRemoveClick
                 expanded = showTrailingMenu,
                 onDismissRequest = { showTrailingMenu = false }) {
                 DropdownMenuItem(
-                    text = { Text("Изменить") },
+                    text = { Text(stringResource(Res.string.common_edit)) },
                     onClick = {
                         showTrailingMenu = false
                         onEditClick()
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Удалить") },
+                    text = { Text(stringResource(Res.string.common_delete)) },
                     onClick = {
                         showTrailingMenu = false
                         onRemoveClick()
@@ -80,7 +85,7 @@ fun AccountTypeIcon(type: AccountType, modifier: Modifier = Modifier) {
             AccountType.DEBT -> Icons.Outlined.CreditCard
             AccountType.SAVINGS -> Icons.Outlined.Savings
         },
-        contentDescription = "Account type",
+        contentDescription = stringResource(Res.string.account_type),
         modifier = modifier
     )
 }

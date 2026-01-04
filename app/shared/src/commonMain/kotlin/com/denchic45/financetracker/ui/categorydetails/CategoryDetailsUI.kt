@@ -32,9 +32,14 @@ import com.denchic45.financetracker.ui.resource.CircularLoadingBox
 import com.denchic45.financetracker.ui.resource.onData
 import com.denchic45.financetracker.ui.resource.onLoading
 import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.common_delete
+import financetracker_app.shared.generated.resources.common_edit
 import financetracker_app.shared.generated.resources.edit
 import financetracker_app.shared.generated.resources.trash
+import financetracker_app.shared.generated.resources.txn_expense
+import financetracker_app.shared.generated.resources.txn_income
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -99,7 +104,9 @@ private fun CategoryDetailsContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = if (category.income) "Income" else "Expense",
+            text = if (category.income) stringResource(Res.string.txn_income) else stringResource(
+                Res.string.txn_expense
+            ),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -122,10 +129,13 @@ private fun CategoryDetailsContent(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.trash),
-                    contentDescription = "Delete",
+                    contentDescription = stringResource(Res.string.common_delete),
                     tint = MaterialTheme.colorScheme.error
                 )
-                Text("Delete", style = MaterialTheme.typography.labelSmall)
+                Text(
+                    stringResource(Res.string.common_delete),
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
 
             Column(
@@ -136,8 +146,14 @@ private fun CategoryDetailsContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Icon(painterResource(Res.drawable.edit), "Edit")
-                Text("Edit", style = MaterialTheme.typography.labelSmall)
+                Icon(
+                    painterResource(Res.drawable.edit),
+                    stringResource(Res.string.common_edit)
+                )
+                Text(
+                    stringResource(Res.string.common_edit),
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
         }
     }

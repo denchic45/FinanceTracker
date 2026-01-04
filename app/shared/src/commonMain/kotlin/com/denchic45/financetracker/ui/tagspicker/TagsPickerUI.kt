@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -25,7 +26,11 @@ import com.denchic45.financetracker.ui.resource.CacheableResourceListContent
 import com.denchic45.financetracker.ui.resource.CircularLoadingBox
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.check
+import financetracker_app.shared.generated.resources.common_done
+import financetracker_app.shared.generated.resources.tag_add
+import financetracker_app.shared.generated.resources.tag_list_empty
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -62,23 +67,23 @@ fun TagsPickerSheet(
                         }
                     }
 
-                    Button(
+                    FilledTonalButton(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
                         onClick = viewModel::onDoneClick
                     ) {
-                        Text("Сохранить")
+                        Text(stringResource(Res.string.common_done))
                     }
                 }
             },
             emptyDataContent = {
                 NoDataContent(
                     modifier = Modifier.height(160.dp),
-                    title = { Text(text = "У вас нет ни одного тега") },
+                    title = { Text(text = stringResource(Res.string.tag_list_empty)) },
                     action = {
                         Button(onClick = viewModel::onCreateTagClick) {
-                            Text("Создать тег")
+                            Text(stringResource(Res.string.tag_add))
                         }
                     }
                 )

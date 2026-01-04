@@ -150,7 +150,7 @@ fun RootContainer(viewModel: MainViewModel = koinViewModel()) {
             entry<NavEntry.CategoryPicker>(
                 metadata = SimpleOverlaySceneStrategy.overlay()
             ) { key ->
-                CategoryPickerSheet(income = key.income)
+                CategoryPickerSheet(income = key.income, selectedId = key.selectedId)
             }
             entry<NavEntry.TagsPicker>(
                 metadata = SimpleOverlaySceneStrategy.overlay()

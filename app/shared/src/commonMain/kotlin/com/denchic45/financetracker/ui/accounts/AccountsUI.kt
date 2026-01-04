@@ -6,13 +6,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,7 +20,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.denchic45.financetracker.domain.model.AccountItem
+import com.denchic45.financetracker.ui.accountdetails.RemoveAccountConfirmDialog
 import com.denchic45.financetracker.ui.resource.CacheableResourceListContent
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.accounts_title
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import java.util.UUID
 
@@ -33,27 +35,20 @@ fun AccountsScreen(viewModel: AccountsViewModel = koinViewModel()) {
     var confirmToRemoveAccount by remember { mutableStateOf<UUID?>(null) }
 
     if (confirmToRemoveAccount != null) {
-        AlertDialog(
-            onDismissRequest = { confirmToRemoveAccount = null },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.onRemoveClick(confirmToRemoveAccount!!)
-                    confirmToRemoveAccount = null
-                }) { Text("Удалить") }
+        RemoveAccountConfirmDialog(
+            onConfirm = {
+                viewModel.onRemoveClick(confirmToRemoveAccount!!)
+                confirmToRemoveAccount = null
             },
-            dismissButton = {
-                TextButton(onClick = {
-                    confirmToRemoveAccount = null
-                }) { Text("Отмена") }
-            },
-            title = { Text("Удалить счет?") },
-            text = { Text("Счет и все операции с ним будут удалены без возможности восстановления") }
+            onDismiss = {
+                confirmToRemoveAccount = null
+            }
         )
     }
 
     Scaffold(topBar = {
         TopAppBar(
-            title = { Text("Счета") },
+            title = { Text(stringResource(Res.string.accounts_title)) },
             actions = {
                 IconButton(onClick = viewModel::onAddClick) {
                     Icon(Icons.Default.Add, null)

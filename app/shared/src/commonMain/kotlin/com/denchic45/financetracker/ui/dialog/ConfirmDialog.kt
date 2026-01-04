@@ -6,6 +6,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.common_cancel
+import financetracker_app.shared.generated.resources.common_ok
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ConfirmDialog(
@@ -14,8 +18,8 @@ fun ConfirmDialog(
     text: String? = null,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    confirmText: String = "OK",
-    dismissText: String = "Отмена",
+    confirmText: String = stringResource(Res.string.common_ok),
+    dismissText: String = stringResource(Res.string.common_cancel),
     icon: (@Composable () -> Unit)? = null
 ) {
     if (show)
@@ -37,8 +41,8 @@ fun ConfirmDialog(
     text: String? = null,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    confirmText: String = "OK",
-    dismissText: String = "Отмена",
+    confirmText: String = stringResource(Res.string.common_ok),
+    dismissText: String = stringResource(Res.string.common_cancel),
     icon: (@Composable () -> Unit)? = null,
 ) {
     AlertDialog(

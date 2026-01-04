@@ -22,6 +22,16 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.auth_email_field
+import financetracker_app.shared.generated.resources.auth_firstname_field
+import financetracker_app.shared.generated.resources.auth_lastname_field
+import financetracker_app.shared.generated.resources.auth_password_field
+import financetracker_app.shared.generated.resources.auth_repeat_password_field
+import financetracker_app.shared.generated.resources.auth_sign_up
+import financetracker_app.shared.generated.resources.auth_sign_up_btn
+import financetracker_app.shared.generated.resources.common_back
+import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -37,13 +47,16 @@ fun SignUpScreen(onNavigateBack: () -> Unit) {
             .systemBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Регистрация", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            stringResource(Res.string.auth_sign_up),
+            style = MaterialTheme.typography.headlineMedium
+        )
         Spacer(Modifier.height(32.dp))
 
         AuthTextField(
             value = state.firstName,
             onValueChange = { state.firstName = it },
-            label = { Text("Имя") },
+            label = { Text(stringResource(Res.string.auth_firstname_field)) },
             errorMessage = state.firstNameMessage,
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Words,
@@ -53,7 +66,7 @@ fun SignUpScreen(onNavigateBack: () -> Unit) {
         AuthTextField(
             value = state.lastName,
             onValueChange = { state.lastName = it },
-            label = { Text("Фамилия") },
+            label = { Text(stringResource(Res.string.auth_lastname_field)) },
             errorMessage = state.lastNameMessage,
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Words,
@@ -63,7 +76,7 @@ fun SignUpScreen(onNavigateBack: () -> Unit) {
         AuthTextField(
             value = state.email,
             onValueChange = { state.email = it },
-            label = { Text("Почта") },
+            label = { Text(stringResource(Res.string.auth_email_field)) },
             errorMessage = state.emailMessage,
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next
@@ -72,7 +85,7 @@ fun SignUpScreen(onNavigateBack: () -> Unit) {
         PasswordField(
             value = state.password,
             onValueChange = { state.password = it },
-            label = { Text("Пароль") },
+            label = { Text(stringResource(Res.string.auth_password_field)) },
             errorMessage = state.passwordMessage,
             imeAction = ImeAction.Next
         )
@@ -80,7 +93,7 @@ fun SignUpScreen(onNavigateBack: () -> Unit) {
         PasswordField(
             value = state.retryPassword,
             onValueChange = { state.retryPassword = it },
-            label = { Text("Повторите пароль") },
+            label = { Text(stringResource(Res.string.auth_repeat_password_field)) },
             errorMessage = state.retryPasswordMessage,
             imeAction = ImeAction.Done
         )
@@ -99,7 +112,7 @@ fun SignUpScreen(onNavigateBack: () -> Unit) {
             if (state.isLoading) {
                 CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
             } else {
-                Text("Зарегистрироваться")
+                Text(stringResource(Res.string.auth_sign_up_btn))
             }
         }
 
@@ -108,7 +121,7 @@ fun SignUpScreen(onNavigateBack: () -> Unit) {
             Text(
                 text = message,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.error, // Use the theme's error color
+                color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -118,7 +131,7 @@ fun SignUpScreen(onNavigateBack: () -> Unit) {
         Spacer(Modifier.height(16.dp))
 
         TextButton(onClick = onNavigateBack) {
-            Text("Назад")
+            Text(stringResource(Res.string.common_back))
         }
     }
 }

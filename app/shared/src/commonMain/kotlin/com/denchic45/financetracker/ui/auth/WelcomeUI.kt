@@ -15,6 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.auth_sign_in_btn
+import financetracker_app.shared.generated.resources.auth_sign_up_btn
+import financetracker_app.shared.generated.resources.auth_welcome
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun WelcomeScreen(
@@ -28,20 +33,23 @@ fun WelcomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Добро пожаловать!", style = MaterialTheme.typography.headlineLarge)
+        Text(
+            stringResource(Res.string.auth_welcome),
+            style = MaterialTheme.typography.headlineLarge
+        )
         Spacer(Modifier.height(32.dp))
         Button(
             onClick = onSignInClick,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Войти")
+            Text(stringResource(Res.string.auth_sign_in_btn))
         }
         Spacer(Modifier.height(16.dp))
         OutlinedButton(
             onClick = onSignUpClick,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Зарегистрироваться")
+            Text(stringResource(Res.string.auth_sign_up_btn))
         }
     }
 }

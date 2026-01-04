@@ -6,9 +6,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -44,9 +44,19 @@ import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.analyze
 import financetracker_app.shared.generated.resources.category
 import financetracker_app.shared.generated.resources.home
+import financetracker_app.shared.generated.resources.nav_about_label
+import financetracker_app.shared.generated.resources.nav_analytics_label
+import financetracker_app.shared.generated.resources.nav_categories_label
+import financetracker_app.shared.generated.resources.nav_data_usage_label
+import financetracker_app.shared.generated.resources.nav_home_label
+import financetracker_app.shared.generated.resources.nav_settings_label
+import financetracker_app.shared.generated.resources.nav_tags_label
+import financetracker_app.shared.generated.resources.txn_new
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
+@Suppress("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -65,7 +75,9 @@ fun MainScreen(viewModel: MainViewModel) {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet(
+                modifier = Modifier.widthIn(max = 320.dp)
+            ) {
                 Column(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
@@ -74,12 +86,12 @@ fun MainScreen(viewModel: MainViewModel) {
                     Spacer(Modifier.height(12.dp))
                     Text(
                         "Finance Tracker",
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(vertical = 16.dp),
                         style = MaterialTheme.typography.titleLarge
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     NavigationDrawerItem(
-                        label = { Text("Теги") },
+                        label = { Text(stringResource(Res.string.nav_tags_label)) },
                         selected = false,
                         onClick = {
                             toggleNavigationDrawer()
@@ -88,7 +100,7 @@ fun MainScreen(viewModel: MainViewModel) {
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     NavigationDrawerItem(
-                        label = { Text("Данные") },
+                        label = { Text(stringResource(Res.string.nav_data_usage_label)) },
                         selected = false,
                         icon = { Icon(Icons.Outlined.Storage, contentDescription = null) },
                         onClick = {
@@ -97,7 +109,7 @@ fun MainScreen(viewModel: MainViewModel) {
                         }
                     )
                     NavigationDrawerItem(
-                        label = { Text("Настройки") },
+                        label = { Text(stringResource(Res.string.nav_settings_label)) },
                         selected = false,
                         icon = {
                             Icon(
@@ -111,7 +123,7 @@ fun MainScreen(viewModel: MainViewModel) {
                         },
                     )
                     NavigationDrawerItem(
-                        label = { Text("О приложении") },
+                        label = { Text(stringResource(Res.string.nav_about_label)) },
                         selected = false,
                         icon = { Icon(Icons.Outlined.Info, contentDescription = null) },
                         onClick = {
@@ -125,7 +137,6 @@ fun MainScreen(viewModel: MainViewModel) {
         },
     ) {
         Scaffold(
-            modifier = Modifier.fillMaxSize(),
             bottomBar = {
                 val current = viewModel.navbarBackStack.last()
                 NavigationBar {
@@ -135,7 +146,7 @@ fun MainScreen(viewModel: MainViewModel) {
                         icon = {
                             Icon(painterResource(Res.drawable.home), null)
                         },
-                        label = { Text("Главная") }
+                        label = { Text(stringResource(Res.string.nav_home_label)) }
                     )
                     NavigationBarItem(
                         selected = current is NavigationBarScreen.Analytics,
@@ -143,7 +154,7 @@ fun MainScreen(viewModel: MainViewModel) {
                         icon = {
                             Icon(painterResource(Res.drawable.analyze), null)
                         },
-                        label = { Text("Аналитика") }
+                        label = { Text(stringResource(Res.string.nav_analytics_label)) }
                     )
                     NavigationBarItem(
                         selected = current is NavigationBarScreen.Labels,
@@ -151,7 +162,7 @@ fun MainScreen(viewModel: MainViewModel) {
                         icon = {
                             Icon(painterResource(Res.drawable.category), null)
                         },
-                        label = { Text("Категории") }
+                        label = { Text(stringResource(Res.string.nav_categories_label)) }
                     )
                 }
             },
@@ -159,13 +170,13 @@ fun MainScreen(viewModel: MainViewModel) {
                 FloatingActionButton(
                     onClick = viewModel::onCreateTransactionClick
                 ) {
-                    Icon(Icons.Filled.Add, contentDescription = "Add transaction")
+                    Icon(Icons.Filled.Add, contentDescription = stringResource(Res.string.txn_new))
                 }
             }
         ) { innerPadding ->
             NavDisplay(
                 backStack = viewModel.navbarBackStack,
-                modifier = Modifier.padding(innerPadding),
+//                modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
                 transitionSpec = {
                     fadeIn(tween(300)) togetherWith fadeOut(tween(300))
                 },

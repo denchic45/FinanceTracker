@@ -28,6 +28,10 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.password_hide_field
+import financetracker_app.shared.generated.resources.password_show_field
+import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -115,7 +119,7 @@ fun PasswordField(
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 Icon(
                     imageVector = image,
-                    contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                    contentDescription = stringResource(if (passwordVisible) Res.string.password_hide_field else Res.string.password_show_field)
                 )
             }
         },

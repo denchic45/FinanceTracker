@@ -20,6 +20,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.auth_email_field
+import financetracker_app.shared.generated.resources.auth_password_field
+import financetracker_app.shared.generated.resources.auth_sign_in
+import financetracker_app.shared.generated.resources.auth_sign_in_btn
+import financetracker_app.shared.generated.resources.common_back
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -34,13 +41,16 @@ fun SignInScreen(onNavigateBack: () -> Unit) {
             .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Вход", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            stringResource(Res.string.auth_sign_in),
+            style = MaterialTheme.typography.headlineMedium
+        )
         Spacer(Modifier.height(32.dp))
 
         AuthTextField(
             value = state.email,
             onValueChange = { state.email = it },
-            label = { Text("Почта") },
+            label = { Text(stringResource(Res.string.auth_email_field)) },
             errorMessage = state.emailMessage,
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next
@@ -50,7 +60,7 @@ fun SignInScreen(onNavigateBack: () -> Unit) {
         PasswordField(
             value = state.password,
             onValueChange = { state.password = it },
-            label = { Text("Пароль") },
+            label = { Text(stringResource(Res.string.auth_password_field)) },
             errorMessage = state.passwordMessage,
             imeAction = ImeAction.Done
         )
@@ -69,7 +79,7 @@ fun SignInScreen(onNavigateBack: () -> Unit) {
             if (state.isLoading) {
                 CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
             } else {
-                Text("Войти")
+                Text(stringResource(Res.string.auth_sign_in_btn))
             }
         }
 
@@ -78,18 +88,18 @@ fun SignInScreen(onNavigateBack: () -> Unit) {
             Text(
                 text = message,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.error, // Use the theme's error color
+                color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.fillMaxWidth()
             )
         }
 
-        Spacer(Modifier.height(if (state.errorMessage == null) 8.dp else 0.dp)) // Adjust spacing if no error
+        Spacer(Modifier.height(if (state.errorMessage == null) 8.dp else 0.dp))
 
         Spacer(Modifier.height(16.dp))
 
         TextButton(onClick = onNavigateBack) {
-            Text("Назад")
+            Text(stringResource(Res.string.common_back))
         }
     }
 }

@@ -1,9 +1,13 @@
 package com.denchic45.financetracker.domain.model
 
+import androidx.compose.runtime.Composable
 import com.denchic45.financetracker.api.account.model.AccountType
-import com.denchic45.financetracker.ui.resource.UiText
-import com.denchic45.financetracker.ui.resource.uiTextOf
 import com.denchic45.financetracker.ui.util.convertToCurrency
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.account_type_debt
+import financetracker_app.shared.generated.resources.account_type_ordinary
+import financetracker_app.shared.generated.resources.account_type_savings
+import org.jetbrains.compose.resources.stringResource
 import java.util.UUID
 
 data class AccountItem(
@@ -18,9 +22,11 @@ data class AccountItem(
 val List<AccountItem>.displayedGeneralBalance: String
     get() = (sumOf(AccountItem::balance)).convertToCurrency()
 
-val AccountType.displayName: UiText
-    get() = when (this) {
-        AccountType.ORDINARY -> uiTextOf("Обычный")
-        AccountType.DEBT -> uiTextOf("Долговой")
-        AccountType.SAVINGS -> uiTextOf("Сбережения")
+@Composable
+fun AccountType.displayName(): String = stringResource(
+    when (this) {
+        AccountType.ORDINARY -> Res.string.account_type_ordinary
+        AccountType.DEBT -> Res.string.account_type_debt
+        AccountType.SAVINGS -> Res.string.account_type_savings
     }
+)

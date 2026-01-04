@@ -57,13 +57,17 @@ import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TagItem
 import com.denchic45.financetracker.ui.CurrencyVisualTransformation
 import com.denchic45.financetracker.ui.PlainTextTextField
-import com.denchic45.financetracker.ui.dialog.ConfirmDeletionDialog
+import com.denchic45.financetracker.ui.RemoveTransactionConfirmDialog
 import com.denchic45.financetracker.ui.util.formattedDateTime
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.calendar_event
 import financetracker_app.shared.generated.resources.check
 import financetracker_app.shared.generated.resources.clock
+import financetracker_app.shared.generated.resources.common_back
+import financetracker_app.shared.generated.resources.common_save
 import financetracker_app.shared.generated.resources.tags
+import financetracker_app.shared.generated.resources.txn_new
+import financetracker_app.shared.generated.resources.txn_update
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
@@ -71,6 +75,7 @@ import kotlinx.datetime.format.char
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.time.ExperimentalTime
@@ -143,9 +148,7 @@ fun TransactionEditorScreen(
     }
 
     if (showConfirmToDelete) {
-        ConfirmDeletionDialog(
-            title = "Удалить операцию?",
-            text = "Восстановить операцию будет невозиожно",
+        RemoveTransactionConfirmDialog(
             onConfirm = {
                 showConfirmToDelete = false
                 viewModel.onRemoveClick()
@@ -162,13 +165,16 @@ fun TransactionEditorScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = if (transactionId == null) "New Transaction" else "Edit Transaction",
+                        text = stringResource(if (transactionId == null) Res.string.txn_new else Res.string.txn_update),
                         style = MaterialTheme.typography.headlineSmall
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = viewModel::onDismissClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(Res.string.common_back)
+                        )
                     }
                 },
                 actions = {
@@ -182,7 +188,7 @@ fun TransactionEditorScreen(
                     else IconButton(onClick = viewModel::onSaveClick) {
                         Icon(
                             painterResource(Res.drawable.check),
-                            contentDescription = "Save changes"
+                            contentDescription = stringResource(Res.string.common_save)
                         )
                     }
                 }
@@ -208,6 +214,7 @@ fun TransactionEditorScreen(
                 textStyle = MaterialTheme.typography.headlineLarge.copy(textAlign = TextAlign.Center),
                 placeholderText = "0.00 ₽",
                 isError = state.amountMessage != null,
+                singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Decimal
                 ),

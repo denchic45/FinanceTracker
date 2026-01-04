@@ -9,8 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -26,7 +26,12 @@ import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.ui.CategoryListItem
 import com.denchic45.financetracker.ui.MainTopAppBar
 import com.denchic45.financetracker.ui.resource.CacheableResourceListContent
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.category_add
+import financetracker_app.shared.generated.resources.txn_expense
+import financetracker_app.shared.generated.resources.txn_income
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -40,7 +45,10 @@ fun CategoriesScreen(
 
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
-    val tabTitles = listOf("Расход", "Доход")
+    val tabTitles = listOf(
+        stringResource(Res.string.txn_expense),
+        stringResource(Res.string.txn_income)
+    )
 
     Scaffold(topBar = {
         MainTopAppBar(
@@ -100,13 +108,13 @@ fun CategoryList(
 ) {
     LazyColumn(modifier = modifier) {
         item {
-            Button(
+            FilledTonalButton(
                 onClick = onCreateClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text("Create new category")
+                Text(stringResource(Res.string.category_add))
             }
         }
         items(categories) { category ->

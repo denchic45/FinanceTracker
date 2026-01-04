@@ -49,14 +49,26 @@ import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.arrow_down
 import financetracker_app.shared.generated.resources.arrow_up
 import financetracker_app.shared.generated.resources.clipboard_copy
+import financetracker_app.shared.generated.resources.common_delete
+import financetracker_app.shared.generated.resources.common_duplicate
+import financetracker_app.shared.generated.resources.common_edit
 import financetracker_app.shared.generated.resources.edit
 import financetracker_app.shared.generated.resources.note
 import financetracker_app.shared.generated.resources.tags
+import financetracker_app.shared.generated.resources.tags_title
 import financetracker_app.shared.generated.resources.trash
+import financetracker_app.shared.generated.resources.txn_category_label
+import financetracker_app.shared.generated.resources.txn_credited_to_label
+import financetracker_app.shared.generated.resources.txn_debited_from_label
+import financetracker_app.shared.generated.resources.txn_note_field_hint
+import financetracker_app.shared.generated.resources.txn_transfer
+import financetracker_app.shared.generated.resources.txn_transfer_from_label
+import financetracker_app.shared.generated.resources.txn_transfer_to_label
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import java.util.UUID
@@ -122,7 +134,7 @@ private fun TransactionDetailsContent(
         is TransactionItem.Transfer -> Triple(
             Color.Blue,
             "",
-            "Перевод"
+            stringResource(Res.string.txn_transfer)
         )
     }
 
@@ -156,12 +168,12 @@ private fun TransactionDetailsContent(
                 is TransactionItem.Income -> {
                     DetailRow(
                         iconResource = Res.drawable.arrow_down,
-                        label = "Зачислено на счет",
+                        label = stringResource(Res.string.txn_credited_to_label),
                         value = transaction.account.name
                     )
                     DetailRow(
                         iconResource = categorizedIcons.getValue(transaction.category.iconName),
-                        label = "Категория",
+                        label = stringResource(Res.string.txn_category_label),
                         value = transaction.category.name
                     )
                     if (transaction.tags.isNotEmpty()) TagsRow(transaction.tags)
@@ -170,12 +182,12 @@ private fun TransactionDetailsContent(
                 is TransactionItem.Expense -> {
                     DetailRow(
                         iconResource = Res.drawable.arrow_up,
-                        label = "Списано со счета",
+                        label = stringResource(Res.string.txn_debited_from_label),
                         value = transaction.account.name
                     )
                     DetailRow(
                         iconResource = categorizedIcons.getValue(transaction.category.iconName),
-                        label = "Категория",
+                        label = stringResource(Res.string.txn_category_label),
                         value = transaction.category.name
                     )
                     if (transaction.tags.isNotEmpty()) TagsRow(transaction.tags)
@@ -184,12 +196,12 @@ private fun TransactionDetailsContent(
                 is TransactionItem.Transfer -> {
                     DetailRow(
                         iconResource = Res.drawable.arrow_up,
-                        label = "Со счета",
+                        label = stringResource(Res.string.txn_transfer_from_label),
                         value = transaction.account.name
                     )
                     DetailRow(
                         iconResource = Res.drawable.arrow_down,
-                        label = "На счет",
+                        label = stringResource(Res.string.txn_transfer_to_label),
                         value = transaction.incomeAccount.name
                     )
                 }
@@ -198,7 +210,7 @@ private fun TransactionDetailsContent(
             if (transaction.note.isNotBlank()) {
                 EditableDetailRow(
                     iconResource = Res.drawable.note,
-                    label = "Заметка",
+                    label = stringResource(Res.string.txn_note_field_hint),
                     value = transaction.note,
                     onValueChange = {}
                 )
@@ -222,7 +234,10 @@ private fun TransactionDetailsContent(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.error
                 )
-                Text("Delete", style = MaterialTheme.typography.labelSmall)
+                Text(
+                    stringResource(Res.string.common_delete),
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
 
             Column(
@@ -234,7 +249,10 @@ private fun TransactionDetailsContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Icon(painterResource(Res.drawable.edit), null)
-                Text("Edit", style = MaterialTheme.typography.labelSmall)
+                Text(
+                    stringResource(Res.string.common_edit),
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
 
             Column(
@@ -246,7 +264,10 @@ private fun TransactionDetailsContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Icon(painterResource(Res.drawable.clipboard_copy), null)
-                Text("Duplicate", style = MaterialTheme.typography.labelSmall)
+                Text(
+                    stringResource(Res.string.common_duplicate),
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
 
         }
@@ -257,7 +278,12 @@ private fun TransactionDetailsContent(
 private fun TagsRow(tags: List<TagItem>) {
     ListItem(
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-        leadingContent = { Icon(painterResource(Res.drawable.tags), contentDescription = "Tags") },
+        leadingContent = {
+            Icon(
+                painterResource(Res.drawable.tags),
+                contentDescription = stringResource(Res.string.tags_title)
+            )
+        },
         headlineContent = {
             Row(
                 modifier = Modifier.fillMaxWidth(),

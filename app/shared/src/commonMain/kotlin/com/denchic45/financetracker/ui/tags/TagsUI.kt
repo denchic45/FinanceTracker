@@ -21,6 +21,10 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.domain.model.TagItem
 import com.denchic45.financetracker.ui.TagListItem
 import com.denchic45.financetracker.ui.resource.CacheableResourceListContent
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.tag_add
+import financetracker_app.shared.generated.resources.tags_title
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -36,7 +40,7 @@ fun TagsScreen(viewModel: TagsViewModel = koinViewModel()) {
                     Icon(Icons.AutoMirrored.Outlined.ArrowBack, null)
                 }
             },
-            title = { Text("Теги") }
+            title = { Text(stringResource(Res.string.tags_title)) }
         )
     }) { padding ->
         CacheableResourceListContent(
@@ -68,11 +72,10 @@ fun TagList(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text("Create new tag")
+                Text(stringResource(Res.string.tag_add))
             }
         }
         items(tags) { tag ->
-            // Assumes a TagListItem composable exists in the project
             TagListItem(tag = tag, onClick = { onTagClick(tag.id) })
         }
     }

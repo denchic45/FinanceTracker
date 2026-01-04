@@ -8,14 +8,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,13 +25,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.domain.model.AccountItem
+import com.denchic45.financetracker.ui.dialog.ConfirmDialog
 import com.denchic45.financetracker.ui.resource.CircularLoadingBox
 import com.denchic45.financetracker.ui.resource.onData
 import com.denchic45.financetracker.ui.resource.onLoading
 import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.account_delete_dialog_message
+import financetracker_app.shared.generated.resources.account_delete_dialog_title
+import financetracker_app.shared.generated.resources.common_delete
+import financetracker_app.shared.generated.resources.common_edit
 import financetracker_app.shared.generated.resources.edit
 import financetracker_app.shared.generated.resources.trash
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import java.util.UUID
@@ -121,10 +125,13 @@ private fun AccountDetailsContent(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.trash),
-                    contentDescription = "Delete",
+                    contentDescription = stringResource(Res.string.common_delete),
                     tint = MaterialTheme.colorScheme.error
                 )
-                Text("Delete", style = MaterialTheme.typography.labelSmall)
+                Text(
+                    stringResource(Res.string.common_delete),
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
 
             Column(
@@ -136,7 +143,10 @@ private fun AccountDetailsContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Icon(painterResource(Res.drawable.edit), "Edit")
-                Text("Edit", style = MaterialTheme.typography.labelSmall)
+                Text(
+                    stringResource(Res.string.common_edit),
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
         }
     }
@@ -147,19 +157,10 @@ fun RemoveAccountConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Delete Account") },
-        text = { Text("Are you sure you want to delete this account? This action cannot be undone.") },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text("Delete")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
+    ConfirmDialog(
+        title = stringResource(Res.string.account_delete_dialog_title),
+        text = stringResource(Res.string.account_delete_dialog_message),
+        onConfirm = onConfirm,
+        onDismiss = onDismiss
     )
 }

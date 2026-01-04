@@ -33,9 +33,12 @@ import com.denchic45.financetracker.ui.resource.CircularLoadingBox
 import com.denchic45.financetracker.ui.resource.onData
 import com.denchic45.financetracker.ui.resource.onLoading
 import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.common_delete
+import financetracker_app.shared.generated.resources.common_edit
 import financetracker_app.shared.generated.resources.edit
 import financetracker_app.shared.generated.resources.trash
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -118,10 +121,13 @@ private fun TagDetailsContent(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.trash),
-                    contentDescription = "Delete",
+                    contentDescription = stringResource(Res.string.common_delete),
                     tint = MaterialTheme.colorScheme.error
                 )
-                Text("Delete", style = MaterialTheme.typography.labelSmall)
+                Text(
+                    stringResource(Res.string.common_delete),
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
 
             Column(
@@ -132,8 +138,11 @@ private fun TagDetailsContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Icon(painterResource(Res.drawable.edit), "Edit")
-                Text("Edit", style = MaterialTheme.typography.labelSmall)
+                Icon(painterResource(Res.drawable.edit), stringResource(Res.string.common_edit))
+                Text(
+                    stringResource(Res.string.common_edit),
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
         }
     }

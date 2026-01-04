@@ -43,14 +43,12 @@ import com.denchic45.financetracker.api.statistic.model.TotalsAmount
 import com.denchic45.financetracker.domain.model.AccountItem
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TransactionItem
-import com.denchic45.financetracker.domain.model.displayName
 import com.denchic45.financetracker.domain.model.displayedGeneralBalance
 import com.denchic45.financetracker.ui.HeaderItem
 import com.denchic45.financetracker.ui.MainTopAppBar
 import com.denchic45.financetracker.ui.NoDataContent
 import com.denchic45.financetracker.ui.SmallTextButton
 import com.denchic45.financetracker.ui.TransactionListItem
-import com.denchic45.financetracker.ui.resource.get
 import com.denchic45.financetracker.ui.resource.isLoading
 import com.denchic45.financetracker.ui.resource.onData
 import com.denchic45.financetracker.ui.resource.onSuccess
@@ -59,8 +57,19 @@ import com.denchic45.financetracker.ui.transactions.ExpenseColor
 import com.denchic45.financetracker.ui.transactions.IncomeColor
 import com.denchic45.financetracker.ui.transactions.TransferColor
 import com.denchic45.financetracker.ui.util.convertToCurrency
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.account_add
+import financetracker_app.shared.generated.resources.accounts_title
+import financetracker_app.shared.generated.resources.common_all
+import financetracker_app.shared.generated.resources.home_general_balance
+import financetracker_app.shared.generated.resources.txn_expense
+import financetracker_app.shared.generated.resources.txn_income
+import financetracker_app.shared.generated.resources.txn_list_empty
+import financetracker_app.shared.generated.resources.txn_profit
+import financetracker_app.shared.generated.resources.txns_title
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 import java.util.UUID
 import kotlin.time.Clock
@@ -118,7 +127,7 @@ fun HomeScreen(
                     }
                 }
 
-                item { HeaderItem("Счета") }
+                item { HeaderItem(stringResource(Res.string.accounts_title)) }
 
                 accounts.onData { failure, accounts ->
                     item {
@@ -147,7 +156,7 @@ fun HomeScreen(
                                     ) {
                                         Icon(Icons.Default.Add, null)
                                         Spacer(Modifier.width(8.dp))
-                                        Text("Добавить")
+                                        Text(stringResource(Res.string.account_add))
                                     }
                                 }
                             }
@@ -158,9 +167,10 @@ fun HomeScreen(
 
                 item {
                     HeaderItem(
-                        name = "Операции", action = {
+                        name = stringResource(Res.string.txns_title),
+                        action = {
                             SmallTextButton(onClick = viewModel::onShowMoreTransactionsClick) {
-                                Text("Все")
+                                Text(stringResource(Res.string.common_all))
                             }
                         })
                 }
@@ -176,7 +186,7 @@ fun HomeScreen(
                         item {
                             NoDataContent(
                                 title = {
-                                    Text("У вас не было добавлено ни одной операции")
+                                    Text(stringResource(Res.string.txn_list_empty))
                                 }
                             )
                         }
@@ -201,7 +211,7 @@ fun GeneralBalanceCard(modifier: Modifier = Modifier, displayedBalance: String) 
                 .fillMaxWidth()
         ) {
             Text(
-                "Общий баланс:",
+                stringResource(Res.string.home_general_balance),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
@@ -218,21 +228,21 @@ fun GeneralBalanceCard(modifier: Modifier = Modifier, displayedBalance: String) 
 fun MonthStatRow(modifier: Modifier = Modifier, totalsAmount: TotalsAmount) {
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         StatBox(
-            label = "Доходы",
+            label = stringResource(Res.string.txn_income),
             amountText = totalsAmount.incomes.convertToCurrency(),
             color = IncomeColor,
             modifier = Modifier.weight(1f)
         )
         Spacer(Modifier.width(8.dp))
         StatBox(
-            label = "Расходы",
+            label = stringResource(Res.string.txn_expense),
             amountText = totalsAmount.expenses.convertToCurrency(),
             color = ExpenseColor,
             modifier = Modifier.weight(1f)
         )
         Spacer(Modifier.width(8.dp))
         StatBox(
-            label = "Остаток",
+            label = stringResource(Res.string.txn_profit),
             amountText = totalsAmount.profit.convertToCurrency(),
             color = TransferColor,
             modifier = Modifier.weight(1f)
@@ -264,7 +274,6 @@ fun StatBox(label: String, amountText: String, color: Color, modifier: Modifier 
 
 @Composable
 fun AccountCard(account: AccountItem, onClick: () -> Unit) {
-    // Determine color based on the new AccountType
     val cardColor = when (account.type) {
         AccountType.ORDINARY -> Color(0xFF673AB7).copy(alpha = 0.8f) // Primary color for Cards
         AccountType.DEBT -> Color(0xFF8BC34A).copy(alpha = 0.8f) // Lighter green for Cash
@@ -286,8 +295,7 @@ fun AccountCard(account: AccountItem, onClick: () -> Unit) {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                // Display the type's displayName next to the account name
-                "${account.name} (${account.type.displayName.get()})",
+                account.name,
                 color = Color.White,
                 style = MaterialTheme.typography.titleMedium.copy(fontSize = 14.sp),
                 fontWeight = FontWeight.SemiBold,
@@ -331,7 +339,7 @@ fun MonthStatRowPreview() {
 fun StatBoxIncomePreview() {
     FinanceTrackerTheme {
         StatBox(
-            label = "Доходы",
+            label = stringResource(Res.string.txn_income),
             amountText = "60 000 ₽",
             color = IncomeColor,
             modifier = Modifier.width(120.dp)
