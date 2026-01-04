@@ -27,7 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,11 +43,14 @@ import com.denchic45.financetracker.api.statistic.model.TotalsAmount
 import com.denchic45.financetracker.domain.model.AccountItem
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TransactionItem
+import com.denchic45.financetracker.domain.model.displayName
 import com.denchic45.financetracker.domain.model.displayedGeneralBalance
 import com.denchic45.financetracker.ui.HeaderItem
+import com.denchic45.financetracker.ui.MainTopAppBar
 import com.denchic45.financetracker.ui.NoDataContent
 import com.denchic45.financetracker.ui.SmallTextButton
 import com.denchic45.financetracker.ui.TransactionListItem
+import com.denchic45.financetracker.ui.resource.get
 import com.denchic45.financetracker.ui.resource.isLoading
 import com.denchic45.financetracker.ui.resource.onData
 import com.denchic45.financetracker.ui.resource.onSuccess
@@ -68,7 +70,8 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = koinViewModel()
+    viewModel: HomeViewModel = koinViewModel(),
+    onNavigationDrawerClick: () -> Unit
 ) {
     val monthStatistics by viewModel.monthStatistics.collectAsState()
     val accounts by viewModel.accounts.collectAsState()
@@ -76,7 +79,10 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Обзор финансов") })
+            MainTopAppBar(
+                onNavigationIconClick = onNavigationDrawerClick,
+                actions = {}
+            )
         }) { paddingValues ->
         if (monthStatistics.isLoading() || accounts.isLoading() || latestTransactions.isLoading()) {
             Box(
