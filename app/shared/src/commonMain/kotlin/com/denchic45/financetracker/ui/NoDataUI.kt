@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
@@ -28,22 +29,23 @@ fun NoDataContent(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             icon?.let {
                 Image(
-                    modifier = Modifier.size(172.dp),
+                    modifier = Modifier.size(172.dp).padding(bottom = 8.dp),
                     painter = icon.getPainter(),
                     contentDescription = null
                 )
             }
-            Spacer(Modifier.height(8.dp))
+
             ProvideTextStyle(value = MaterialTheme.typography.titleMedium) {
                 title()
             }
-
             description?.let {
-                ProvideTextStyle(value = MaterialTheme.typography.bodyMedium) { it() }
+                ProvideTextStyle(value = MaterialTheme.typography.bodyMedium) { description() }
             }
-
             Spacer(Modifier.height(8.dp))
-            action?.invoke()
+            action?.let {
+                action()
+                Spacer(Modifier.height(16.dp))
+            }
         }
     }
 }
