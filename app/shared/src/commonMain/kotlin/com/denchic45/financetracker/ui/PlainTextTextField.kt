@@ -18,6 +18,7 @@ fun PlainTextTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    singleLine: Boolean = false,
     textStyle: TextStyle = LocalTextStyle.current,
     placeholderText: String? = null,
     isError: Boolean = false,
@@ -36,6 +37,7 @@ fun PlainTextTextField(
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
+            singleLine = singleLine,
             textStyle = textStyle.copy(color = textColor),
             visualTransformation = visualTransformation,
             keyboardOptions = keyboardOptions
