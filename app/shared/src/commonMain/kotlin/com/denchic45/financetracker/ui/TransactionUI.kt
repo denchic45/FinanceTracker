@@ -22,7 +22,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.domain.model.TransactionItem
-import com.denchic45.financetracker.domain.model.displayName
 import com.denchic45.financetracker.ui.dialog.ConfirmDeletionDialog
 import com.denchic45.financetracker.ui.transactions.ExpenseColor
 import com.denchic45.financetracker.ui.transactions.IncomeColor
@@ -47,9 +46,9 @@ fun TransactionListItem(
         }
 
         is TransactionItem.Transfer -> {
-            // Access type-specific property `incomeAccount` safely
+            val senderName = transaction.account.name
             val destinationName = transaction.incomeAccount.name
-            TransferColor to "Перевод: ${transaction.account.type.displayName} -> $destinationName"
+            TransferColor to "$senderName -> $destinationName"
         }
     }
 
