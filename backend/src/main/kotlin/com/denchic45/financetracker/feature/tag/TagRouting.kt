@@ -1,8 +1,9 @@
 package com.denchic45.financetracker.feature.tag
 
 import com.denchic45.financetracker.api.error.TagValidationMessages
-import com.denchic45.financetracker.feature.buildValidationResult
 import com.denchic45.financetracker.api.tag.model.TagRequest
+import com.denchic45.financetracker.feature.buildValidationResult
+import com.denchic45.financetracker.ktor.currentUserId
 import com.denchic45.financetracker.util.respond
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -32,7 +33,10 @@ fun Application.configureTag() {
                     }
                 }
                 post {
-                    call.respond(HttpStatusCode.Created, repository.add(call.receive()))
+                    call.respond(
+                        HttpStatusCode.Created,
+                        repository.add(call.receive(), currentUserId())
+                    )
                 }
                 route("/{tagId}") {
                     get {
@@ -50,7 +54,7 @@ fun Application.configureTag() {
                     }
                 }
                 get {
-                    call.respond(repository.findAll())
+                    call.respond(repository.findAll(currentUserId()))
                 }
             }
         }
