@@ -10,10 +10,10 @@ import com.denchic45.financetracker.api.auth.model.RefreshToken
 import com.denchic45.financetracker.api.auth.model.RefreshTokenRequest
 import com.denchic45.financetracker.api.auth.model.SignInRequest
 import com.denchic45.financetracker.api.auth.model.SignUpRequest
+import com.denchic45.financetracker.api.error.*
 import com.denchic45.financetracker.database.table.RefreshTokens
 import com.denchic45.financetracker.database.table.UserDao
 import com.denchic45.financetracker.database.table.Users
-import com.denchic45.financetracker.api.error.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
 import org.jetbrains.exposed.sql.deleteWhere
@@ -53,10 +53,12 @@ class AuthService {
     }
 
     fun refreshToken(request: RefreshTokenRequest): Either<InvalidRefreshToken, Pair<UUID, String>> = either {
-        val refreshToken = ensureNotNull(findRefreshToken(request.refreshToken)) { InvalidRefreshToken }
-        removeRefreshToken(request.refreshToken)
-        ensure(!refreshToken.isExpired) { InvalidRefreshToken }
-        refreshToken.userId to generateAndInsertRefreshToken(refreshToken.userId)
+        transaction {
+            val refreshToken = ensureNotNull(getRefreshToken(request.refreshToken)) { InvalidRefreshToken }
+            removeRefreshToken(request.refreshToken)
+            ensure(!refreshToken.isExpired) { InvalidRefreshToken }
+            refreshToken.userId to generateAndInsertRefreshToken(refreshToken.userId)
+        }
     }
 
     private fun generateRefreshToken(userId: UUID): RefreshToken = RefreshToken(
@@ -69,7 +71,7 @@ class AuthService {
         return insertRefreshToken(generateRefreshToken(userId))
     }
 
-    fun insertRefreshToken(refreshToken: RefreshToken): String {
+    private fun insertRefreshToken(refreshToken: RefreshToken): String {
         return RefreshTokens.insert {
             it[userId] = refreshToken.userId
             it[token] = refreshToken.token
@@ -77,7 +79,7 @@ class AuthService {
         }[RefreshTokens.token]
     }
 
-    fun findRefreshToken(refreshToken: String): RefreshToken? {
+    private fun getRefreshToken(refreshToken: String): RefreshToken? {
         RefreshTokens.deleteWhere { RefreshTokens.expireAt less OffsetDateTime.now() }
         return RefreshTokens.selectAll().where(RefreshTokens.token eq refreshToken)
             .singleOrNull()?.let {
