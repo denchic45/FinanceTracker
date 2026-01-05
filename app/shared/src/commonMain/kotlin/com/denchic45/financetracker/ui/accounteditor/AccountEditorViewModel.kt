@@ -24,7 +24,6 @@ import com.denchic45.financetracker.ui.validator.CompositeValidator
 import com.denchic45.financetracker.ui.validator.Condition
 import com.denchic45.financetracker.ui.validator.Operator
 import com.denchic45.financetracker.ui.validator.ValueValidator
-import com.denchic45.financetracker.ui.validator.getIfNot
 import com.denchic45.financetracker.ui.validator.observable
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -56,7 +55,7 @@ class AccountEditorViewModel(
                 value = state::name,
                 conditions = listOf(
                     Condition(String::isNotEmpty).observable { isValid ->
-                        state.nameMessage = getIfNot(isValid) { "Name is required" }
+                        state.showNameError = !isValid
                     }
                 )
             ),
@@ -64,13 +63,7 @@ class AccountEditorViewModel(
                 value = state::balance,
                 conditions = listOf(
                     Condition(String::isNotEmpty).observable { isValid ->
-                        state.balanceMessage =
-                            getIfNot(isValid) { "Initial balance is required" }
-                    },
-                    Condition<String>({ it.toDoubleOrNull() != null }).observable { isValid ->
-                        if (!isValid && state.balance.isNotEmpty()) {
-                            state.balanceMessage = "Must be a number"
-                        }
+                        state.showBalanceError = !isValid
                     }
                 ),
                 operator = Operator.allEach()
@@ -94,7 +87,7 @@ class AccountEditorViewModel(
 
     fun onAccountNameChanged(name: String) {
         state.name = name
-        state.nameMessage = null
+        state.showNameError = false
     }
 
     fun onAccountTypeChange(type: AccountType) {
@@ -103,7 +96,7 @@ class AccountEditorViewModel(
 
     fun onBalanceChanged(balance: String) {
         if (balance.matches(currencyRegex)) state.balance = balance
-        state.balanceMessage = null
+        state.showBalanceError = false
     }
 
     fun onSaveClick() {
@@ -139,9 +132,10 @@ class EditingAccountState {
     var name by mutableStateOf("")
     var type by mutableStateOf(AccountType.ORDINARY)
     var balance by mutableStateOf("")
+
     var createTransactionForUpdateBalance by mutableStateOf(false)
-    var nameMessage: String? by mutableStateOf(null)
-    var balanceMessage: String? by mutableStateOf(null)
+    var showNameError by mutableStateOf(false)
+    var showBalanceError by mutableStateOf(false)
     var isLoading by mutableStateOf(false)
 
     val realBalance: Long

@@ -40,6 +40,8 @@ import financetracker_app.shared.generated.resources.account_update
 import financetracker_app.shared.generated.resources.check
 import financetracker_app.shared.generated.resources.common_back
 import financetracker_app.shared.generated.resources.common_name_field
+import financetracker_app.shared.generated.resources.validation_balance_required
+import financetracker_app.shared.generated.resources.validation_name_required
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -96,8 +98,11 @@ fun AccountEditorScreen(
                 onValueChange = viewModel::onAccountNameChanged,
                 label = { Text(stringResource(Res.string.common_name_field)) },
                 modifier = Modifier.fillMaxWidth(),
-                isError = state.nameMessage != null,
-                supportingText = { state.nameMessage?.let { Text(it) } })
+                isError = state.showNameError,
+                supportingText = {
+                    if (state.showNameError)
+                        Text(stringResource(Res.string.validation_name_required))
+                })
             var accountTypesExpanded by remember { mutableStateOf(false) }
             ExposedDropdownMenuBox(
                 expanded = accountTypesExpanded, onExpandedChange = { accountTypesExpanded = it }) {
@@ -135,8 +140,11 @@ fun AccountEditorScreen(
                 label = { Text(stringResource(Res.string.account_balance)) },
                 placeholder = { Text("10000 ₽") },
                 modifier = Modifier.fillMaxWidth(),
-                isError = state.balanceMessage != null,
-                supportingText = { state.balanceMessage?.let { Text(it) } },
+                isError = state.showBalanceError,
+                supportingText = {
+                    if (state.showBalanceError)
+                        Text(stringResource(Res.string.validation_balance_required))
+                },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Decimal
                 ),

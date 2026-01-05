@@ -64,7 +64,7 @@ class TransactionEditorViewModel(
     private val appEventHandler: AppEventHandler,
     private val router: AppRouter
 ) : ViewModel() {
-    val state = EditingTransactionState(transactionId == null)
+    val state = EditingTransactionState()
 
     private val fieldEditor = FieldEditor(
         mapOf(
@@ -85,13 +85,13 @@ class TransactionEditorViewModel(
                 value = state::amountText,
                 conditions = listOf(
                     Condition(String::isNotEmpty).observable { isValid ->
-                        state.amountMessage = getIfNot(isValid) { "Сумма обязательна" }
+                        state.amountErrorType = getIfNot(isValid) {
+                            EditingTransactionState.AmountErrorType.REQUIRED
+                        }
                     },
                     Condition<String>({ (it.toFloatOrNull() ?: 0F) > 0F }).observable { isValid ->
-                        if (!isValid && state.amountText.isNotEmpty()) {
-                            state.amountMessage = "Введите положительное число"
-                        } else if (isValid && state.amountMessage == "Введите положительное число") {
-                            state.amountMessage = null
+                        state.amountErrorType = getIfNot(isValid) {
+                            EditingTransactionState.AmountErrorType.MUST_BE_POSITIVE
                         }
                     }
                 ),
@@ -101,8 +101,7 @@ class TransactionEditorViewModel(
                 value = state::sourceAccount,
                 conditions = listOf(
                     Condition<AccountItem?> { it != null }.observable { isValid ->
-                        state.sourceAccountMessage =
-                            getIfNot(isValid) { "Выберите счет отправителя" }
+                        state.showSourceAccountError = !isValid
                     }
                 )
             ),
@@ -110,7 +109,7 @@ class TransactionEditorViewModel(
                 value = state::category,
                 conditions = listOf(
                     Condition<CategoryItem?> { state.transactionType == TransactionType.TRANSFER || it != null }.observable { isValid ->
-                        state.categoryMessage = getIfNot(isValid) { "Выберите категорию" }
+                        state.showCategoryError = !isValid
                     }
                 )
             ),
@@ -118,8 +117,7 @@ class TransactionEditorViewModel(
                 value = state::incomeAccount,
                 conditions = listOf(
                     Condition<AccountItem?> { state.transactionType != TransactionType.TRANSFER || it != null }.observable { isValid ->
-                        state.incomeAccountMessage =
-                            getIfNot(isValid) { "Выберите счет получателя" }
+                        state.showIncomeAccountError = !isValid
                     }
                 )
             )
@@ -128,43 +126,43 @@ class TransactionEditorViewModel(
     )
 
     init {
-            transactionId?.let {
-                observeTransactionByIdUseCase(transactionId)
-                    .take(1)
-                    .onEach { ior ->
-                        ior.onRightHasValue { transaction ->
-                            state.datetime = transaction.datetime
-                            state.amountText = transaction.amount.convertToMonetaryFormat()
-                            state.note = transaction.note
-                            state.sourceAccount = transaction.account
-                            when (transaction) {
-                                is TransactionItem.Expense -> {
-                                    state.transactionType = TransactionType.EXPENSE
-                                    state.category = transaction.category
-                                    state.tags = transaction.tags
-                                    state.incomeAccount = null
-                                }
-
-                                is TransactionItem.Income -> {
-                                    state.transactionType = TransactionType.INCOME
-                                    state.category = transaction.category
-                                    state.tags = transaction.tags
-                                    state.incomeAccount = null
-                                    state.tags = emptyList()
-                                }
-
-                                is TransactionItem.Transfer -> {
-                                    state.transactionType = TransactionType.TRANSFER
-                                    state.incomeAccount = transaction.incomeAccount
-                                    state.category = null
-                                    state.tags = emptyList()
-                                }
+        transactionId?.let {
+            observeTransactionByIdUseCase(transactionId)
+                .take(1)
+                .onEach { ior ->
+                    ior.onRightHasValue { transaction ->
+                        state.datetime = transaction.datetime
+                        state.amountText = transaction.amount.convertToMonetaryFormat()
+                        state.note = transaction.note
+                        state.sourceAccount = transaction.account
+                        when (transaction) {
+                            is TransactionItem.Expense -> {
+                                state.transactionType = TransactionType.EXPENSE
+                                state.category = transaction.category
+                                state.tags = transaction.tags
+                                state.incomeAccount = null
                             }
-                        }.onRightHasNull {
-                            router.pop()
+
+                            is TransactionItem.Income -> {
+                                state.transactionType = TransactionType.INCOME
+                                state.category = transaction.category
+                                state.tags = transaction.tags
+                                state.incomeAccount = null
+                                state.tags = emptyList()
+                            }
+
+                            is TransactionItem.Transfer -> {
+                                state.transactionType = TransactionType.TRANSFER
+                                state.incomeAccount = transaction.incomeAccount
+                                state.category = null
+                                state.tags = emptyList()
+                            }
                         }
-                    }.launchIn(viewModelScope)
-            }
+                    }.onRightHasNull {
+                        router.pop()
+                    }
+                }.launchIn(viewModelScope)
+        }
     }
 
     fun onTransactionTypeChange(type: TransactionType) {
@@ -181,17 +179,15 @@ class TransactionEditorViewModel(
 
     fun onDateChange(date: LocalDate) {
         state.datetime = date.atTime(state.datetime.time)
-        state.datetimeMessage = null
     }
 
     fun onTimeChange(time: LocalTime) {
         state.datetime = time.atDate(state.datetime.date)
-        state.datetimeMessage = null
     }
 
     fun onAmountTextChange(amountText: String) {
         if (amountText.matches(currencyRegex)) state.amountText = amountText
-        state.amountMessage = null
+        state.amountErrorType = null
     }
 
     fun onNoteChange(note: String) {
@@ -252,7 +248,7 @@ class TransactionEditorViewModel(
         router.push(NavEntry.AccountPicker(null))
         viewModelScope.launch {
             state.sourceAccount = accountPickerInteractor.getPicked()
-            state.sourceAccountMessage = null
+            state.showSourceAccountError = false
         }
     }
 
@@ -260,7 +256,7 @@ class TransactionEditorViewModel(
         router.push(NavEntry.AccountPicker(null))
         viewModelScope.launch {
             state.incomeAccount = accountPickerInteractor.getPicked()
-            state.incomeAccountMessage = null
+            state.showIncomeAccountError = false
         }
     }
 
@@ -277,7 +273,7 @@ class TransactionEditorViewModel(
         )
         viewModelScope.launch {
             state.category = categoryPickerInteractor.getPicked()
-            state.categoryMessage = null
+            state.showCategoryError = false
         }
     }
 
@@ -307,7 +303,7 @@ class TransactionEditorViewModel(
 }
 
 @Stable
-class EditingTransactionState(val isNew: Boolean) {
+class EditingTransactionState() {
     var transactionType: TransactionType by mutableStateOf(TransactionType.EXPENSE)
 
     @OptIn(ExperimentalTime::class)
@@ -324,14 +320,11 @@ class EditingTransactionState(val isNew: Boolean) {
     var tags: List<TagItem> by mutableStateOf(emptyList())
 
 
-    // 4. Validation/Error Messages
-    var amountMessage: String? by mutableStateOf(null)
-    var datetimeMessage: String? by mutableStateOf(null)
-    var sourceAccountMessage: String? by mutableStateOf(null)
-    var categoryMessage: String? by mutableStateOf(null)
-    var incomeAccountMessage: String? by mutableStateOf(null)
-    var noteMessage: String? by mutableStateOf(null)
-
+    var amountErrorType: AmountErrorType? by mutableStateOf(null)
+    var showSourceAccountError: Boolean by mutableStateOf(false)
+    var showCategoryError: Boolean by mutableStateOf(false)
+    var showIncomeAccountError: Boolean by mutableStateOf(false)
     var isLoading by mutableStateOf(false)
-}
 
+    enum class AmountErrorType { REQUIRED, MUST_BE_POSITIVE }
+}

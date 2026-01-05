@@ -1,4 +1,3 @@
 <resources>
-    <string name="app_name">Finance Tracker</string>
-
+    <string name="app_name" translatable="false">Finance Tracker</string>
 </resources>

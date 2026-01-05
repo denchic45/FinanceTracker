@@ -1,7 +1,14 @@
 package com.denchic45.financetracker.domain.model
 
+import androidx.compose.runtime.Composable
+import com.denchic45.financetracker.api.transaction.model.TransactionType
 import com.denchic45.financetracker.ui.util.convertToCurrency
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.txn_expense
+import financetracker_app.shared.generated.resources.txn_income
+import financetracker_app.shared.generated.resources.txn_transfer
 import kotlinx.datetime.LocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 sealed class TransactionItem {
 
@@ -44,3 +51,12 @@ sealed class TransactionItem {
         val incomeAccount: AccountItem
     ) : TransactionItem()
 }
+
+@Composable
+fun TransactionType.displayName() = stringResource(
+    when (this) {
+        TransactionType.EXPENSE -> Res.string.txn_expense
+        TransactionType.INCOME -> Res.string.txn_income
+        TransactionType.TRANSFER -> Res.string.txn_transfer
+    }
+)

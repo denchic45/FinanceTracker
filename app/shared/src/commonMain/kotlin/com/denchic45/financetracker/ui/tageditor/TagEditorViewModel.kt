@@ -20,7 +20,6 @@ import com.denchic45.financetracker.ui.navigation.router.pop
 import com.denchic45.financetracker.ui.validator.CompositeValidator
 import com.denchic45.financetracker.ui.validator.Condition
 import com.denchic45.financetracker.ui.validator.ValueValidator
-import com.denchic45.financetracker.ui.validator.getIfNot
 import com.denchic45.financetracker.ui.validator.observable
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -35,7 +34,7 @@ class TagEditorViewModel(
     private val appEventHandler: AppEventHandler
 ) : ViewModel() {
 
-    val state = EditingTagState(tagId == null)
+    val state = EditingTagState()
 
     private val fieldEditor = FieldEditor(
         mapOf(
@@ -50,9 +49,7 @@ class TagEditorViewModel(
                 conditions = listOf(
                     Condition(String::isNotEmpty)
                         .observable { isValid ->
-                            state.nameMessage = getIfNot(isValid) {
-                                "Название тега не может быть пустым"
-                            }
+                            state.showNameError = !isValid
                         }
                 )
             )
@@ -81,7 +78,7 @@ class TagEditorViewModel(
 
     fun onNameChange(name: String) {
         state.name = name
-        formValidator.validate()
+        state.showNameError = false
     }
 
     fun onDismissClick() = router.pop()
@@ -113,10 +110,10 @@ class TagEditorViewModel(
 }
 
 @Stable
-class EditingTagState(val isNew: Boolean) {
+class EditingTagState {
     var name: String by mutableStateOf("")
 
-    var nameMessage: String? by mutableStateOf(null)
+    var showNameError: Boolean by mutableStateOf(false)
 
     // 5. Generic UI State
     var isLoading: Boolean by mutableStateOf(false)

@@ -26,6 +26,10 @@ import com.denchic45.financetracker.ui.dialog.ConfirmDeletionDialog
 import com.denchic45.financetracker.ui.transactions.ExpenseColor
 import com.denchic45.financetracker.ui.transactions.IncomeColor
 import com.denchic45.financetracker.ui.transactions.TransferColor
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.common_delete_dialog_message
+import financetracker_app.shared.generated.resources.txn_delete_dialog_title
+import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
@@ -112,8 +116,8 @@ fun RemoveTransactionConfirmDialog(
     onDismiss: () -> Unit
 ) {
     ConfirmDeletionDialog(
-        title = "Удалить операцию?",
-        text = "Восстановление будет невозможно.",
+        title = stringResource(Res.string.txn_delete_dialog_title),
+        text = stringResource(Res.string.common_delete_dialog_message),
         onConfirm = onConfirm,
         onDismiss = onDismiss
     )

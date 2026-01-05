@@ -4,12 +4,10 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -18,12 +16,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.denchic45.financetracker.ui.RemoveTransactionConfirmDialog
 import com.denchic45.financetracker.ui.TopAppBar
 import com.denchic45.financetracker.ui.TransactionListItem
 import com.denchic45.financetracker.ui.resource.PagingItemsContent
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.common_delete
+import financetracker_app.shared.generated.resources.common_edit
+import financetracker_app.shared.generated.resources.txn_list_empty
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -40,7 +43,6 @@ fun TransactionsScreen(
 //    val isRetrying by viewModel.isRetrying.collectAsState()
     var longPressedItem by remember { mutableIntStateOf(-1) }
     var confirmToRemoveItemId by remember { mutableLongStateOf(-1) }
-    LocalContext.current
 
     Scaffold(topBar = {
         TopAppBar(
@@ -71,14 +73,14 @@ fun TransactionsScreen(
                                 expanded = longPressedItem == index,
                                 onDismissRequest = { longPressedItem == -1 }) {
                                 DropdownMenuItem(
-                                    text = { Text("Изменить") },
+                                    text = { Text(stringResource(Res.string.common_edit)) },
                                     onClick = {
                                         longPressedItem == -1
                                         viewModel.onEditTransactionClick(item.id)
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text("Удалить") },
+                                    text = { Text(stringResource(Res.string.common_delete)) },
                                     onClick = {
                                         longPressedItem == -1
                                         confirmToRemoveItemId == item.id
@@ -89,26 +91,17 @@ fun TransactionsScreen(
                     }
                 }
             },
-            emptyDataContent = { Text("Empty...") }
+            emptyDataContent = { Text(stringResource(Res.string.txn_list_empty)) }
         )
     }
 
     if (confirmToRemoveItemId != -1L) {
-        AlertDialog(
-            onDismissRequest = { confirmToRemoveItemId = -1L },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.onRemoveTransactionClick(confirmToRemoveItemId)
-                    confirmToRemoveItemId = -1L
-                }) { Text("Удалить") }
+        RemoveTransactionConfirmDialog(
+            onConfirm = {
+                viewModel.onRemoveTransactionClick(confirmToRemoveItemId)
+                confirmToRemoveItemId = -1L
             },
-            dismissButton = {
-                TextButton(onClick = {
-                    confirmToRemoveItemId = -1L
-                }) { Text("Отмена") }
-            },
-            title = { Text("Удалить операцию?") },
-            text = { Text("Операция будет удалена без возможности восстановления") }
+            onDismiss = { confirmToRemoveItemId = -1L },
         )
     }
 }

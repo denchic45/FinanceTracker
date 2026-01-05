@@ -25,23 +25,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.denchic45.financetracker.data.ApiFailure
 import com.denchic45.financetracker.data.Failure
-import com.denchic45.financetracker.data.NoConnection
-import com.denchic45.financetracker.data.ThrowableFailure
-import com.denchic45.financetracker.data.UnknownApiFailure
 import com.denchic45.financetracker.data.asFailure
+import com.denchic45.financetracker.data.getDefaultErrorMessageResource
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.common_retry
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-
-
-private val Failure.message: String
-    get() = when (val error = this) {
-        NoConnection -> "Нет подключения к интернету"
-        is ApiFailure -> "Ошибка с серевера - ${error.error.httpCode.value}"
-        is UnknownApiFailure -> "Неизвестная ошибка с сервера"
-        is ThrowableFailure -> "Неизвестная ошибка"
-    }
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
@@ -113,7 +105,7 @@ fun <T> SnackbarResourceLayout(
                     action = {
                         if (!isRetrying)
                             TextButton(onClick = onRetry) {
-                                Text("Повторить")
+                                Text(stringResource(Res.string.common_retry))
                             }
                         else CircularProgressIndicator()
                     }
@@ -141,7 +133,7 @@ fun <T> SnackbarResourceLayout(
                         dataContent(data)
                         LaunchedEffect(Unit) {
                             snackbarHostState.showSnackbar(
-                                message = failure.message,
+                                message = getString(failure.getDefaultErrorMessageResource()),
                                 duration = SnackbarDuration.Indefinite
                             )
                         }

@@ -4,9 +4,19 @@ import com.denchic45.financetracker.api.error.ApiError
 import com.denchic45.financetracker.api.response.UnknownApiException
 import com.denchic45.financetracker.api.response.bodyNullable
 import com.denchic45.financetracker.api.response.isNetworkException
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.common_error_api_forbidden
+import financetracker_app.shared.generated.resources.common_error_api_not_found
+import financetracker_app.shared.generated.resources.common_error_api_server
+import financetracker_app.shared.generated.resources.common_error_api_unhandled
+import financetracker_app.shared.generated.resources.common_error_internal
+import financetracker_app.shared.generated.resources.common_error_no_connection
+import financetracker_app.shared.generated.resources.common_error_unknown
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpStatusCode
 import kotlinx.io.IOException
+import org.jetbrains.compose.resources.StringResource
 
 
 /**
@@ -124,4 +134,18 @@ fun Failure.asThrowable(): Throwable {
         is UnknownApiFailure -> UnknownApiException(code, body)
         is ThrowableFailure -> throwable
     }
+}
+
+fun Failure.getDefaultErrorMessageResource(): StringResource = when (this) {
+    NoConnection -> Res.string.common_error_no_connection
+    is ApiFailure -> getDefaultApiErrorMessageResource()
+    is UnknownApiFailure -> Res.string.common_error_unknown
+    is ThrowableFailure -> Res.string.common_error_internal
+}
+
+fun ApiFailure.getDefaultApiErrorMessageResource(): StringResource = when (error.httpCode) {
+    HttpStatusCode.Forbidden -> Res.string.common_error_api_forbidden
+    HttpStatusCode.NotFound -> Res.string.common_error_api_not_found
+    in HttpStatusCode.InternalServerError..HttpStatusCode.InternalServerError -> Res.string.common_error_api_server
+    else -> Res.string.common_error_api_unhandled
 }

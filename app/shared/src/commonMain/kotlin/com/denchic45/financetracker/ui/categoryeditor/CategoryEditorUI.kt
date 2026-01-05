@@ -43,6 +43,7 @@ import financetracker_app.shared.generated.resources.common_save
 import financetracker_app.shared.generated.resources.icon_pick
 import financetracker_app.shared.generated.resources.txn_expense
 import financetracker_app.shared.generated.resources.txn_income
+import financetracker_app.shared.generated.resources.validation_name_required
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -126,8 +127,8 @@ fun CategoryEditorScreen(
                 value = state.name,
                 onValueChange = viewModel::onNameChange,
                 label = { Text(stringResource(Res.string.common_name_field)) },
-                isError = state.nameMessage != null,
-                supportingText = { state.nameMessage?.let { Text(it) } },
+                isError = state.showNameError,
+                supportingText = { if (state.showNameError) Text(stringResource(Res.string.validation_name_required)) },
                 modifier = Modifier.fillMaxWidth()
             )
 

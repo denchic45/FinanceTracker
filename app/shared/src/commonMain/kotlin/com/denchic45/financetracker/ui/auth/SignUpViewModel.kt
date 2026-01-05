@@ -7,10 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denchic45.financetracker.api.auth.model.SignUpRequest
-import com.denchic45.financetracker.api.error.EmailAlreadyUsed
-import com.denchic45.financetracker.api.error.InvalidRequest
-import com.denchic45.financetracker.data.ApiFailure
-import com.denchic45.financetracker.data.NoConnection
+import com.denchic45.financetracker.data.Failure
 import com.denchic45.financetracker.domain.usecase.SignUpUseCase
 import com.denchic45.financetracker.ui.validator.CompositeValidator
 import com.denchic45.financetracker.ui.validator.Condition
@@ -31,10 +28,10 @@ class SignUpViewModel(
         value = uiState::email,
         conditions = listOf(
             Condition(String::isNotEmpty).observable { isValid ->
-                uiState.emailMessage = getIfNot(isValid) { "Почта обязательна" }
+                uiState.emailErrorType = SignUpUiState.EmailErrorType.REQUIRED
             },
             Condition(String::isEmail).observable { isValid ->
-                uiState.emailMessage = getIfNot(isValid) { "Некорректная почта" }
+                uiState.emailErrorType = SignUpUiState.EmailErrorType.INVALID
             }
         ),
         operator = Operator.allEach()
@@ -44,17 +41,32 @@ class SignUpViewModel(
         value = uiState::password,
         conditions = listOf(
             Condition(String::isNotEmpty).observable { isValid ->
-                uiState.passwordMessage = getIfNot(isValid) { "Пароль обязателен" }
-            },
-            Condition<String> { it.length >= 6 }.observable { isValid ->
-                if (!isValid && uiState.password.isNotEmpty()) {
-                    uiState.passwordMessage = "Пароль должен быть не менее 6 символов"
-                } else if (isValid) {
-                    uiState.passwordMessage = null
+                uiState.passwordErrorType = getIfNot(isValid) {
+                    SignUpUiState.PasswordErrorType.REQUIRED
                 }
-            }
+            },
+            Condition<String> { it.length >= 8 }.observable { isValid ->
+                uiState.passwordErrorType = getIfNot(isValid) {
+                    SignUpUiState.PasswordErrorType.TOO_SHORT
+                }
+            },
+            Condition<String> { it.any(Char::isUpperCase) }.observable { isValid ->
+                uiState.passwordErrorType = getIfNot(isValid) {
+                    SignUpUiState.PasswordErrorType.TOO_SHORT
+                }
+            },
+            Condition<String> { it.any(Char::isDigit) }.observable { isValid ->
+                uiState.passwordErrorType = getIfNot(isValid) {
+                    SignUpUiState.PasswordErrorType.MUST_CONTAIN_DIGITS
+                }
+            },
+            Condition<String> { it.any(Char::isLetterOrDigit) }.observable { isValid ->
+                uiState.passwordErrorType = getIfNot(isValid) {
+                    SignUpUiState.PasswordErrorType.MUST_CONTAIN_DIGITS
+                }
+            },
         ),
-        operator = Operator.allEach()
+        operator = Operator.all()
     )
 
     private val formValidator = CompositeValidator(
@@ -64,14 +76,14 @@ class SignUpViewModel(
                 conditions = listOf(
                     Condition(String::isNotEmpty)
                         .observable { isValid ->
-                            uiState.firstNameMessage = getIfNot(isValid) { "Имя обязательно" }
+                            uiState.showFirstNameError = !isValid
                         }
                 )
             ),
             ValueValidator(
                 value = uiState::lastName,
                 conditions = listOf(Condition(String::isNotEmpty).observable { isValid ->
-                    uiState.lastNameMessage = getIfNot(isValid) { "Фамилия обязательна" }
+                    uiState.showLastNameError = !isValid
                 })
             ),
             emailValidator,
@@ -81,18 +93,13 @@ class SignUpViewModel(
                     ValueValidator(
                         value = uiState::retryPassword,
                         conditions = listOf(Condition(String::isNotEmpty).observable { isValid ->
-                            uiState.retryPasswordMessage =
-                                getIfNot(isValid) { "Повтор пароля обязателен" }
+                            uiState.showRetryPasswordError = !isValid
                         })
                     ),
                     ValueValidator(
                         value = uiState::retryPassword,
                         conditions = listOf(Condition<String> { it == uiState.password }.observable { isValid ->
-                            if (!isValid && uiState.retryPassword.isNotEmpty() && uiState.password.isNotEmpty()) {
-                                uiState.retryPasswordMessage = "Пароли не совпадают"
-                            } else if (isValid) {
-                                uiState.retryPasswordMessage = null
-                            }
+                            uiState.showRetryPasswordError = !isValid
                         })
                     )
                 ),
@@ -103,7 +110,7 @@ class SignUpViewModel(
     )
 
     fun validate(): Boolean {
-        uiState.errorMessage = null
+        uiState.resultError = null
         return formValidator.validate()
     }
 
@@ -112,7 +119,7 @@ class SignUpViewModel(
 
         viewModelScope.launch {
             uiState.isLoading = true
-            uiState.errorMessage = null
+            uiState.resultError = null
 
             val request = SignUpRequest(
                 firstName = uiState.firstName,
@@ -124,18 +131,7 @@ class SignUpViewModel(
             signUpUseCase(request)
                 .onSome { failure ->
                     uiState.isLoading = false
-                    uiState.errorMessage = when (failure) {
-                        NoConnection -> "Нет интернет-соединения"
-                        is ApiFailure -> {
-                            when (failure.error) {
-                                EmailAlreadyUsed -> "Почта уже используется"
-                                is InvalidRequest -> "Ошибка в веденных данных"
-                                else -> "Неизвестная ошибка"
-                            }
-                        }
-
-                        else -> "Неизвестная ошибка"
-                    }
+                    uiState.resultError = failure
 
                 }.onNone { uiState.isLoading = false }
         }
@@ -150,13 +146,16 @@ class SignUpUiState {
     var password by mutableStateOf("")
     var retryPassword by mutableStateOf("")
 
-    var firstNameMessage: String? by mutableStateOf(null)
-    var lastNameMessage: String? by mutableStateOf(null)
-    var emailMessage: String? by mutableStateOf(null)
-    var passwordMessage: String? by mutableStateOf(null)
-    var retryPasswordMessage: String? by mutableStateOf(null)
+    var showFirstNameError: Boolean by mutableStateOf(false)
+    var showLastNameError: Boolean by mutableStateOf(false)
+    var emailErrorType: EmailErrorType? by mutableStateOf(null)
+    var passwordErrorType: PasswordErrorType? by mutableStateOf(null)
+    var showRetryPasswordError: Boolean by mutableStateOf(false)
 
     // UI state for async call
     var isLoading by mutableStateOf(false)
-    var errorMessage by mutableStateOf<String?>(null)
+    var resultError by mutableStateOf<Failure?>(null)
+
+    enum class EmailErrorType { REQUIRED, INVALID }
+    enum class PasswordErrorType { REQUIRED, MUST_CONTAIN_SPECIAL_CHARACTERS, MUST_CONTAIN_DIGITS, MUST_CONTAIN_UPPERCASE_LETTER, TOO_SHORT }
 }

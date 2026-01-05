@@ -13,24 +13,23 @@ import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
-import com.denchic45.financetracker.ui.resource.UiImage
-import com.denchic45.financetracker.ui.resource.getPainter
 
 @Composable
 fun NoDataContent(
     modifier: Modifier = Modifier,
-    icon: UiImage? = null,
+    iconPainter: Painter? = null,
     title: @Composable () -> Unit,
     description: (@Composable () -> Unit)? = null,
     action: (@Composable () -> Unit)? = null
 ) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            icon?.let {
+            iconPainter?.let {
                 Image(
                     modifier = Modifier.size(172.dp).padding(bottom = 8.dp),
-                    painter = icon.getPainter(),
+                    painter = iconPainter,
                     contentDescription = null
                 )
             }

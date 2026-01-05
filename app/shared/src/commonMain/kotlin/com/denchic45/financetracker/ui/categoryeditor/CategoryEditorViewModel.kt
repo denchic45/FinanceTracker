@@ -20,7 +20,6 @@ import com.denchic45.financetracker.ui.validator.CompositeValidator
 import com.denchic45.financetracker.ui.validator.Condition
 import com.denchic45.financetracker.ui.validator.Operator
 import com.denchic45.financetracker.ui.validator.ValueValidator
-import com.denchic45.financetracker.ui.validator.getIfNot
 import com.denchic45.financetracker.ui.validator.observable
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -43,7 +42,7 @@ class CategoryEditorViewModel(
                 value = state::name,
                 conditions = listOf(
                     Condition(String::isNotEmpty).observable { isValid ->
-                        state.nameMessage = getIfNot(isValid) { "Name is required" }
+                        state.showNameError = !isValid
                     }
                 )
             )
@@ -68,7 +67,7 @@ class CategoryEditorViewModel(
 
     fun onNameChange(name: String) {
         state.name = name
-        state.nameMessage = null
+        state.showNameError = false
     }
 
     fun onIconChange(iconName: String) {
@@ -107,7 +106,7 @@ class EditingCategoryState(val categoryId: Long?) {
     var income: Boolean by mutableStateOf(false)
 
     // Validation messages
-    var nameMessage: String? by mutableStateOf(null)
+    var showNameError: Boolean by mutableStateOf(false)
 
     // Generic UI state
     var isLoading: Boolean by mutableStateOf(false)

@@ -16,12 +16,29 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import com.denchic45.financetracker.data.ApiFailure
 import com.denchic45.financetracker.data.Failure
 import com.denchic45.financetracker.data.NoConnection
 import com.denchic45.financetracker.data.ThrowableFailure
 import com.denchic45.financetracker.data.UnknownApiFailure
+import com.denchic45.financetracker.data.getDefaultErrorMessageResource
 import com.denchic45.financetracker.ui.NoDataContent
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.building_broadcast_tower
+import financetracker_app.shared.generated.resources.cancel
+import financetracker_app.shared.generated.resources.common_error_api_unhandled
+import financetracker_app.shared.generated.resources.common_error_internal
+import financetracker_app.shared.generated.resources.common_error_no_connection
+import financetracker_app.shared.generated.resources.common_retry
+import financetracker_app.shared.generated.resources.error_circle
+import financetracker_app.shared.generated.resources.lock
+import financetracker_app.shared.generated.resources.mood_puzzled
+import financetracker_app.shared.generated.resources.server_bolt
+import io.ktor.http.HttpStatusCode
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
@@ -43,12 +60,14 @@ fun <T> DefaultBothContent(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(error) {
-        val message = when (error) {
-            NoConnection -> "Нет подключения к интернету"
-            is ApiFailure -> "Ошибка с серевера - ${error.error.httpCode.value}"
-            is UnknownApiFailure -> "Неизвестная ошибка с сервера"
-            is ThrowableFailure -> "Неизвестная ошибка"
-        }
+        val message = getString(
+            when (error) {
+                NoConnection -> Res.string.common_error_no_connection
+                is ApiFailure -> Res.string.common_error_api_unhandled // TODO handle http code
+                is UnknownApiFailure -> Res.string.common_error_api_unhandled
+                is ThrowableFailure -> Res.string.common_error_internal // TODO send report
+            }
+        )
         snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Indefinite)
     }
 
@@ -60,7 +79,7 @@ fun <T> DefaultBothContent(
                         {
                             if (!retrying)
                                 TextButton(onClick = onRetry) {
-                                    Text("Повторить")
+                                    Text(stringResource(Res.string.common_retry))
                                 }
                             else CircularProgressIndicator()
                         }
@@ -84,6 +103,29 @@ fun DefaultFailedContent(failure: Failure) {
     }
 
     NoDataContent(
-        title = { Text("Неизвестная ошибка") }
+        iconPainter = getDefaultIcon(failure),
+        title = { Text(getDefaultMessage(failure)) }
     )
 }
+
+@Composable
+fun getDefaultIcon(failure: Failure): Painter = painterResource(
+    when (failure) {
+        is ApiFailure -> when (failure.error.httpCode) {
+            HttpStatusCode.BadRequest -> Res.drawable.cancel
+            HttpStatusCode.Forbidden -> Res.drawable.lock
+            HttpStatusCode.NotFound -> Res.drawable.mood_puzzled
+            in HttpStatusCode.InternalServerError..HttpStatusCode.InternalServerError -> Res.drawable.server_bolt
+            else -> Res.drawable.error_circle
+        }
+
+        NoConnection -> Res.drawable.building_broadcast_tower
+        is ThrowableFailure,
+        is UnknownApiFailure -> Res.drawable.error_circle
+    }
+)
+
+@Composable
+fun getDefaultMessage(failure: Failure): String = stringResource(
+    failure.getDefaultErrorMessageResource()
+)

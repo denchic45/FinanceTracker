@@ -5,9 +5,15 @@ import com.denchic45.financetracker.data.Failure
 import com.denchic45.financetracker.data.NoConnection
 import com.denchic45.financetracker.data.ThrowableFailure
 import com.denchic45.financetracker.data.UnknownApiFailure
+import com.denchic45.financetracker.data.getDefaultApiErrorMessageResource
 import com.denchic45.financetracker.ui.resource.UiImage
 import com.denchic45.financetracker.ui.resource.UiText
 import com.denchic45.financetracker.ui.resource.uiTextOf
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.common_error_api_unhandled
+import financetracker_app.shared.generated.resources.common_error_internal
+import financetracker_app.shared.generated.resources.common_error_no_connection
+import financetracker_app.shared.generated.resources.common_loading_long
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -33,7 +39,7 @@ class AppEventHandler {
 
     fun showLongLoading(
         coroutineScope: CoroutineScope,
-        state: LoadingState = LoadingState(uiTextOf("Требуется больше времени..."))
+        state: LoadingState = LoadingState(uiTextOf(Res.string.common_loading_long))
     ) {
         loadingJob?.cancel()
         loadingJob = coroutineScope.launch {
@@ -60,21 +66,19 @@ class AppEventHandler {
         failure: Failure,
         onApiFailureHandle: (ApiFailure) -> AppUIEvent = { defaultApiFailure(it) }
     ) = when (failure) {
-        NoConnection -> AppUIEvent.Toast(uiTextOf("No internet connection"))
-        is UnknownApiFailure -> AppUIEvent.Toast(uiTextOf("Unknown API error"))
+        NoConnection -> AppUIEvent.Toast(uiTextOf(Res.string.common_error_no_connection))
+        is UnknownApiFailure -> AppUIEvent.Toast(uiTextOf(Res.string.common_error_api_unhandled))
         is ApiFailure -> onApiFailureHandle(failure)
         is ThrowableFailure -> AppUIEvent.AlertMessage(
-            title = uiTextOf("Throwable error"),
+            title = uiTextOf(Res.string.common_error_internal),
             text = uiTextOf(failure.throwable.message.orEmpty())
         )
     }
 
     private fun defaultApiFailure(apiFailure: ApiFailure): AppUIEvent {
-        return when (apiFailure.error) {
-            else -> {
-                AppUIEvent.Toast(uiTextOf("Unhandled API error"))
-            }
-        }
+        return AppUIEvent.AlertMessage(
+            uiTextOf(apiFailure.getDefaultApiErrorMessageResource())
+        )
     }
 
     suspend fun sendEvent(event: AppUIEvent) {

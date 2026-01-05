@@ -21,6 +21,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
@@ -47,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -55,6 +57,7 @@ import com.denchic45.financetracker.api.transaction.model.TransactionType
 import com.denchic45.financetracker.domain.model.AccountItem
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TagItem
+import com.denchic45.financetracker.domain.model.displayName
 import com.denchic45.financetracker.ui.CurrencyVisualTransformation
 import com.denchic45.financetracker.ui.PlainTextTextField
 import com.denchic45.financetracker.ui.RemoveTransactionConfirmDialog
@@ -64,9 +67,18 @@ import financetracker_app.shared.generated.resources.calendar_event
 import financetracker_app.shared.generated.resources.check
 import financetracker_app.shared.generated.resources.clock
 import financetracker_app.shared.generated.resources.common_back
+import financetracker_app.shared.generated.resources.common_cancel
+import financetracker_app.shared.generated.resources.common_ok
 import financetracker_app.shared.generated.resources.common_save
+import financetracker_app.shared.generated.resources.common_select
+import financetracker_app.shared.generated.resources.common_time_input_dialog_title
 import financetracker_app.shared.generated.resources.tags
+import financetracker_app.shared.generated.resources.tags_title
+import financetracker_app.shared.generated.resources.txn_category_required
+import financetracker_app.shared.generated.resources.txn_income_account_hint
 import financetracker_app.shared.generated.resources.txn_new
+import financetracker_app.shared.generated.resources.txn_note_field_hint
+import financetracker_app.shared.generated.resources.txn_source_account_hint
 import financetracker_app.shared.generated.resources.txn_update
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -108,12 +120,12 @@ fun TransactionEditorScreen(
                     )
                     showDatePicker = false
                 }) {
-                    Text("OK")
+                    Text(stringResource(Res.string.common_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
+                    Text(stringResource(Res.string.common_cancel))
                 }
             }
         ) {
@@ -129,7 +141,7 @@ fun TransactionEditorScreen(
         )
         AlertDialog(
             onDismissRequest = { showTimePicker = false },
-            title = { Text("Выберите время") },
+            title = { Text(stringResource(Res.string.common_time_input_dialog_title)) },
             text = {
                 TimeInput(timePickerState)
             },
@@ -137,11 +149,11 @@ fun TransactionEditorScreen(
                 Button(onClick = {
                     showTimePicker = false
                     viewModel.onTimeChange(LocalTime(timePickerState.hour, timePickerState.minute))
-                }) { Text("Выбрать") }
+                }) { Text(stringResource(Res.string.common_select)) }
             },
             dismissButton = {
                 TextButton(onClick = { showTimePicker = false }) {
-                    Text("Отмена")
+                    Text(stringResource(Res.string.common_cancel))
                 }
             }
         )
@@ -213,7 +225,7 @@ fun TransactionEditorScreen(
                 onValueChange = viewModel::onAmountTextChange,
                 textStyle = MaterialTheme.typography.headlineLarge.copy(textAlign = TextAlign.Center),
                 placeholderText = "0.00 ₽",
-                isError = state.amountMessage != null,
+                isError = state.amountErrorType != null,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Decimal
@@ -254,23 +266,19 @@ fun TransactionEditorScreen(
                 )
             }
 
-            state.datetimeMessage?.let {
-                Text(it, color = MaterialTheme.colorScheme.error)
-            }
-
             AccountSelector(
-                label = if (state.transactionType == TransactionType.TRANSFER) "Source Account" else "Account",
+                label = stringResource(if (state.transactionType == TransactionType.TRANSFER) Res.string.txn_source_account_hint else Res.string.txn_income_account_hint),
                 selectedItem = state.sourceAccount,
                 onClick = viewModel::onSourceAccountPickerClick,
-                errorMessage = state.sourceAccountMessage
+                isError = state.showSourceAccountError
             )
 
             if (state.transactionType == TransactionType.TRANSFER) {
                 AccountSelector(
-                    label = "Income Account",
+                    label = stringResource(Res.string.txn_income_account_hint),
                     selectedItem = state.incomeAccount,
                     onClick = viewModel::onIncomeAccountPickerClick,
-                    errorMessage = state.incomeAccountMessage
+                    isError = state.showIncomeAccountError
                 )
             }
 
@@ -278,16 +286,15 @@ fun TransactionEditorScreen(
                 CategorySelector(
                     selectedItem = state.category,
                     onClick = viewModel::onCategoryPickerClick,
-                    errorMessage = state.categoryMessage,
+                    isError = state.showCategoryError,
                 )
             }
 
             OutlinedTextField(
                 value = state.note,
                 onValueChange = viewModel::onNoteChange,
-                label = { Text("Note") },
-                isError = state.noteMessage != null,
-                supportingText = { if (state.noteMessage != null) Text(state.noteMessage!!) },
+                label = { Text(stringResource(Res.string.txn_note_field_hint)) },
+                supportingText = { },
                 modifier = Modifier.fillMaxWidth(),
                 maxLines = 3
             )
@@ -329,14 +336,7 @@ private fun TransactionTypeSelector(
                     role = Role.RadioButton
                 )
             ) {
-                Text(
-                    text = when (type) {
-                        TransactionType.EXPENSE -> "Expense"
-                        TransactionType.INCOME -> "Income"
-                        TransactionType.TRANSFER -> "Transfer"
-                    },
-                    maxLines = 1
-                )
+                Text(type.displayName())
             }
         }
     }
@@ -347,9 +347,15 @@ private fun AccountSelector(
     label: String,
     selectedItem: AccountItem?,
     onClick: () -> Unit,
-    errorMessage: String?,
+    isError: Boolean,
 ) {
-    Card(onClick = onClick) {
+    Card(
+        onClick = onClick,
+        colors = if (isError) CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.onErrorContainer
+        ) else CardDefaults.cardColors()
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -357,20 +363,27 @@ private fun AccountSelector(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(label)
-            Text(selectedItem?.name ?: "Select Account")
+            Text(
+                selectedItem?.name ?: label,
+                color = if (isError) MaterialTheme.colorScheme.error else Color.Unspecified
+            )
         }
     }
-    if (errorMessage != null) Text(errorMessage, color = MaterialTheme.colorScheme.error)
 }
 
 @Composable
 private fun CategorySelector(
     selectedItem: CategoryItem?,
     onClick: () -> Unit,
-    errorMessage: String?
+    isError: Boolean
 ) {
-    Card(onClick = onClick) {
+    Card(
+        onClick = onClick,
+        colors = if (isError) CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.onErrorContainer
+        ) else CardDefaults.cardColors()
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -378,11 +391,12 @@ private fun CategorySelector(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Category")
-            Text(selectedItem?.name ?: "Select Category")
+            Text(
+                selectedItem?.name ?: stringResource(Res.string.txn_category_required),
+                color = if (isError) MaterialTheme.colorScheme.error else Color.Unspecified
+            )
         }
     }
-    if (errorMessage != null) Text(errorMessage, color = MaterialTheme.colorScheme.error)
 }
 
 @Composable
@@ -395,7 +409,7 @@ private fun TagsSelector(
         leadingContent = {
             Icon(
                 painter = painterResource(Res.drawable.tags),
-                contentDescription = "Tags",
+                contentDescription = stringResource(Res.string.tags_title),
             )
         },
         headlineContent = {
@@ -403,7 +417,7 @@ private fun TagsSelector(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                if (selectedTags.isEmpty()) Text("Теги")
+                if (selectedTags.isEmpty()) Text(stringResource(Res.string.tags_title))
 
                 selectedTags.forEach { tag ->
                     AssistChip(

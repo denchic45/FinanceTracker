@@ -42,6 +42,7 @@ import com.denchic45.financetracker.ui.categorypicker.CategoryPickerSheet
 import com.denchic45.financetracker.ui.navigation.BottomSheetSceneStrategy
 import com.denchic45.financetracker.ui.navigation.SimpleOverlaySceneStrategy
 import com.denchic45.financetracker.ui.resource.get
+import com.denchic45.financetracker.ui.resource.getSuspended
 import com.denchic45.financetracker.ui.tagdetails.TagDetailsSheet
 import com.denchic45.financetracker.ui.tageditor.TagEditorDialog
 import com.denchic45.financetracker.ui.tags.TagsScreen
@@ -51,7 +52,10 @@ import com.denchic45.financetracker.ui.toast.ToastManager
 import com.denchic45.financetracker.ui.transactiondetails.TransactionDetailsSheet
 import com.denchic45.financetracker.ui.transactioneditor.TransactionEditorScreen
 import com.denchic45.financetracker.ui.transactions.TransactionsScreen
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.common_ok
 import kotlinx.coroutines.flow.Flow
+import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
@@ -196,7 +200,7 @@ fun HandleAppEvent(eventFlow: Flow<AppUIEvent>) {
                 is AppUIEvent.AlertMessage -> showAlertDialog = event
 
                 is AppUIEvent.Toast -> {
-                    toastManager.showToast(event.message, ToastDurationType.SHORT)
+                    toastManager.showToast(event.message.getSuspended(), ToastDurationType.SHORT)
                 }
             }
         }
@@ -209,7 +213,7 @@ fun HandleAppEvent(eventFlow: Flow<AppUIEvent>) {
             text = { event.text?.let { Text(it.get()) } },
             confirmButton = {
                 TextButton(onClick = { showAlertDialog = null }) {
-                    Text("ОК")
+                    Text(stringResource(Res.string.common_ok))
                 }
             })
     }
