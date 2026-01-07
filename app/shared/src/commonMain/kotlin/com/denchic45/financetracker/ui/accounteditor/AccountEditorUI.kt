@@ -37,7 +37,7 @@ import financetracker_app.shared.generated.resources.account_balance
 import financetracker_app.shared.generated.resources.account_new
 import financetracker_app.shared.generated.resources.account_type
 import financetracker_app.shared.generated.resources.account_update
-import financetracker_app.shared.generated.resources.arrow_left
+import financetracker_app.shared.generated.resources.arrow_back
 import financetracker_app.shared.generated.resources.check
 import financetracker_app.shared.generated.resources.common_back
 import financetracker_app.shared.generated.resources.common_name_field
@@ -74,7 +74,7 @@ fun AccountEditorScreen(
                     else viewModel.onDismissClick()
                 }) {
                     Icon(
-                        painter = painterResource(Res.drawable.arrow_left),
+                        painter = painterResource(Res.drawable.arrow_back),
                         contentDescription = stringResource(Res.string.common_back)
                     )
                 }

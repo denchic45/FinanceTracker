@@ -32,7 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.ui.categorizedIcons
 import financetracker_app.shared.generated.resources.Res
-import financetracker_app.shared.generated.resources.arrow_left
+import financetracker_app.shared.generated.resources.arrow_back
 import financetracker_app.shared.generated.resources.category_new
 import financetracker_app.shared.generated.resources.category_update
 import financetracker_app.shared.generated.resources.check
@@ -74,7 +74,7 @@ fun CategoryEditorScreen(
                 navigationIcon = {
                     IconButton(onClick = viewModel::onDismissClick) {
                         Icon(
-                            painterResource(Res.drawable.arrow_left),
+                            painterResource(Res.drawable.arrow_back),
                             contentDescription = stringResource(Res.string.common_back)
                         )
                     }

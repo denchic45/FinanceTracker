@@ -383,7 +383,7 @@ fun EditableDetailRow(
 fun TransactionDetailsOutcomePreview() {
     // Моковые данные
     val mockAccount = AccountItem(UUID.randomUUID(), "Тинькофф Black", AccountType.ORDINARY, 500000)
-    val mockCategory = CategoryItem(1, "Продукты", "food", false)
+    val mockCategory = CategoryItem(1, "Продукты", "burger", false)
     val mockTransaction = TransactionItem.Expense(
         id = 1,
         amount = 12550, // 125.50

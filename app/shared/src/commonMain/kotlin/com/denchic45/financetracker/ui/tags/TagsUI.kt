@@ -20,7 +20,7 @@ import com.denchic45.financetracker.domain.model.TagItem
 import com.denchic45.financetracker.ui.TagListItem
 import com.denchic45.financetracker.ui.resource.CacheableResourceListContent
 import financetracker_app.shared.generated.resources.Res
-import financetracker_app.shared.generated.resources.arrow_left
+import financetracker_app.shared.generated.resources.arrow_back
 import financetracker_app.shared.generated.resources.tag_add
 import financetracker_app.shared.generated.resources.tags_title
 import org.jetbrains.compose.resources.painterResource
@@ -37,7 +37,7 @@ fun TagsScreen(viewModel: TagsViewModel = koinViewModel()) {
         TopAppBar(
             navigationIcon = {
                 IconButton(onClick = viewModel::onDismissClick) {
-                    Icon(painterResource(Res.drawable.arrow_left), null)
+                    Icon(painterResource(Res.drawable.arrow_back), null)
                 }
             },
             title = { Text(stringResource(Res.string.tags_title)) }

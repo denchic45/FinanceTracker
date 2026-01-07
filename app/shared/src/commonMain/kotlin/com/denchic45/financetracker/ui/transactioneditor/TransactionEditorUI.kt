@@ -59,9 +59,11 @@ import com.denchic45.financetracker.domain.model.displayName
 import com.denchic45.financetracker.ui.CurrencyVisualTransformation
 import com.denchic45.financetracker.ui.PlainTextTextField
 import com.denchic45.financetracker.ui.RemoveTransactionConfirmDialog
+import com.denchic45.financetracker.ui.accounts.AccountTypeIcon
+import com.denchic45.financetracker.ui.categorizedIcons
 import com.denchic45.financetracker.ui.util.formattedDateTime
 import financetracker_app.shared.generated.resources.Res
-import financetracker_app.shared.generated.resources.arrow_left
+import financetracker_app.shared.generated.resources.arrow_back
 import financetracker_app.shared.generated.resources.calendar_event
 import financetracker_app.shared.generated.resources.check
 import financetracker_app.shared.generated.resources.clock
@@ -183,7 +185,7 @@ fun TransactionEditorScreen(
                 navigationIcon = {
                     IconButton(onClick = viewModel::onDismissClick) {
                         Icon(
-                            painterResource(Res.drawable.arrow_left),
+                            painterResource(Res.drawable.arrow_back),
                             contentDescription = stringResource(Res.string.common_back)
                         )
                     }
@@ -359,9 +361,12 @@ private fun AccountSelector(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            selectedItem?.let {
+                AccountTypeIcon(selectedItem.type)
+                Spacer(Modifier.width(8.dp))
+            }
             Text(
                 selectedItem?.name ?: label,
                 color = if (isError) MaterialTheme.colorScheme.error else Color.Unspecified
@@ -387,9 +392,12 @@ private fun CategorySelector(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            selectedItem?.let {
+                Icon(painterResource(categorizedIcons.getValue(selectedItem.iconName)), null)
+                Spacer(Modifier.width(8.dp))
+            }
             Text(
                 selectedItem?.name ?: stringResource(Res.string.txn_category_required),
                 color = if (isError) MaterialTheme.colorScheme.error else Color.Unspecified
