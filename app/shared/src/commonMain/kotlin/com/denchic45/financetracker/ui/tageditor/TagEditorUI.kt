@@ -31,7 +31,7 @@ import financetracker_app.shared.generated.resources.tag_update
 import financetracker_app.shared.generated.resources.validation_name_required
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)

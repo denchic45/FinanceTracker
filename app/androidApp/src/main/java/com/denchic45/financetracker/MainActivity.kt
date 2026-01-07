@@ -10,7 +10,7 @@ import com.denchic45.financetracker.ui.main.RootContainer
 import com.denchic45.financetracker.ui.splash.Screen
 import com.denchic45.financetracker.ui.splash.SplashViewModel
 import com.denchic45.financetracker.ui.theme.FinanceTrackerTheme
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

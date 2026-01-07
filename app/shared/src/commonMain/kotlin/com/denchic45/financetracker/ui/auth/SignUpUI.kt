@@ -49,7 +49,7 @@ import financetracker_app.shared.generated.resources.validation_passwords_must_c
 import financetracker_app.shared.generated.resources.validation_passwords_not_match
 import financetracker_app.shared.generated.resources.validation_repeat_password_required
 import org.jetbrains.compose.resources.stringResource
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable

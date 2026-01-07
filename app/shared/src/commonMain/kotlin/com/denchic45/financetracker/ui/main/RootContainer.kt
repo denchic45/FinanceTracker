@@ -56,7 +56,7 @@ import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.common_ok
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.compose.koinInject
 
 

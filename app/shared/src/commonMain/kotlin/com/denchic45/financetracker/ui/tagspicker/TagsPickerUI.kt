@@ -31,7 +31,7 @@ import financetracker_app.shared.generated.resources.tag_add
 import financetracker_app.shared.generated.resources.tag_list_empty
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 
