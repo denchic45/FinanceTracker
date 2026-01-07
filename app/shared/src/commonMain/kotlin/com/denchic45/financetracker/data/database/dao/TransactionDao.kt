@@ -8,6 +8,7 @@ import androidx.room.Upsert
 import com.denchic45.financetracker.data.database.entity.AggregatedTransactionEntity
 import com.denchic45.financetracker.data.database.entity.TransactionEntity
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 @Dao
 interface TransactionDao {
@@ -82,4 +83,7 @@ interface TransactionDao {
 
     @Query("DELETE FROM `transaction` WHERE category_id = :categoryId")
     fun deleteByCategoryId(categoryId: Long)
+
+    @Query("SELECT account_id FROM `transaction` WHERE transaction_id = :transactionId")
+    fun getAccountIdByTransactionId(transactionId: Long): UUID
 }

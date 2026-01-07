@@ -6,6 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import androidx.room.withTransaction
+import com.denchic45.financetracker.api.account.AccountApi
 import com.denchic45.financetracker.api.transaction.TransactionApi
 import com.denchic45.financetracker.api.transaction.model.AbstractTransactionRequest
 import com.denchic45.financetracker.api.transaction.model.AbstractTransactionResponse
@@ -40,6 +41,7 @@ import kotlinx.coroutines.flow.map
 
 class TransactionRepository(
     private val transactionApi: TransactionApi,
+    private val accountApi: AccountApi,
     private val database: AppDatabase,
     private val transactionDao: TransactionDao,
     private val accountDao: AccountDao,
@@ -165,7 +167,13 @@ class TransactionRepository(
     suspend fun remove(transactionId: Long): EmptyRequestResult {
         return safeFetchForEmptyResult { transactionApi.delete(transactionId) }
             .onNone {
-                database.withTransaction { transactionDao.deleteById(transactionId) }
+           database.withTransaction {
+               val accountId = transactionDao.getAccountIdByTransactionId(transactionId)
+               database.withTransaction { transactionDao.deleteById(transactionId) }
+               accountApi.getById(accountId).onRight { account ->
+                   accountDao.upsert(account.toAccountEntity())
+               } // TODO make fetch only account balance
+           }
             }
     }
 }
