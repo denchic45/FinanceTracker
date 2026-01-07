@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,8 +20,10 @@ import com.denchic45.financetracker.domain.model.TagItem
 import com.denchic45.financetracker.ui.TagListItem
 import com.denchic45.financetracker.ui.resource.CacheableResourceListContent
 import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.arrow_left
 import financetracker_app.shared.generated.resources.tag_add
 import financetracker_app.shared.generated.resources.tags_title
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -37,7 +37,7 @@ fun TagsScreen(viewModel: TagsViewModel = koinViewModel()) {
         TopAppBar(
             navigationIcon = {
                 IconButton(onClick = viewModel::onDismissClick) {
-                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, null)
+                    Icon(painterResource(Res.drawable.arrow_left), null)
                 }
             },
             title = { Text(stringResource(Res.string.tags_title)) }

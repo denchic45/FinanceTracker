@@ -7,11 +7,11 @@ coreKtx = "1.17.0"
 lifecycleRuntimeKtx = "2.9.3"
 activityCompose = "1.12.2"
 composeBom = "2025.12.01"
-jetbrainsCompose = "1.11.0-alpha01"
-uiTooling = "1.10.0"
+jetbrainsCompose = "1.10.0-rc02"
+composeUi = "1.10.0"
+#uiTooling = "1.10.0"
 adaptive = "1.2.0"
 icondialog = "3.3.0"
-materialIconsExtended = "1.7.8"
 navigation3 = "1.0.0"
 lifecycleViewmodelNav3 = "2.10.0-rc01"
 paging = "3.3.6"
@@ -34,15 +34,17 @@ androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecyc
 # Compose BOM & Base UI
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+compose-ui = { group = "androidx.compose.ui", name = "ui" }
+activity-compose = { group = "androidx.activity", name = "activity-compose" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3" } # Primary Material3 dependency
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "composeUi" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
 compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "jetbrainsCompose" }
+compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "jetbrainsCompose" }
 
 # Compose Material & Adaptive Layout
-androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+#androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 icondialog = { module = "com.maltaisn:icondialog", version.ref = "icondialog" }
 androidx-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "adaptive" }
 androidx-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version.ref = "adaptive" }
@@ -79,7 +81,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 
 # Debugging (for debugImplementation)
-androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "uiTooling" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "composeUi" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 
 financetracker-common = { module = "com.denchic45:financetracker-common" }
@@ -88,16 +90,15 @@ financetracker-common = { module = "com.denchic45:financetracker-common" }
 # Compose UI (Core & Activity)
 compose-ui = [
     "androidx-activity-compose",
-    "androidx-ui",
+    "compose-ui",
+    "activity-compose",
     "androidx-ui-graphics",
-    "androidx-compose-ui-tooling",
     "androidx-ui-tooling-preview",
 ]
 
 # Compose Material3 & Extensions
 compose-material = [
     "androidx-material3",
-    "androidx-material-icons-extended",
     "icondialog",
 ]
 

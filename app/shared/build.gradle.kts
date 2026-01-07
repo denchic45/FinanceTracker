@@ -62,6 +62,7 @@ kotlin {
 
         commonMain.dependencies {
             implementation(libs.compose.resources)
+            implementation(libs.compose.backhandler)
             implementation(libs.androidx.datastore.preferences)
 
             // Networking & Image Loading
@@ -72,30 +73,39 @@ kotlin {
             implementation(libs.koin.compose)
         }
 
-        androidMain.dependencies {
-            implementation(libs.financetracker.common)
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.financetracker.common)
 
-            // Android Core & Lifecycle
-            implementation(libs.androidx.core.ktx)
-            implementation(libs.androidx.lifecycle.runtime.ktx)
+                // Android Core & Lifecycle
+                implementation(libs.androidx.core.ktx)
+                implementation(libs.androidx.lifecycle.runtime.ktx)
 
-            // Compose BOM & UI
-            implementation(project.dependencies.platform(libs.androidx.compose.bom))
-            implementation(libs.bundles.compose.ui)
+                // Compose BOM & UI
+                implementation(project.dependencies.platform(libs.androidx.compose.bom))
+                implementation(libs.bundles.compose.ui)
 //            implementation(libs.compose.resources)
 
-            // Compose Material & Adaptive Layout
-            implementation(libs.bundles.compose.material)
-            implementation(libs.bundles.compose.adaptive)
+                // Compose Material & Adaptive Layout
+                implementation(libs.bundles.compose.material)
+                implementation(libs.bundles.compose.adaptive)
 
-            // Navigation & Paging
-            implementation(libs.bundles.navigation)
+                // Navigation & Paging
+                implementation(libs.bundles.navigation)
 
-            implementation(libs.bundles.paging)
+                implementation(libs.bundles.paging)
 
-            // Data Persistence (Room & Datastore)
-            implementation(libs.bundles.room)
-            implementation(libs.bundles.testing)
+                // Data Persistence (Room & Datastore)
+                implementation(libs.bundles.room)
+                implementation(libs.bundles.testing)
+            }
+        }
+
+        val androidDebug by creating {
+            dependsOn(androidMain)
+            dependencies {
+                implementation(libs.androidx.compose.ui.tooling)
+            }
         }
     }
 

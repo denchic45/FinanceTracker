@@ -1,13 +1,10 @@
 package com.denchic45.financetracker.ui.accounteditor
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +25,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationEventHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.denchic45.financetracker.api.account.model.AccountType
 import com.denchic45.financetracker.domain.model.displayName
 import com.denchic45.financetracker.ui.CurrencyVisualTransformation
@@ -37,6 +37,7 @@ import financetracker_app.shared.generated.resources.account_balance
 import financetracker_app.shared.generated.resources.account_new
 import financetracker_app.shared.generated.resources.account_type
 import financetracker_app.shared.generated.resources.account_update
+import financetracker_app.shared.generated.resources.arrow_left
 import financetracker_app.shared.generated.resources.check
 import financetracker_app.shared.generated.resources.common_back
 import financetracker_app.shared.generated.resources.common_name_field
@@ -73,7 +74,7 @@ fun AccountEditorScreen(
                     else viewModel.onDismissClick()
                 }) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        painter = painterResource(Res.drawable.arrow_left),
                         contentDescription = stringResource(Res.string.common_back)
                     )
                 }
@@ -153,7 +154,10 @@ fun AccountEditorScreen(
         }
     }
 
-    BackHandler(viewModel.hasChanges()) {
+    NavigationEventHandler(
+        state = rememberNavigationEventState(NavigationEventInfo.None),
+        isBackEnabled = viewModel.hasChanges()
+    ) {
         showDiscardConfirmation = true
     }
 

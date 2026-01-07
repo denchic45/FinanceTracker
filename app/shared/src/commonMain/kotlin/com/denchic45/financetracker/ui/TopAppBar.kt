@@ -1,13 +1,14 @@
 package com.denchic45.financetracker.ui
 
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.arrow_left
+import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,6 +27,6 @@ fun TopAppBar(
 @Composable
 fun NavigationBackIcon(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
-        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+        Icon(painterResource(Res.drawable.arrow_left), contentDescription = "Back")
     }
 }

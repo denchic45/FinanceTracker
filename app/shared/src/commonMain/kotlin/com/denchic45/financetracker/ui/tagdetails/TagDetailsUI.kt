@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -36,10 +34,11 @@ import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.common_delete
 import financetracker_app.shared.generated.resources.common_edit
 import financetracker_app.shared.generated.resources.edit
+import financetracker_app.shared.generated.resources.tag
 import financetracker_app.shared.generated.resources.trash
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 
@@ -89,7 +88,7 @@ private fun TagDetailsContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            imageVector = Icons.AutoMirrored.Outlined.Label,
+            painter = painterResource(Res.drawable.tag),
             contentDescription = tag.name,
             modifier = Modifier.size(72.dp),
             tint = MaterialTheme.colorScheme.primary

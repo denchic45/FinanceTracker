@@ -6,9 +6,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -31,8 +28,11 @@ import androidx.navigation3.ui.NavDisplay
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.password_hide_field
 import financetracker_app.shared.generated.resources.password_show_field
+import financetracker_app.shared.generated.resources.visibility
+import financetracker_app.shared.generated.resources.visibility_off
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AuthScreen() {
@@ -112,13 +112,15 @@ fun PasswordField(
         ),
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
-            val image = if (passwordVisible)
-                Icons.Filled.Visibility
-            else Icons.Filled.VisibilityOff
+            val image = painterResource(
+                if (passwordVisible)
+                    Res.drawable.visibility
+                else Res.drawable.visibility_off
+            )
 
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 Icon(
-                    imageVector = image,
+                    painter = image,
                     contentDescription = stringResource(if (passwordVisible) Res.string.password_hide_field else Res.string.password_show_field)
                 )
             }

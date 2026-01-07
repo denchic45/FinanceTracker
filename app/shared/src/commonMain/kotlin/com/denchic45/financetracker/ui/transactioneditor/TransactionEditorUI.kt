@@ -15,8 +15,6 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
@@ -63,6 +61,7 @@ import com.denchic45.financetracker.ui.PlainTextTextField
 import com.denchic45.financetracker.ui.RemoveTransactionConfirmDialog
 import com.denchic45.financetracker.ui.util.formattedDateTime
 import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.arrow_left
 import financetracker_app.shared.generated.resources.calendar_event
 import financetracker_app.shared.generated.resources.check
 import financetracker_app.shared.generated.resources.clock
@@ -88,7 +87,7 @@ import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -184,7 +183,7 @@ fun TransactionEditorScreen(
                 navigationIcon = {
                     IconButton(onClick = viewModel::onDismissClick) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            painterResource(Res.drawable.arrow_left),
                             contentDescription = stringResource(Res.string.common_back)
                         )
                     }

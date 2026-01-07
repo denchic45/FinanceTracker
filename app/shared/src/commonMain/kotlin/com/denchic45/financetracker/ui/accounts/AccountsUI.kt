@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,6 +22,8 @@ import com.denchic45.financetracker.ui.accountdetails.RemoveAccountConfirmDialog
 import com.denchic45.financetracker.ui.resource.CacheableResourceListContent
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.accounts_title
+import financetracker_app.shared.generated.resources.add
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import java.util.UUID
@@ -51,7 +51,7 @@ fun AccountsScreen(viewModel: AccountsViewModel = koinViewModel()) {
             title = { Text(stringResource(Res.string.accounts_title)) },
             actions = {
                 IconButton(onClick = viewModel::onAddClick) {
-                    Icon(Icons.Default.Add, null)
+                    Icon(painterResource(Res.drawable.add), null)
                 }
             })
     }) { padding ->

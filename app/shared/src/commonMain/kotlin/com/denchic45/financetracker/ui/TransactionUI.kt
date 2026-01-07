@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,7 +26,9 @@ import com.denchic45.financetracker.ui.transactions.IncomeColor
 import com.denchic45.financetracker.ui.transactions.TransferColor
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.common_delete_dialog_message
+import financetracker_app.shared.generated.resources.list
 import financetracker_app.shared.generated.resources.txn_delete_dialog_title
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 
@@ -70,7 +70,7 @@ fun TransactionListItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            Icons.AutoMirrored.Filled.ListAlt,
+            painterResource(Res.drawable.list),
             contentDescription = null,
             tint = amountColor,
             modifier = Modifier

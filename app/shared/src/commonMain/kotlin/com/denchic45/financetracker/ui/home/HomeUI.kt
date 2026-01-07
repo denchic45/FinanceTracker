@@ -11,13 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -60,6 +59,7 @@ import com.denchic45.financetracker.ui.util.convertToCurrency
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.account_add
 import financetracker_app.shared.generated.resources.accounts_title
+import financetracker_app.shared.generated.resources.add
 import financetracker_app.shared.generated.resources.common_all
 import financetracker_app.shared.generated.resources.home_general_balance
 import financetracker_app.shared.generated.resources.txn_expense
@@ -69,8 +69,9 @@ import financetracker_app.shared.generated.resources.txn_profit
 import financetracker_app.shared.generated.resources.txns_title
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import java.util.UUID
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -154,7 +155,7 @@ fun HomeScreen(
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Icon(Icons.Default.Add, null)
+                                        Icon(painterResource(Res.drawable.add), null)
                                         Spacer(Modifier.width(8.dp))
                                         Text(stringResource(Res.string.account_add))
                                     }

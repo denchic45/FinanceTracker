@@ -4,11 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Note
-import androidx.compose.material.icons.outlined.CreditCard
-import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.Savings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -29,6 +24,11 @@ import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.account_type
 import financetracker_app.shared.generated.resources.common_delete
 import financetracker_app.shared.generated.resources.common_edit
+import financetracker_app.shared.generated.resources.credit_card
+import financetracker_app.shared.generated.resources.more_vert
+import financetracker_app.shared.generated.resources.note
+import financetracker_app.shared.generated.resources.pig_money
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -52,7 +52,7 @@ fun AccountListItem(account: AccountItem, onEditClick: () -> Unit, onRemoveClick
         trailingContent = {
             var showTrailingMenu by remember { mutableStateOf(false) }
             IconButton(onClick = { showTrailingMenu = true }) {
-                Icon(Icons.Outlined.MoreVert, null)
+                Icon(painterResource(Res.drawable.more_vert), null)
             }
 
             DropdownMenu(
@@ -80,11 +80,13 @@ fun AccountListItem(account: AccountItem, onEditClick: () -> Unit, onRemoveClick
 @Composable
 fun AccountTypeIcon(type: AccountType, modifier: Modifier = Modifier) {
     Icon(
-        imageVector = when (type) {
-            AccountType.ORDINARY -> Icons.AutoMirrored.Outlined.Note
-            AccountType.DEBT -> Icons.Outlined.CreditCard
-            AccountType.SAVINGS -> Icons.Outlined.Savings
-        },
+        painter = painterResource(
+            when (type) {
+                AccountType.ORDINARY -> Res.drawable.note
+                AccountType.DEBT -> Res.drawable.credit_card
+                AccountType.SAVINGS -> Res.drawable.pig_money
+            }
+        ),
         contentDescription = stringResource(Res.string.account_type),
         modifier = modifier
     )

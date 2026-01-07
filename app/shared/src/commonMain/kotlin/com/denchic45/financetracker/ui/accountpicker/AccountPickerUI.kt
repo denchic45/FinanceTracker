@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,7 +28,9 @@ import com.denchic45.financetracker.ui.resource.onData
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.account_add
 import financetracker_app.shared.generated.resources.accounts_select
+import financetracker_app.shared.generated.resources.add
 import financetracker_app.shared.generated.resources.common_done
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -82,7 +82,7 @@ fun AccountPickerSheet(
             floatingActionButton = {
                 FloatingActionButton(onClick = viewModel::onAddAccountClick) {
                     Icon(
-                        Icons.Default.Add,
+                        painter = painterResource(Res.drawable.add),
                         contentDescription = stringResource(Res.string.account_add)
                     )
                 }

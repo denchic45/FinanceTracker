@@ -11,11 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -41,9 +36,12 @@ import com.denchic45.financetracker.ui.analytics.AnalyticsScreen
 import com.denchic45.financetracker.ui.categories.CategoriesScreen
 import com.denchic45.financetracker.ui.home.HomeScreen
 import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.add
 import financetracker_app.shared.generated.resources.analyze
 import financetracker_app.shared.generated.resources.category
+import financetracker_app.shared.generated.resources.database
 import financetracker_app.shared.generated.resources.home
+import financetracker_app.shared.generated.resources.info_circle
 import financetracker_app.shared.generated.resources.nav_about_label
 import financetracker_app.shared.generated.resources.nav_analytics_label
 import financetracker_app.shared.generated.resources.nav_categories_label
@@ -51,6 +49,7 @@ import financetracker_app.shared.generated.resources.nav_data_usage_label
 import financetracker_app.shared.generated.resources.nav_home_label
 import financetracker_app.shared.generated.resources.nav_settings_label
 import financetracker_app.shared.generated.resources.nav_tags_label
+import financetracker_app.shared.generated.resources.settings
 import financetracker_app.shared.generated.resources.txn_new
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -102,7 +101,7 @@ fun MainScreen(viewModel: MainViewModel) {
                     NavigationDrawerItem(
                         label = { Text(stringResource(Res.string.nav_data_usage_label)) },
                         selected = false,
-                        icon = { Icon(Icons.Outlined.Storage, contentDescription = null) },
+                        icon = { Icon(painterResource(Res.drawable.database), contentDescription = null) },
                         onClick = {
                             toggleNavigationDrawer()
                             viewModel.onDataUsageClick()
@@ -113,7 +112,7 @@ fun MainScreen(viewModel: MainViewModel) {
                         selected = false,
                         icon = {
                             Icon(
-                                Icons.Outlined.Settings,
+                                painterResource(Res.drawable.settings),
                                 contentDescription = null
                             )
                         },
@@ -125,7 +124,7 @@ fun MainScreen(viewModel: MainViewModel) {
                     NavigationDrawerItem(
                         label = { Text(stringResource(Res.string.nav_about_label)) },
                         selected = false,
-                        icon = { Icon(Icons.Outlined.Info, contentDescription = null) },
+                        icon = { Icon(painterResource(Res.drawable.info_circle), contentDescription = null) },
                         onClick = {
                             toggleNavigationDrawer()
                             viewModel.onAboutClick()
@@ -170,7 +169,7 @@ fun MainScreen(viewModel: MainViewModel) {
                 FloatingActionButton(
                     onClick = viewModel::onCreateTransactionClick
                 ) {
-                    Icon(Icons.Filled.Add, contentDescription = stringResource(Res.string.txn_new))
+                    Icon(painterResource(Res.drawable.add), contentDescription = stringResource(Res.string.txn_new))
                 }
             }
         ) { innerPadding ->

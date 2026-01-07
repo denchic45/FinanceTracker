@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.ui.categorizedIcons
 import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.arrow_left
 import financetracker_app.shared.generated.resources.category_new
 import financetracker_app.shared.generated.resources.category_update
 import financetracker_app.shared.generated.resources.check
@@ -47,7 +46,7 @@ import financetracker_app.shared.generated.resources.validation_name_required
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,7 +74,7 @@ fun CategoryEditorScreen(
                 navigationIcon = {
                     IconButton(onClick = viewModel::onDismissClick) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            painterResource(Res.drawable.arrow_left),
                             contentDescription = stringResource(Res.string.common_back)
                         )
                     }

@@ -5,9 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,12 +21,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.ui.dialog.ConfirmDiscardChangesDialog
 import financetracker_app.shared.generated.resources.Res
+import financetracker_app.shared.generated.resources.arrow_left
+import financetracker_app.shared.generated.resources.check
 import financetracker_app.shared.generated.resources.common_back
 import financetracker_app.shared.generated.resources.common_name_field
 import financetracker_app.shared.generated.resources.common_save
 import financetracker_app.shared.generated.resources.tag_new
 import financetracker_app.shared.generated.resources.tag_update
 import financetracker_app.shared.generated.resources.validation_name_required
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -53,7 +53,7 @@ fun TagEditorDialog(
                         else viewModel.onDismissClick()
                     }) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            painterResource(Res.drawable.arrow_left),
                             contentDescription = stringResource(Res.string.common_back)
                         )
                     }
@@ -61,7 +61,7 @@ fun TagEditorDialog(
                 actions = {
                     IconButton(onClick = viewModel::onSaveClick, enabled = !state.isLoading) {
                         Icon(
-                            Icons.Default.Done,
+                            painterResource(Res.drawable.check),
                             contentDescription = stringResource(Res.string.common_save)
                         )
                     }
