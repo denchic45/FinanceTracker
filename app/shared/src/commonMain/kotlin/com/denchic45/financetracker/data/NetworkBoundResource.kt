@@ -38,7 +38,7 @@ fun <T> observeData(
     query: Flow<T>,
     fetch: suspend () -> ApiResult<*>,
     shouldFetch: (T) -> Boolean = { true },
-    waitFetchResult: Boolean = true
+    waitFetchResult: Boolean = false
 ): Flow<Ior<Failure, T>> = flow {
     val first = query.first()
     if (!waitFetchResult) emit(Ior.Right(first))
