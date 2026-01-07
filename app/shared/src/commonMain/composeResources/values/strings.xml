@@ -25,9 +25,9 @@
     <string name="txn_delete_dialog_title">Delete Transaction?</string>
     <string name="common_delete_dialog_message">It will be impossible to undo the deletion</string>
     <string name="common_done">Done</string>
-    <string name="category_list_empty">You don\'t have any tags</string>
-    <string name="tag_list_empty">You don\'t have any tags</string>
-    <string name="txn_list_empty">You don\'t have any transactions</string>
+    <string name="category_list_empty">You don't have any tags</string>
+    <string name="tag_list_empty">You don't have any tags</string>
+    <string name="txn_list_empty">You don't have any transactions</string>
     <string name="nav_tags_label">Tags</string>
     <string name="nav_data_usage_label">Data Usage</string>
     <string name="nav_settings_label">Settings</string>
