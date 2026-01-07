@@ -46,5 +46,6 @@ data class TransactionAccount(
     val name: String,
     val accountType: AccountType,
     val initialBalance: Long,
-    val balance: Long
+    val balance: Long,
+    val iconName: String
 )

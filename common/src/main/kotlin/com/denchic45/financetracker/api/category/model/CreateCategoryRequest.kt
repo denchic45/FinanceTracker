@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CreateCategoryRequest(
     val name: String,
-    val icon: String,
+    val iconName: String,
     val income: Boolean
 )

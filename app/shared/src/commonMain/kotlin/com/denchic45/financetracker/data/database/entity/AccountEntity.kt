@@ -14,6 +14,9 @@ data class AccountEntity(
     @ColumnInfo(name = "account_name")
     val name: String,
     val type: AccountType,
+    @ColumnInfo(name = "initial_balance")
     val initialBalance: Long,
-    val balance: Long
+    val balance: Long,
+    @ColumnInfo(name = "icon_name")
+    val iconName: String,
 )

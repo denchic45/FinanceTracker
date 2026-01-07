@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class CategoryResponse(
     val id: Long,
     val name: String,
-    val icon: String,
+    val iconName: String,
     val income: Boolean
 )

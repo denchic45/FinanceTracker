@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class CreateAccountRequest(
     val name: String,
     val type: AccountType,
-    val initialBalance: Long
+    val initialBalance: Long,
+    val iconName: String,
 )
