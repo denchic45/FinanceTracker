@@ -247,7 +247,11 @@ class TransactionEditorViewModel(
     fun onSourceAccountPickerClick() {
         router.push(NavEntry.AccountPicker(null))
         viewModelScope.launch {
-            state.sourceAccount = accountPickerInteractor.getPicked()
+            val picked = accountPickerInteractor.getPicked()
+            if (picked == state.incomeAccount) {
+                state.incomeAccount = state.sourceAccount
+            }
+            state.sourceAccount = picked
             state.showSourceAccountError = false
         }
     }
@@ -255,7 +259,11 @@ class TransactionEditorViewModel(
     fun onIncomeAccountPickerClick() {
         router.push(NavEntry.AccountPicker(null))
         viewModelScope.launch {
-            state.incomeAccount = accountPickerInteractor.getPicked()
+            val picked = accountPickerInteractor.getPicked()
+            if (picked == state.sourceAccount) {
+                state.sourceAccount = state.incomeAccount
+            }
+            state.incomeAccount = picked
             state.showIncomeAccountError = false
         }
     }
