@@ -98,12 +98,7 @@ kotlin {
                 // Data Persistence (Room & Datastore)
                 implementation(libs.bundles.room)
                 implementation(libs.bundles.testing)
-            }
-        }
 
-        val androidDebug by creating {
-            dependsOn(androidMain)
-            dependencies {
                 implementation(libs.androidx.compose.ui.tooling)
             }
         }
