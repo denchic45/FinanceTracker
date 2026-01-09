@@ -2,6 +2,7 @@ package com.denchic45.financetracker.ui.categories
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -106,7 +107,7 @@ fun CategoryList(
     onCreateClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier = modifier, contentPadding = PaddingValues(bottom = 96.dp)) {
         item {
             FilledTonalButton(
                 onClick = onCreateClick,

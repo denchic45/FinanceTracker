@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -107,7 +106,8 @@ fun HomeScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(bottom = 96.dp)
             ) {
                 item {
                     Spacer(modifier = Modifier.height(8.dp))
@@ -195,6 +195,7 @@ fun HomeScreen(
                 }
             }
         }
+        Spacer(Modifier.height(96.dp))
     }
 }
 
@@ -355,7 +356,8 @@ fun AccountCardPreview() {
         id = UUID.randomUUID(),
         name = "Основная",
         type = AccountType.ORDINARY,
-        balance = 9500000L // 95 000.00
+        balance = 9500000L, // 95 000.00
+        iconName = "credit_card"
     )
     FinanceTrackerTheme {
         AccountCard(
@@ -369,7 +371,13 @@ fun AccountCardPreview() {
 @Preview(name = "5. Transaction List Item (Expense)")
 @Composable
 fun TransactionListItemExpensePreview() {
-    val mockAccount = AccountItem(UUID.randomUUID(), "СберБанк", AccountType.ORDINARY, 9500000L)
+    val mockAccount = AccountItem(
+        id = UUID.randomUUID(),
+        name = "СберБанк",
+        type = AccountType.ORDINARY,
+        balance = 9500000L,
+        iconName = "credit_card"
+    )
     val mockCategory = CategoryItem(101, "Продукты", "", false)
     val mockTransaction = TransactionItem.Expense(
         id = 1,
@@ -392,8 +400,20 @@ fun TransactionListItemExpensePreview() {
 @Preview(name = "6. Transaction List Item (Transfer)")
 @Composable
 fun TransactionListItemTransferPreview() {
-    val cardAccount = AccountItem(UUID.randomUUID(), "СберБанк", AccountType.DEBT, 9500000L)
-    val cashAccount = AccountItem(UUID.randomUUID(), "Кошелек", AccountType.ORDINARY, 500000L)
+    val cardAccount = AccountItem(
+        id = UUID.randomUUID(),
+        name = "СберБанк",
+        type = AccountType.DEBT,
+        balance = 9500000L,
+        iconName = "credit_card"
+    )
+    val cashAccount = AccountItem(
+        id = UUID.randomUUID(),
+        name = "Кошелек",
+        type = AccountType.ORDINARY,
+        balance = 500000L,
+        iconName = "credit_card"
+    )
     val mockTransaction = TransactionItem.Transfer(
         id = 2,
         amount = 1000000L, // 10 000.00
