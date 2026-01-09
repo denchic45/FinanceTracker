@@ -24,9 +24,7 @@ class TagDetailsViewModel(
 ) : ViewModel() {
     val tag = observeTagByIdUseCase(tagId)
         .onEach {
-            it.onRightHasNull {
-                router.pop()
-            }
+            it.onRightHasNull { router.pop() }
         }
         .filterNotNullValue()
         .stateInCacheableResource(viewModelScope)
@@ -39,7 +37,6 @@ class TagDetailsViewModel(
         viewModelScope.launch {
             removeTagUseCase(tagId)
                 .onSome { appEventHandler.handleFailure(it) }
-                .onNone { router.pop() }
         }
     }
 
