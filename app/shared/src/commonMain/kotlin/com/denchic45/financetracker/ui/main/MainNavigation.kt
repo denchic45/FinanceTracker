@@ -17,6 +17,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,9 +31,14 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.denchic45.financetracker.data.AppPreferences
 import com.denchic45.financetracker.di.AppRouter
+import com.denchic45.financetracker.domain.CurrencyHandler
+import com.denchic45.financetracker.domain.model.Currency
 import com.denchic45.financetracker.ui.AppUIEvent
 import com.denchic45.financetracker.ui.LoadingState
+import com.denchic45.financetracker.ui.LocalCurrencyHandler
+import com.denchic45.financetracker.ui.LocalDefaultCurrency
 import com.denchic45.financetracker.ui.accountdetails.AccountDetailsSheet
 import com.denchic45.financetracker.ui.accounteditor.AccountEditorScreen
 import com.denchic45.financetracker.ui.accountpicker.AccountPickerSheet
@@ -56,116 +62,122 @@ import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.common_ok
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RootContainer(viewModel: MainViewModel = koinViewModel()) {
-    val router = koinInject<AppRouter>()
+fun MainNavigation(viewModel: MainViewModel = koinViewModel()) {
+    val currency by koinInject<AppPreferences>().defaultCurrency.collectAsState(Currency.RUB)
+    val currencyHandler = koinInject<CurrencyHandler>()
 
-    HandleAppEvent(viewModel.events)
-    val loading by viewModel.loading.collectAsState()
-    AppLoading(loading)
+    CompositionLocalProvider(
+        LocalCurrencyHandler provides currencyHandler,
+        LocalDefaultCurrency provides currency
+    ) {
+        val router = koinInject<AppRouter>()
 
-    NavDisplay(
-        backStack = router.backstack,
-        sceneStrategy = remember {
-            BottomSheetSceneStrategy<NavEntry>()
-                .then(SimpleOverlaySceneStrategy())
-        },
-        transitionSpec = {
-            fadeIn(tween(300)) togetherWith fadeOut(tween(300))
-        },
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator()
-        ),
-        entryProvider = entryProvider {
-            entry<NavEntry.Main> {
-                MainScreen(viewModel)
-            }
-            entry<NavEntry.Tags> {
-                TagsScreen()
-            }
-            entry<NavEntry.TagDetails>(
-                metadata = SimpleOverlaySceneStrategy.overlay()
-            ) { key ->
-                TagDetailsSheet(
-                    tagId = key.tagId
-                )
-            }
-            entry<NavEntry.DataUsage> { key ->
-                TODO()
-            }
-            entry<NavEntry.Settings> { key ->
+        HandleAppEvent(viewModel.events)
+        val loading by viewModel.loading.collectAsState()
+        AppLoading(loading)
 
-            }
-            entry<NavEntry.About> { key ->
-                TODO()
-            }
+        NavDisplay(
+            backStack = router.backstack,
+            sceneStrategy = remember {
+                BottomSheetSceneStrategy<NavEntry>()
+                    .then(SimpleOverlaySceneStrategy())
+            },
+            transitionSpec = {
+                fadeIn(tween(300)) togetherWith fadeOut(tween(300))
+            },
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
+            entryProvider = entryProvider {
+                entry<NavEntry.Main> {
+                    MainScreen(viewModel)
+                }
+                entry<NavEntry.Tags> {
+                    TagsScreen()
+                }
+                entry<NavEntry.TagDetails>(
+                    metadata = SimpleOverlaySceneStrategy.overlay()
+                ) { key ->
+                    TagDetailsSheet(
+                        tagId = key.tagId
+                    )
+                }
+                entry<NavEntry.DataUsage> { key ->
+                    TODO()
+                }
+                entry<NavEntry.Settings> { key ->
 
-            entry<NavEntry.AccountDetails>(
-                metadata = SimpleOverlaySceneStrategy.overlay()
-            ) { key ->
-                AccountDetailsSheet(key.accountId)
+                }
+                entry<NavEntry.About> { key ->
+                    TODO()
+                }
+
+                entry<NavEntry.AccountDetails>(
+                    metadata = SimpleOverlaySceneStrategy.overlay()
+                ) { key ->
+                    AccountDetailsSheet(key.accountId)
+                }
+                entry<NavEntry.Transactions> {
+                    TransactionsScreen()
+                }
+                entry<NavEntry.AccountEditor> { key ->
+                    AccountEditorScreen(
+                        accountId = key.accountId
+                    )
+                }
+                entry<NavEntry.TransactionEditor> { key ->
+                    TransactionEditorScreen(
+                        transactionId = key.transactionId
+                    )
+                }
+                entry<NavEntry.TransactionDetails>(
+                    metadata = SimpleOverlaySceneStrategy.overlay()
+                ) { key ->
+                    TransactionDetailsSheet(
+                        transactionId = key.transactionId
+                    )
+                }
+                entry<NavEntry.CategoryDetails>(
+                    metadata = SimpleOverlaySceneStrategy.overlay()
+                ) { key ->
+                    CategoryDetailsContent(
+                        categoryId = key.categoryId
+                    )
+                }
+                entry<NavEntry.CategoryEditor> { key ->
+                    CategoryEditorScreen(
+                        categoryId = key.categoryId,
+                        income = key.income
+                    )
+                }
+                entry<NavEntry.AccountPicker>(
+                    metadata = SimpleOverlaySceneStrategy.overlay()
+                ) { key ->
+                    AccountPickerSheet(key.mode)
+                }
+                entry<NavEntry.CategoryPicker>(
+                    metadata = SimpleOverlaySceneStrategy.overlay()
+                ) { key ->
+                    CategoryPickerSheet(income = key.income, selectedId = key.selectedId)
+                }
+                entry<NavEntry.TagsPicker>(
+                    metadata = SimpleOverlaySceneStrategy.overlay()
+                ) { key ->
+                    TagsPickerSheet(selectedTagIds = key.selectedIds)
+                }
+                entry<NavEntry.TagEditor> { key ->
+                    TagEditorDialog(tagId = key.tagId)
+                }
             }
-            entry<NavEntry.Transactions> {
-                TransactionsScreen()
-            }
-            entry<NavEntry.AccountEditor> { key ->
-                AccountEditorScreen(
-                    accountId = key.accountId
-                )
-            }
-            entry<NavEntry.TransactionEditor> { key ->
-                TransactionEditorScreen(
-                    transactionId = key.transactionId
-                )
-            }
-            entry<NavEntry.TransactionDetails>(
-                metadata = SimpleOverlaySceneStrategy.overlay()
-            ) { key ->
-                TransactionDetailsSheet(
-                    transactionId = key.transactionId
-                )
-            }
-            entry<NavEntry.CategoryDetails>(
-                metadata = SimpleOverlaySceneStrategy.overlay()
-            ) { key ->
-                CategoryDetailsContent(
-                    categoryId = key.categoryId
-                )
-            }
-            entry<NavEntry.CategoryEditor> { key ->
-                CategoryEditorScreen(
-                    categoryId = key.categoryId,
-                    income = key.income
-                )
-            }
-            entry<NavEntry.AccountPicker>(
-                metadata = SimpleOverlaySceneStrategy.overlay()
-            ) { key ->
-                key.selectedIds?.let {
-                    AccountPickerSheet(selectedIds = it)
-                } ?: AccountPickerSheet()
-            }
-            entry<NavEntry.CategoryPicker>(
-                metadata = SimpleOverlaySceneStrategy.overlay()
-            ) { key ->
-                CategoryPickerSheet(income = key.income, selectedId = key.selectedId)
-            }
-            entry<NavEntry.TagsPicker>(
-                metadata = SimpleOverlaySceneStrategy.overlay()
-            ) { key ->
-                TagsPickerSheet(selectedTagIds = key.selectedIds)
-            }
-            entry<NavEntry.TagEditor> { key ->
-                TagEditorDialog(tagId = key.tagId)
-            }
-        }
-    )
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

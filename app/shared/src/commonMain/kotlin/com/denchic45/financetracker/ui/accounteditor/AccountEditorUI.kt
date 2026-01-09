@@ -1,23 +1,27 @@
 package com.denchic45.financetracker.ui.accounteditor
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,15 +45,19 @@ import com.denchic45.financetracker.ui.LocalDefaultCurrency
 import com.denchic45.financetracker.ui.accountIcons
 import com.denchic45.financetracker.ui.accounts.AccountTypeIcon
 import com.denchic45.financetracker.ui.dialog.ConfirmDiscardChangesDialog
+import com.denchic45.financetracker.ui.iconpicker.IconGrid
+import com.denchic45.financetracker.ui.iconpicker.IconGridItem
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.account_balance
 import financetracker_app.shared.generated.resources.account_new
 import financetracker_app.shared.generated.resources.account_type
+import financetracker_app.shared.generated.resources.account_type_pick_title
 import financetracker_app.shared.generated.resources.account_update
 import financetracker_app.shared.generated.resources.arrow_back
 import financetracker_app.shared.generated.resources.check
 import financetracker_app.shared.generated.resources.common_back
 import financetracker_app.shared.generated.resources.common_name_field
+import financetracker_app.shared.generated.resources.icon_pick_title
 import financetracker_app.shared.generated.resources.validation_balance_required
 import financetracker_app.shared.generated.resources.validation_name_required
 import org.jetbrains.compose.resources.painterResource
@@ -68,6 +76,8 @@ fun AccountEditorScreen(
     val state = viewModel.state
 
     var showDiscardConfirmation by remember { mutableStateOf(false) }
+    var accountTypesExpanded by remember { mutableStateOf(false) }
+    var accountIconsExpanded by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -123,9 +133,10 @@ fun AccountEditorScreen(
             if (accountId == null) OutlinedTextField(
                 value = state.balance,
                 onValueChange = viewModel::onBalanceChanged,
+                singleLine = true,
                 label = { Text(stringResource(Res.string.account_balance)) },
                 placeholder = { Text("10000 ₽") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 isError = state.showBalanceError,
                 supportingText = {
                     if (state.showBalanceError)
@@ -134,12 +145,23 @@ fun AccountEditorScreen(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Decimal
                 ),
-                visualTransformation = CurrencyVisualTransformation()
                 visualTransformation = CurrencyVisualTransformation(
                     LocalCurrencyHandler.current.decimalSeparator,
                     LocalDefaultCurrency.current
                 )
             )
+
+            ListItem(
+                leadingContent = {
+                    IconGridItem(
+                        iconResource = accountIcons.getValue(state.iconName),
+                        selected = true,
+                        onClick = { accountIconsExpanded = true }
+                    )
+                },
+                overlineContent = { Text(stringResource(Res.string.account_type)) },
+                headlineContent = { Text(state.type.displayName()) },
+                modifier = Modifier.clickable(onClick = { accountTypesExpanded = true })
             )
         }
     }
@@ -151,10 +173,106 @@ fun AccountEditorScreen(
         showDiscardConfirmation = true
     }
 
-    ConfirmDiscardChangesDialog(show = showDiscardConfirmation, onConfirm = {
-        showDiscardConfirmation = false
-        viewModel.onDismissClick()
-    }, onDismiss = {
-        showDiscardConfirmation = false
-    })
+    if (accountTypesExpanded) {
+        AccountTypeSelectorSheet(
+            selectedType = state.type,
+            onSelect = {
+                accountTypesExpanded = false
+                viewModel.onAccountTypeChange(it)
+            },
+            onDismiss = { accountTypesExpanded = false }
+        )
+    }
+
+    if (accountIconsExpanded) {
+        AccountIconPickerSheet(
+            selectedIconName = state.iconName,
+            onPick = {
+                viewModel.onIconPick(it)
+                accountIconsExpanded = false
+            },
+            onDismiss = { accountIconsExpanded = false }
+        )
+    }
+
+    ConfirmDiscardChangesDialog(
+        show = showDiscardConfirmation,
+        onConfirm = {
+            showDiscardConfirmation = false
+            viewModel.onDismissClick()
+        }, onDismiss = {
+            showDiscardConfirmation = false
+        })
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AccountIconPickerSheet(
+    selectedIconName: String,
+    onPick: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ) {
+        Text(
+            stringResource(Res.string.icon_pick_title),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        IconGrid(
+            selectedIconName = selectedIconName,
+            onIconClick = onPick,
+            icons = accountIcons.toList(),
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AccountTypeSelectorSheet(
+    selectedType: AccountType,
+    onSelect: (AccountType) -> Unit,
+    onDismiss: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ) {
+        Text(
+            stringResource(Res.string.account_type_pick_title),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        Column(Modifier.padding(vertical = 16.dp)) {
+            AccountType.entries.forEach { type ->
+                val selected = selectedType == type
+                val contentColor = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+                else LocalContentColor.current
+                ListItem(
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable(onClick = { onSelect(type) }),
+                    headlineContent = {
+                        Text(
+                            type.displayName(),
+                            color = contentColor,
+                            fontWeight = if (selected) FontWeight.SemiBold else null
+                        )
+                    },
+                    leadingContent = { AccountTypeIcon(type = type, tint = contentColor) },
+                    trailingContent = {
+                        if (selected)
+                            Icon(
+                                painterResource(Res.drawable.check),
+                                null,
+                                tint = contentColor
+                            )
+                    }
+                )
+            }
+        }
+    }
 }

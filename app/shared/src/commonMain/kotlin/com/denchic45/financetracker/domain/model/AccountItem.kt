@@ -2,7 +2,6 @@ package com.denchic45.financetracker.domain.model
 
 import androidx.compose.runtime.Composable
 import com.denchic45.financetracker.api.account.model.AccountType
-import com.denchic45.financetracker.ui.util.convertToCurrency
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.account_type_debt
 import financetracker_app.shared.generated.resources.account_type_ordinary
@@ -16,12 +15,7 @@ data class AccountItem(
     val type: AccountType,
     val balance: Long,
     val iconName: String
-) {
-    val displayedBalance = balance.convertToCurrency()
-}
-
-val List<AccountItem>.displayedGeneralBalance: String
-    get() = (sumOf(AccountItem::balance)).convertToCurrency()
+)
 
 @Composable
 fun AccountType.displayName(): String = stringResource(

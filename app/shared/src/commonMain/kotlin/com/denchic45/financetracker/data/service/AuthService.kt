@@ -12,6 +12,7 @@ import com.denchic45.financetracker.data.Failure
 import com.denchic45.financetracker.data.database.AppDatabase
 import com.denchic45.financetracker.data.safeFetch
 import com.denchic45.financetracker.data.toEmptyRequestResult
+import com.denchic45.financetracker.domain.model.Currency
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.plugin
@@ -52,6 +53,7 @@ class AuthService(
                 ifLeft = { it.some() },
                 ifRight = {
                     saveTokens(it)
+                    appPreferences.setDefaultCurrency(Currency.RUB) // TODO remove hardcoded currency
                     None
                 })
     }

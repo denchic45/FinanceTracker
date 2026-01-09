@@ -2,7 +2,6 @@ package com.denchic45.financetracker.domain.model
 
 import androidx.compose.runtime.Composable
 import com.denchic45.financetracker.api.transaction.model.TransactionType
-import com.denchic45.financetracker.ui.util.convertToCurrency
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.txn_expense
 import financetracker_app.shared.generated.resources.txn_income
@@ -17,9 +16,6 @@ sealed class TransactionItem {
     abstract val datetime: LocalDateTime
     abstract val note: String
     abstract val account: AccountItem
-
-    val displayedAmount: String
-        get() = amount.convertToCurrency()
 
 
     data class Expense(

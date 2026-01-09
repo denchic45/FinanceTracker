@@ -42,14 +42,26 @@ val viewModelModule = module {
     viewModelOf(::SettingsViewModel)
 
     viewModelOf(::AccountsViewModel)
-    viewModel { AccountEditorViewModel(it.getOrNull(), get(), get(), get(), get(), get()) }
-    viewModel { AccountPickerViewModel(it.getOrNull(), get(), get(), get()) }
+    viewModel {
+        AccountEditorViewModel(
+            it.getOrNull(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
+    viewModel { AccountPickerViewModel(it.get(), get(), get(), get()) }
 
     viewModelOf(::TransactionsViewModel)
     viewModel { TransactionDetailsViewModel(it.get(), get(), get(), get(), get()) }
     viewModel {
         TransactionEditorViewModel(
             it.getOrNull(),
+            get(),
             get(),
             get(),
             get(),

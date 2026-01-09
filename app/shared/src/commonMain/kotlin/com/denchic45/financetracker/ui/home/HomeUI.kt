@@ -41,12 +41,14 @@ import com.denchic45.financetracker.api.statistic.model.TotalsAmount
 import com.denchic45.financetracker.domain.model.AccountItem
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TransactionItem
-import com.denchic45.financetracker.domain.model.displayedGeneralBalance
 import com.denchic45.financetracker.ui.HeaderItem
 import com.denchic45.financetracker.ui.MainTopAppBar
 import com.denchic45.financetracker.ui.NoDataContent
 import com.denchic45.financetracker.ui.SmallTextButton
 import com.denchic45.financetracker.ui.TransactionListItem
+import com.denchic45.financetracker.ui.accounts.displayedBalance
+import com.denchic45.financetracker.ui.accounts.displayedGeneralBalance
+import com.denchic45.financetracker.ui.displayedAmount
 import com.denchic45.financetracker.ui.resource.isLoading
 import com.denchic45.financetracker.ui.resource.onData
 import com.denchic45.financetracker.ui.resource.onSuccess
@@ -54,7 +56,6 @@ import com.denchic45.financetracker.ui.theme.FinanceTrackerTheme
 import com.denchic45.financetracker.ui.transactions.ExpenseColor
 import com.denchic45.financetracker.ui.transactions.IncomeColor
 import com.denchic45.financetracker.ui.transactions.TransferColor
-import com.denchic45.financetracker.ui.util.convertToCurrency
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.account_add
 import financetracker_app.shared.generated.resources.accounts_title
@@ -231,21 +232,21 @@ fun MonthStatRow(modifier: Modifier = Modifier, totalsAmount: TotalsAmount) {
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         StatBox(
             label = stringResource(Res.string.txn_income),
-            amountText = totalsAmount.incomes.convertToCurrency(),
+            amountText = totalsAmount.incomes.displayedAmount,
             color = IncomeColor,
             modifier = Modifier.weight(1f)
         )
         Spacer(Modifier.width(8.dp))
         StatBox(
             label = stringResource(Res.string.txn_expense),
-            amountText = totalsAmount.expenses.convertToCurrency(),
+            amountText = totalsAmount.expenses.displayedAmount,
             color = ExpenseColor,
             modifier = Modifier.weight(1f)
         )
         Spacer(Modifier.width(8.dp))
         StatBox(
             label = stringResource(Res.string.txn_profit),
-            amountText = totalsAmount.profit.convertToCurrency(),
+            amountText = totalsAmount.profit.displayedAmount,
             color = TransferColor,
             modifier = Modifier.weight(1f)
         )

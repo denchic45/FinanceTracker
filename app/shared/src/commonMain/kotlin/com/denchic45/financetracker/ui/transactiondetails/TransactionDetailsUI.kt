@@ -42,6 +42,7 @@ import com.denchic45.financetracker.domain.model.TagItem
 import com.denchic45.financetracker.domain.model.TransactionItem
 import com.denchic45.financetracker.ui.RemoveTransactionConfirmDialog
 import com.denchic45.financetracker.ui.categorizedIcons
+import com.denchic45.financetracker.ui.displayedAmount
 import com.denchic45.financetracker.ui.resource.CircularLoadingBox
 import com.denchic45.financetracker.ui.resource.onData
 import com.denchic45.financetracker.ui.resource.onLoading
@@ -145,7 +146,7 @@ private fun TransactionDetailsContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "$amountPrefix${transaction.displayedAmount}",
+            text = amountPrefix + transaction.displayedAmount,
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
             color = amountColor
@@ -382,7 +383,13 @@ fun EditableDetailRow(
 @Composable
 fun TransactionDetailsOutcomePreview() {
     // Моковые данные
-    val mockAccount = AccountItem(UUID.randomUUID(), "Тинькофф Black", AccountType.ORDINARY, 500000)
+    val mockAccount = AccountItem(
+        id = UUID.randomUUID(),
+        name = "Тинькофф Black",
+        type = AccountType.ORDINARY,
+        balance = 500000,
+        iconName = "credit_card"
+    )
     val mockCategory = CategoryItem(1, "Продукты", "burger", false)
     val mockTransaction = TransactionItem.Expense(
         id = 1,

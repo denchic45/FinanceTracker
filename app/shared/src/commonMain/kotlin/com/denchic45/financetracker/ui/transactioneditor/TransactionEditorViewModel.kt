@@ -15,6 +15,7 @@ import com.denchic45.financetracker.api.transaction.model.TransferTransactionReq
 import com.denchic45.financetracker.data.onRightHasNull
 import com.denchic45.financetracker.data.onRightHasValue
 import com.denchic45.financetracker.di.AppRouter
+import com.denchic45.financetracker.domain.CurrencyHandler
 import com.denchic45.financetracker.domain.model.AccountItem
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TagItem
@@ -24,14 +25,13 @@ import com.denchic45.financetracker.domain.usecase.ObserveTransactionByIdUseCase
 import com.denchic45.financetracker.domain.usecase.RemoveTransactionUseCase
 import com.denchic45.financetracker.domain.usecase.UpdateTransactionUseCase
 import com.denchic45.financetracker.ui.AppEventHandler
+import com.denchic45.financetracker.ui.PickerMode
 import com.denchic45.financetracker.ui.accountpicker.AccountPickerInteractor
 import com.denchic45.financetracker.ui.categorypicker.CategoryPickerInteractor
 import com.denchic45.financetracker.ui.main.NavEntry
 import com.denchic45.financetracker.ui.navigation.router.pop
 import com.denchic45.financetracker.ui.navigation.router.push
 import com.denchic45.financetracker.ui.tagspicker.TagsPickerInteractor
-import com.denchic45.financetracker.ui.util.convertToMonetaryFormat
-import com.denchic45.financetracker.ui.util.currencyRegex
 import com.denchic45.financetracker.ui.validator.CompositeValidator
 import com.denchic45.financetracker.ui.validator.Condition
 import com.denchic45.financetracker.ui.validator.Operator
@@ -62,7 +62,8 @@ class TransactionEditorViewModel(
     private val updateTransactionUseCase: UpdateTransactionUseCase,
     private val removeTransactionUseCase: RemoveTransactionUseCase,
     private val appEventHandler: AppEventHandler,
-    private val router: AppRouter
+    private val router: AppRouter,
+    private val currencyHandler: CurrencyHandler,
 ) : ViewModel() {
     val state = EditingTransactionState()
 
@@ -89,7 +90,7 @@ class TransactionEditorViewModel(
                             EditingTransactionState.AmountErrorType.REQUIRED
                         }
                     },
-                    Condition<String>({ (it.toFloatOrNull() ?: 0F) > 0F }).observable { isValid ->
+                    Condition<String>({ currencyHandler.toLong(it) > 0F }).observable { isValid ->
                         state.amountErrorType = getIfNot(isValid) {
                             EditingTransactionState.AmountErrorType.MUST_BE_POSITIVE
                         }
@@ -132,7 +133,7 @@ class TransactionEditorViewModel(
                 .onEach { ior ->
                     ior.onRightHasValue { transaction ->
                         state.datetime = transaction.datetime
-                        state.amountText = transaction.amount.convertToMonetaryFormat()
+                        state.amountText = currencyHandler.formatForEditing(transaction.amount)
                         state.note = transaction.note
                         state.sourceAccount = transaction.account
                         when (transaction) {
@@ -185,8 +186,9 @@ class TransactionEditorViewModel(
         state.datetime = time.atDate(state.datetime.date)
     }
 
-    fun onAmountTextChange(amountText: String) {
-        if (amountText.matches(currencyRegex)) state.amountText = amountText
+    fun onAmountTextChange(amount: String) {
+        val filteredAmount = currencyHandler.filterInput(amount)
+        filteredAmount?.let { state.amountText = filteredAmount }
         state.amountErrorType = null
     }
 
@@ -214,16 +216,13 @@ class TransactionEditorViewModel(
     }
 
     fun EditingTransactionState.toRequest(): AbstractTransactionRequest {
-        fun parseAmountToMinorUnits(amountText: String): Long {
-            val cleanText = amountText.replace(",", "").trim()
-            return (cleanText.toDouble() * 100).toLong()
-        }
+
 
         return when (transactionType) {
             TransactionType.EXPENSE, TransactionType.INCOME -> TransactionRequest(
                 income = (transactionType == TransactionType.INCOME),
                 datetime = datetime,
-                amount = parseAmountToMinorUnits(amountText),
+                amount = currencyHandler.toLong(amountText),
                 note = note,
                 accountId = sourceAccount!!.id,
                 categoryId = category!!.id,
@@ -232,7 +231,7 @@ class TransactionEditorViewModel(
 
             TransactionType.TRANSFER -> TransferTransactionRequest(
                 datetime = datetime,
-                amount = parseAmountToMinorUnits(amountText),
+                amount = currencyHandler.toLong(amountText),
                 note = note,
                 accountId = sourceAccount!!.id,
                 incomeSourceId = incomeAccount!!.id
@@ -245,7 +244,9 @@ class TransactionEditorViewModel(
     }
 
     fun onSourceAccountPickerClick() {
-        router.push(NavEntry.AccountPicker(null))
+        router.push(
+            NavEntry.AccountPicker(PickerMode.Single(state.sourceAccount?.id))
+        )
         viewModelScope.launch {
             val picked = accountPickerInteractor.getPicked()
             if (picked == state.incomeAccount) {
@@ -257,7 +258,9 @@ class TransactionEditorViewModel(
     }
 
     fun onIncomeAccountPickerClick() {
-        router.push(NavEntry.AccountPicker(null))
+        router.push(
+            NavEntry.AccountPicker(PickerMode.Single(state.incomeAccount?.id))
+        )
         viewModelScope.launch {
             val picked = accountPickerInteractor.getPicked()
             if (picked == state.sourceAccount) {
@@ -286,7 +289,9 @@ class TransactionEditorViewModel(
     }
 
     fun onTagsPickerClick() {
-        router.push(NavEntry.TagsPicker(state.tags.map(TagItem::id)))
+        router.push(
+            NavEntry.TagsPicker(state.tags.map(TagItem::id).toSet())
+        )
         viewModelScope.launch {
             state.tags = tagsPickerInteractor.getPicked()
         }

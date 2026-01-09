@@ -12,14 +12,15 @@ import com.denchic45.financetracker.api.account.model.AccountType
 import com.denchic45.financetracker.api.account.model.AdjustAccountBalanceRequest
 import com.denchic45.financetracker.api.account.model.CreateAccountRequest
 import com.denchic45.financetracker.api.account.model.UpdateAccountRequest
+import com.denchic45.financetracker.data.AppPreferences
 import com.denchic45.financetracker.di.AppRouter
+import com.denchic45.financetracker.domain.CurrencyHandler
+import com.denchic45.financetracker.domain.model.Currency
 import com.denchic45.financetracker.domain.usecase.AddAccountUseCase
 import com.denchic45.financetracker.domain.usecase.ObserveAccountByIdUseCase
 import com.denchic45.financetracker.domain.usecase.UpdateAccountUseCase
 import com.denchic45.financetracker.ui.AppEventHandler
 import com.denchic45.financetracker.ui.navigation.router.pop
-import com.denchic45.financetracker.ui.util.convertToAmount
-import com.denchic45.financetracker.ui.util.currencyRegex
 import com.denchic45.financetracker.ui.validator.CompositeValidator
 import com.denchic45.financetracker.ui.validator.Condition
 import com.denchic45.financetracker.ui.validator.Operator
@@ -35,11 +36,12 @@ class AccountEditorViewModel(
     private val addAccountUseCase: AddAccountUseCase,
     private val updateAccountUseCase: UpdateAccountUseCase,
     private val appEventHandler: AppEventHandler,
+    private val appPreferences: AppPreferences,
+    private val currencyHandler: CurrencyHandler,
     private val router: AppRouter
 ) : ViewModel() {
 
     val state = EditingAccountState()
-
 
     private val fieldEditor = FieldEditor(
         mapOf(
@@ -62,9 +64,10 @@ class AccountEditorViewModel(
             ValueValidator(
                 value = state::balance,
                 conditions = listOf(
-                    Condition(String::isNotEmpty).observable { isValid ->
-                        state.showBalanceError = !isValid
-                    }
+                    Condition<String>({ accountId != null || it.toFloatOrNull() != null })
+                        .observable { isValid ->
+                            state.showBalanceError = !isValid
+                        }
                 ),
                 operator = Operator.allEach()
             )
@@ -74,12 +77,16 @@ class AccountEditorViewModel(
 
     init {
         viewModelScope.launch {
-            accountId?.let { id ->
-                findAccountByIdUseCase(id).first().getOrNull()?.let { account ->
-                    state.name = account.name
-                    state.type = account.type
-                    state.balance = account.balance.convertToAmount()
-                    fieldEditor.updateOldValues()
+            state.currency = appPreferences.defaultCurrency.first()
+
+            viewModelScope.launch {
+                accountId?.let { id ->
+                    findAccountByIdUseCase(id).first().getOrNull()?.let { account ->
+                        state.name = account.name
+                        state.type = account.type
+                        state.balance = currencyHandler.formatForEditing(account.balance)
+                        fieldEditor.updateOldValues()
+                    }
                 }
             }
         }
@@ -92,11 +99,20 @@ class AccountEditorViewModel(
 
     fun onAccountTypeChange(type: AccountType) {
         state.type = type
+        state.iconName = when (type) {
+            AccountType.ORDINARY -> "wallet"
+            AccountType.DEBT -> "credit_card"
+            AccountType.SAVINGS -> "pig_money"
+        }
     }
 
     fun onBalanceChanged(balance: String) {
-        if (balance.matches(currencyRegex)) state.balance = balance
+        currencyHandler.filterInput(balance)?.let { state.balance = it }
         state.showBalanceError = false
+    }
+
+    fun onIconPick(iconName: String) {
+        state.iconName = iconName
     }
 
     fun onSaveClick() {
@@ -132,6 +148,8 @@ class EditingAccountState {
     var name by mutableStateOf("")
     var type by mutableStateOf(AccountType.ORDINARY)
     var balance by mutableStateOf("")
+    var iconName by mutableStateOf("wallet")
+    var currency by mutableStateOf<Currency?>(null)
 
     var createTransactionForUpdateBalance by mutableStateOf(false)
     var showNameError by mutableStateOf(false)
@@ -147,6 +165,7 @@ private fun EditingAccountState.toCreateRequest(): CreateAccountRequest {
         name = name,
         type = type,
         initialBalance = realBalance,
+        iconName = iconName
     )
 }
 
@@ -155,6 +174,8 @@ private fun EditingAccountState.toUpdateRequest(balanceChanged: Boolean) = Updat
     type = type,
     adjustBalance = if (balanceChanged) AdjustAccountBalanceRequest(
         balance = realBalance,
-        createTransaction = createTransactionForUpdateBalance
-    ) else null,
+        createTransaction = createTransactionForUpdateBalance,
+
+        ) else null,
+    iconName = iconName
 )

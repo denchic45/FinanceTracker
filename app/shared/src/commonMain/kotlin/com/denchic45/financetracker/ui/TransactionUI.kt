@@ -30,9 +30,7 @@ import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TransactionItem
 import com.denchic45.financetracker.ui.accounts.AccountTypeIcon
 import com.denchic45.financetracker.ui.dialog.ConfirmDeletionDialog
-import com.denchic45.financetracker.ui.transactions.ExpenseColor
 import com.denchic45.financetracker.ui.transactions.IncomeColor
-import com.denchic45.financetracker.ui.transactions.TransferColor
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.arrow_forward
 import financetracker_app.shared.generated.resources.common_delete_dialog_message
@@ -52,9 +50,9 @@ fun TransactionListItem(
     onClick: () -> Unit,
 ) {
     val amountColor = when (transaction) {
-        is TransactionItem.Expense -> ExpenseColor
         is TransactionItem.Income -> IncomeColor
-        is TransactionItem.Transfer -> TransferColor
+        is TransactionItem.Expense,
+        is TransactionItem.Transfer -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     val amountPrefix = when (transaction) {
@@ -107,7 +105,7 @@ fun TransactionListItem(
                             is TransactionItem.Expense,
                             is TransactionItem.Income -> {
                                 AccountTypeIcon(
-                                    transaction.account.type,
+                                    type = transaction.account.type,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
@@ -118,7 +116,7 @@ fun TransactionListItem(
 
                             is TransactionItem.Transfer -> {
                                 AccountTypeIcon(
-                                    transaction.account.type,
+                                    type = transaction.account.type,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
@@ -131,11 +129,11 @@ fun TransactionListItem(
                                     modifier = Modifier.padding(horizontal = 8.dp).size(16.dp)
                                 )
                                 AccountTypeIcon(
-                                    transaction.account.type,
+                                    type = transaction.account.type,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
-                                    transaction.account.name,
+                                    transaction.incomeAccount.name,
                                     modifier = Modifier.padding(start = 8.dp)
                                 )
                             }
@@ -181,7 +179,8 @@ private fun TransactionListItemPreview() {
                         id = UUID.randomUUID(),
                         name = "Main Card",
                         type = AccountType.ORDINARY,
-                        balance = 100000
+                        balance = 100000,
+                        iconName = "credit_card"
                     ),
                     category = CategoryItem(
                         id = 1,
@@ -203,7 +202,8 @@ private fun TransactionListItemPreview() {
                         id = UUID.randomUUID(),
                         name = "Main Card",
                         type = AccountType.ORDINARY,
-                        balance = 250000
+                        balance = 250000,
+                        iconName = "wallet"
                     ),
                     category = CategoryItem(
                         id = 2,
@@ -225,13 +225,15 @@ private fun TransactionListItemPreview() {
                         id = UUID.randomUUID(),
                         name = "Main Card",
                         type = AccountType.ORDINARY,
-                        balance = 90000
+                        balance = 90000,
+                        iconName = "credit_card"
                     ),
                     incomeAccount = AccountItem(
                         id = UUID.randomUUID(),
                         name = "Savings",
                         type = AccountType.SAVINGS,
-                        balance = 50000
+                        balance = 50000,
+                        iconName = "moneybag"
                     )
                 ),
                 onClick = {}
@@ -239,3 +241,7 @@ private fun TransactionListItemPreview() {
         }
     }
 }
+
+@get:Composable
+val TransactionItem.displayedAmount: String
+    get() = LocalCurrencyHandler.current.formatForDisplay(amount, LocalDefaultCurrency.current)

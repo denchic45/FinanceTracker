@@ -4,6 +4,7 @@ import com.denchic45.financetracker.data.AppPreferences
 import com.denchic45.financetracker.data.database.AppDatabase
 import com.denchic45.financetracker.data.repository.AccountRepository
 import com.denchic45.financetracker.data.repository.CategoryRepository
+import com.denchic45.financetracker.data.repository.SettingsRepository
 import com.denchic45.financetracker.data.repository.TagRepository
 import com.denchic45.financetracker.data.repository.TransactionRepository
 import com.denchic45.financetracker.data.service.AuthService
@@ -18,6 +19,7 @@ val repositoryModule = module {
     singleOf(::AccountRepository)
     singleOf(::TransactionRepository)
     singleOf(::CategoryRepository)
+    singleOf(::SettingsRepository)
     singleOf(::TagRepository)
     singleOf(::StatisticsService)
 }
