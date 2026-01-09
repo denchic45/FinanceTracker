@@ -6,7 +6,7 @@ import com.denchic45.financetracker.api.category.model.CategoryResponse
 fun CategoryDao.toCategoryResponse() = CategoryResponse(
     id=id.value,
     name = name,
-    icon = icon,
+    iconName = iconName,
     income = income
 )
 

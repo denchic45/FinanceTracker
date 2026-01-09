@@ -11,8 +11,7 @@ data class CategoryEntity(
     val id: Long,
     @ColumnInfo(name = "category_name")
     val name: String,
-    @ColumnInfo(name = "icon")
-    val icon: String,
-    @ColumnInfo(name = "income")
+    @ColumnInfo(name = "icon_name")
+    val iconName: String,
     val income: Boolean
 )

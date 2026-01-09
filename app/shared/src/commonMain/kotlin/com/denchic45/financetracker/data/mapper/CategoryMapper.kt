@@ -11,14 +11,14 @@ fun List<CategoryResponse>.toCategoryEntities() = map { response ->
 fun CategoryResponse.toCategoryEntity() = CategoryEntity(
     id = id,
     name = name,
-    icon = icon,
+    iconName = iconName,
     income = income
 )
 
 fun CategoryEntity.toCategoryResponse() = CategoryResponse(
     id = id,
     name = name,
-    icon = icon,
+    iconName = iconName,
     income = income
 )
 
@@ -27,7 +27,7 @@ fun List<CategoryEntity>.toCategoryResponses() = map(CategoryEntity::toCategoryR
 fun CategoryEntity.toCategoryItem() = CategoryItem(
     id = id,
     name = name,
-    iconName = icon,
+    iconName = iconName,
     income = income
 )
 

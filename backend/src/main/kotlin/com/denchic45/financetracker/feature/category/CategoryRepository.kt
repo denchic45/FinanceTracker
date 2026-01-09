@@ -22,7 +22,7 @@ class CategoryRepository() {
         transaction {
             CategoryDao.new {
                 name = request.name
-                icon = request.icon
+                iconName = request.iconName
                 income = request.income
                 owner = ensureNotNull(UserDao.findById(ownerId)) { UserNotFound }
             }.toCategoryResponse()
@@ -41,7 +41,7 @@ class CategoryRepository() {
         transaction {
             CategoryDao.findById(categoryId)?.apply {
                 name = request.name
-                icon = request.icon
+                iconName = request.iconName
             }?.toCategoryResponse()?.right() ?: CategoryNotFound.left()
         }
 
@@ -78,7 +78,7 @@ class CategoryRepository() {
                 // Создание новой сущности CategoryDao для вставки в базу данных
                 CategoryDao.new {
                     this.name = name
-                    this.icon = icon
+                    this.iconName = icon
                     this.income = isIncome
                     this.owner = UserDao[userId]
                 }

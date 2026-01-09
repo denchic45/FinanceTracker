@@ -22,10 +22,11 @@ interface TransactionDao {
     @Transaction
     @Query(
         """
-        SELECT tr.*, ca.category_id, ca.category_name category_name, ca.icon,
+        SELECT tr.*, ca.category_id, ca.category_name category_name, ca.icon_name,
         ca.income, ac.account_id, ac.account_name account_name, ac.type account_type,
-        ac.balance account_balance, incac.balance income_account_balance, incac.account_id, incac.account_name income_account_name,
-        incac.type income_account_type
+        ac.balance account_balance, ac.icon_name account_icon_name,
+        incac.balance income_account_balance, incac.account_id, incac.account_name income_account_name,
+        incac.type income_account_type, incac.icon_name income_account_icon_name
         FROM `transaction` tr
         INNER JOIN account ac ON ac.account_id == tr.account_id
         LEFT JOIN account incac ON incac.account_id == tr.income_account_id
@@ -38,10 +39,11 @@ interface TransactionDao {
     @Transaction
     @Query(
         """
-        SELECT tr.*, ca.category_id, ca.category_name category_name, ca.icon,
+        SELECT tr.*, ca.category_id, ca.category_name category_name, ca.icon_name,
         ca.income, ac.account_id, ac.account_name account_name, ac.type account_type,
-        ac.balance account_balance, incac.balance income_account_balance, incac.account_id, incac.account_name income_account_name,
-        incac.type income_account_type
+        ac.balance account_balance, ac.icon_name account_icon_name,
+        incac.balance income_account_balance, incac.account_id, incac.account_name income_account_name,
+        incac.type income_account_type, incac.icon_name income_account_icon_name
         FROM `transaction` tr
         INNER JOIN account ac ON ac.account_id == tr.account_id
         LEFT JOIN account incac ON incac.account_id == tr.income_account_id
@@ -55,10 +57,11 @@ interface TransactionDao {
     @Transaction
     @Query(
         """
-        SELECT tr.*, ca.category_id, ca.category_name category_name, ca.icon,
+        SELECT tr.*, ca.category_id, ca.category_name category_name, ca.icon_name,
         ca.income, ac.account_id, ac.account_name account_name, ac.type account_type,
-        ac.balance account_balance, incac.balance income_account_balance, incac.account_id, incac.account_name income_account_name,
-        incac.type income_account_type
+        ac.balance account_balance, ac.icon_name account_icon_name,
+        incac.balance income_account_balance, incac.account_id, incac.account_name income_account_name,
+        incac.type income_account_type, incac.icon_name income_account_icon_name
         FROM `transaction` tr
         INNER JOIN account ac ON ac.account_id == tr.account_id
         LEFT JOIN account incac ON incac.account_id == tr.income_account_id

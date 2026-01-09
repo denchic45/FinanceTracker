@@ -114,11 +114,11 @@ class EditingCategoryState(val categoryId: Long?) {
 
 fun EditingCategoryState.toCreateRequest() = CreateCategoryRequest(
     name = name,
-    icon = iconName,
+    iconName = iconName,
     income = income
 )
 
 fun EditingCategoryState.toUpdateRequest() = UpdateCategoryRequest(
     name = name,
-    icon = iconName
+    iconName = iconName
 )

@@ -29,7 +29,7 @@ fun Application.configureCategory() {
                                 CategoryValidationMessages.NAME_REQUIRED
                             )
                             condition(
-                                request.icon.isNotBlank(),
+                                request.iconName.isNotBlank(),
                                 CategoryValidationMessages.ICON_REQUIRED
                             )
                         }
