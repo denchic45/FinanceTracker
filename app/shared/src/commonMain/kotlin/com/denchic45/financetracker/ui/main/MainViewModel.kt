@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation3.runtime.NavKey
 import com.denchic45.financetracker.di.AppRouter
 import com.denchic45.financetracker.ui.AppEventHandler
+import com.denchic45.financetracker.ui.PickerMode
 import com.denchic45.financetracker.ui.navigation.router.Router
 import com.denchic45.financetracker.ui.navigation.router.bringToFront
 import com.denchic45.financetracker.ui.navigation.router.push
@@ -25,7 +26,7 @@ class MainViewModel(
 
     fun onAnalyticsNavigate() = navbarRouter.bringToFront(NavigationBarScreen.Analytics)
 
-    fun onLabelsNavigate() = navbarRouter.bringToFront(NavigationBarScreen.Labels)
+    fun onCategoriesNavigate() = navbarRouter.bringToFront(NavigationBarScreen.Categories)
 
     fun onCreateTransactionClick() {
         router.push(NavEntry.TransactionEditor(null))
@@ -52,7 +53,7 @@ class MainViewModel(
 sealed interface NavigationBarScreen : NavKey {
     data object Home : NavigationBarScreen, NavKey
     data object Analytics : NavigationBarScreen, NavKey
-    data object Labels : NavigationBarScreen, NavKey
+    data object Categories : NavigationBarScreen, NavKey
 }
 
 @Serializable
@@ -75,10 +76,10 @@ sealed interface NavEntry : NavKey {
     data class CategoryPicker(val income: Boolean, val selectedId: Long?) : NavEntry
 
     data class AccountEditor(val accountId: UUID?) : NavEntry
-    data class AccountPicker(val selectedIds: List<UUID>?) : NavEntry
+    data class AccountPicker(val mode: PickerMode) : NavEntry
 
 
-    data class TagsPicker(val selectedIds: List<Long>) : NavEntry
+    data class TagsPicker(val selectedIds: Set<Long>) : NavEntry
     data class TagDetails(val tagId: Long) : NavEntry
     data class TagEditor(val tagId: Long?) : NavEntry
 }

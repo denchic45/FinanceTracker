@@ -156,8 +156,8 @@ fun MainScreen(viewModel: MainViewModel) {
                         label = { Text(stringResource(Res.string.nav_analytics_label)) }
                     )
                     NavigationBarItem(
-                        selected = current is NavigationBarScreen.Labels,
-                        onClick = viewModel::onLabelsNavigate,
+                        selected = current is NavigationBarScreen.Categories,
+                        onClick = viewModel::onCategoriesNavigate,
                         icon = {
                             Icon(painterResource(Res.drawable.category), null)
                         },
