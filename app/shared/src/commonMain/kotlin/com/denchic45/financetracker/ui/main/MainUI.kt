@@ -101,7 +101,12 @@ fun MainScreen(viewModel: MainViewModel) {
                     NavigationDrawerItem(
                         label = { Text(stringResource(Res.string.nav_data_usage_label)) },
                         selected = false,
-                        icon = { Icon(painterResource(Res.drawable.database), contentDescription = null) },
+                        icon = {
+                            Icon(
+                                painterResource(Res.drawable.database),
+                                contentDescription = null
+                            )
+                        },
                         onClick = {
                             toggleNavigationDrawer()
                             viewModel.onDataUsageClick()
@@ -124,7 +129,12 @@ fun MainScreen(viewModel: MainViewModel) {
                     NavigationDrawerItem(
                         label = { Text(stringResource(Res.string.nav_about_label)) },
                         selected = false,
-                        icon = { Icon(painterResource(Res.drawable.info_circle), contentDescription = null) },
+                        icon = {
+                            Icon(
+                                painterResource(Res.drawable.info_circle),
+                                contentDescription = null
+                            )
+                        },
                         onClick = {
                             toggleNavigationDrawer()
                             viewModel.onAboutClick()
@@ -169,7 +179,10 @@ fun MainScreen(viewModel: MainViewModel) {
                 FloatingActionButton(
                     onClick = viewModel::onCreateTransactionClick
                 ) {
-                    Icon(painterResource(Res.drawable.add), contentDescription = stringResource(Res.string.txn_new))
+                    Icon(
+                        painterResource(Res.drawable.add),
+                        contentDescription = stringResource(Res.string.txn_new)
+                    )
                 }
             }
         ) { innerPadding ->
@@ -190,7 +203,7 @@ fun MainScreen(viewModel: MainViewModel) {
                     entry<NavigationBarScreen.Analytics> {
                         AnalyticsScreen(onNavigationDrawerClick = ::toggleNavigationDrawer)
                     }
-                    entry<NavigationBarScreen.Labels> {
+                    entry<NavigationBarScreen.Categories> {
                         CategoriesScreen(onNavigationDrawerClick = ::toggleNavigationDrawer)
                     }
                 }

@@ -6,7 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.denchic45.financetracker.ui.auth.AuthScreen
-import com.denchic45.financetracker.ui.main.RootContainer
+import com.denchic45.financetracker.ui.main.MainNavigation
 import com.denchic45.financetracker.ui.splash.Screen
 import com.denchic45.financetracker.ui.splash.SplashViewModel
 import com.denchic45.financetracker.ui.theme.FinanceTrackerTheme
@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
                 val viewModel = koinViewModel<SplashViewModel>()
                 when (viewModel.screen) {
                     Screen.Auth -> AuthScreen()
-                    Screen.Main -> RootContainer()
+                    Screen.Main -> MainNavigation()
                     Screen.Splash -> {}
                 }
             }
