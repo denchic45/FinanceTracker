@@ -12,6 +12,7 @@ val categorizedIconNames = setOf(
     "building_stadium",
     "home",
     "building_circus",
+    "building_community",
     "building_carousel",
     // E_commerce
     "backpack",
@@ -21,6 +22,7 @@ val categorizedIconNames = setOf(
     "shirt",
     "gift",
     "shopping_cart",
+    "box",
     // Text
     "ballpen",
     "language",
