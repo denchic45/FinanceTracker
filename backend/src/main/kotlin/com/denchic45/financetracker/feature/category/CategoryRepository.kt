@@ -53,19 +53,19 @@ class CategoryRepository() {
     fun addDefaultsFor(userId: UUID) {
         val defaultCategoryData = listOf(
             // --- EXPENSES ---
-            Triple("Еда и Напитки", "burger", false),
+            Triple("Продукты", "shopping_cart", false),
             Triple("Транспорт", "car", false),
-            Triple("Жилье и Аренда", "home", false),
+            Triple("Жилье и аренда", "home", false),
             Triple("Развлечения", "video", false),
-            Triple("Покупки", "shopping_cart", false),
+            Triple("Покупки", "box", false),
             Triple("Одежда", "shirt", false),
             Triple("Здоровье", "first_aid_kit", false),
             Triple("Фитнес", "barbell", false),
             Triple("Подарки", "gift", false), // Расход
             Triple("Изучение английского", "language", false),
             Triple("Интернет", "access_point", false),
-            Triple("Коммунальные Услуги", "umbrella", false),
-            Triple("Прочие Расходы", "axe", false),
+            Triple("Коммунальные услуги", "building_community", false),
+            Triple("Прочие расходы", "axe", false),
 
             // --- INCOMES ---
             Triple("Зарплата", "pig_money", true),
