@@ -39,7 +39,7 @@ fun AbstractTransactionResponse.toTransactionEntity(): TransactionEntity {
 @OptIn(ExperimentalTime::class)
 fun AggregatedTransactionEntity.toTransactionItem(): TransactionItem {
     val accountItem = with(account) {
-        AccountItem(id, name, type, balance)
+        AccountItem(id, name, type, balance, iconName)
     }
 
     return when (type) {
@@ -73,7 +73,7 @@ fun AggregatedTransactionEntity.toTransactionItem(): TransactionItem {
             note = note,
             account = accountItem,
             incomeAccount = with(incomeAccount!!) {
-                AccountItem(id, name, type, balance)
+                AccountItem(id, name, type, balance, iconName)
             }
         )
     }

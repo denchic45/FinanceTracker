@@ -11,7 +11,8 @@ fun AccountDao.toTransactionAccount() = TransactionAccount(
     name = name,
     accountType = type,
     initialBalance = initialBalance,
-    balance = balance
+    balance = balance,
+    iconName = iconName
 )
 
 fun TransactionDao.toResponse(): AbstractTransactionResponse {
