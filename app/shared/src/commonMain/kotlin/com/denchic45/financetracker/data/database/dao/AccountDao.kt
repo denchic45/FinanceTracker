@@ -28,4 +28,7 @@ interface AccountDao {
 //    @Transaction
     @Query("DELETE FROM account WHERE account_id = :accountId")
     fun delete(accountId: UUID)
+
+    @Query("DELETE FROM account WHERE account_id NOT IN (:ids)")
+    fun deleteWhereNotIn(ids: List<UUID>)
 } 

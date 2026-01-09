@@ -36,6 +36,7 @@ class AccountRepository(
         fetch = {
             accountApi.getList().onRight {
                 database.withTransaction {
+                    accountDao.deleteWhereNotIn(it.map(AccountResponse::id))
                     accountDao.upsert(it.toAccountEntities())
                 }
             }
