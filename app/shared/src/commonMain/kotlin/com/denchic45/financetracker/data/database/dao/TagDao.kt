@@ -54,4 +54,7 @@ interface TagDao {
     """
     )
     fun getTagsForTransaction(transactionId: Long): List<TagEntity>
+
+    @Query("DELETE FROM tag WHERE tag_id NOT IN (:ids)")
+    fun deleteWhereNotIn(ids: List<Long>)
 }

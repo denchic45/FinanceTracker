@@ -29,6 +29,7 @@ class TagRepository(
         fetch = {
             tagApi.getList().onRight { responses ->
                 database.withTransaction {
+                    tagDao.deleteWhereNotIn(responses.map(TagResponse::id))
                     tagDao.upsert(responses.toTagEntities())
                 }
             }
