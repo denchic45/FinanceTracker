@@ -1,18 +1,11 @@
 package com.denchic45.financetracker.ui.categoryeditor
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,13 +19,15 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.ui.categorizedIcons
+import com.denchic45.financetracker.ui.iconpicker.IconGrid
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.arrow_back
 import financetracker_app.shared.generated.resources.category_new
@@ -41,11 +36,10 @@ import financetracker_app.shared.generated.resources.check
 import financetracker_app.shared.generated.resources.common_back
 import financetracker_app.shared.generated.resources.common_name_field
 import financetracker_app.shared.generated.resources.common_save
-import financetracker_app.shared.generated.resources.icon_pick
+import financetracker_app.shared.generated.resources.icon_pick_title
 import financetracker_app.shared.generated.resources.txn_expense
 import financetracker_app.shared.generated.resources.txn_income
 import financetracker_app.shared.generated.resources.validation_name_required
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -137,35 +131,16 @@ fun CategoryEditorScreen(
                 focusRequester.requestFocus()
             }
 
-@Composable
-fun CategoryIconGridItem(
-    iconResource: DrawableResource,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .size(64.dp)
-            .aspectRatio(1f)
-            .clip(MaterialTheme.shapes.medium)
-            .background(
-                if (selected) MaterialTheme.colorScheme.primaryContainer
-                else MaterialTheme.colorScheme.surfaceVariant
+            Text(
+                stringResource(Res.string.icon_pick_title),
+                style = MaterialTheme.typography.titleMedium
             )
-            .border(
-                width = 1.dp,
-                color = if (selected) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.outline,
-                shape = MaterialTheme.shapes.medium
+
+            IconGrid(
+                selectedIconName = state.iconName,
+                onIconClick = viewModel::onIconChange,
+                icons = categorizedIcons.toList()
             )
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(iconResource),
-            contentDescription = null,
-            tint = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
-            else MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        }
     }
 }

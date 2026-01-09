@@ -25,13 +25,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.ui.NoDataContent
-import com.denchic45.financetracker.ui.categoryeditor.CategoryIconGridItem
+import com.denchic45.financetracker.ui.iconpicker.IconGridItem
 import com.denchic45.financetracker.ui.resource.CacheableResourceListContent
 import com.denchic45.financetracker.ui.resource.CircularLoadingBox
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.allDrawableResources
 import financetracker_app.shared.generated.resources.category_add
 import financetracker_app.shared.generated.resources.category_list_empty
+import financetracker_app.shared.generated.resources.category_pick_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -57,18 +58,25 @@ fun CategoryPickerSheet(
             resource = categories,
             loadingContent = { CircularLoadingBox(Modifier.height(160.dp)) },
             dataContent = { items ->
-                LazyVerticalGrid(
-                    contentPadding = PaddingValues(16.dp),
-                    columns = GridCells.Fixed(4),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(items, key = { it.id }) { category ->
-                        CategoryGridItem(
-                            category = category,
-                            selected = category.id == selectedId,
-                            onClick = { viewModel.onSelect(category) }
-                        )
+                Column {
+                    Text(
+                        stringResource(Res.string.category_pick_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    LazyVerticalGrid(
+                        contentPadding = PaddingValues(16.dp),
+                        columns = GridCells.Fixed(4),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(items, key = { it.id }) { category ->
+                            CategoryGridItem(
+                                category = category,
+                                selected = category.id == selectedId,
+                                onClick = { viewModel.onSelect(category) }
+                            )
+                        }
                     }
                 }
             },
@@ -94,7 +102,7 @@ fun CategoryGridItem(
     onClick: () -> Unit,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        CategoryIconGridItem(
+        IconGridItem(
             iconResource = Res.allDrawableResources.getValue(category.iconName),
             selected = selected,
             onClick = onClick
