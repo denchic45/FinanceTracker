@@ -241,7 +241,8 @@ class StatisticsService {
                     name = accountDao.name,
                     type = accountDao.type,
                     initialBalance = accountDao.initialBalance,
-                    balance = accountDao.balance
+                    balance = accountDao.balance,
+                    iconName = accountDao.iconName
                 ), expenses = allExpenses, incomes = allIncomes, profit = allIncomes - allExpenses
             )
         }
