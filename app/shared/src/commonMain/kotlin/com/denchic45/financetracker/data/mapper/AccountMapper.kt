@@ -14,7 +14,8 @@ fun AccountResponse.toAccountEntity() = AccountEntity(
     name = name,
     type = type,
     initialBalance = initialBalance,
-    balance = balance
+    balance = balance,
+    iconName = iconName
 )
 
 fun TransactionAccount.toAccountEntity() = AccountEntity(
@@ -22,14 +23,16 @@ fun TransactionAccount.toAccountEntity() = AccountEntity(
     name = name,
     type = accountType,
     initialBalance = initialBalance,
-    balance = balance
+    balance = balance,
+    iconName = iconName
 )
 
 fun AccountEntity.toAccountItem() = AccountItem(
     id = id,
     name = name,
     type = type,
-    balance = balance
+    balance = balance,
+    iconName = iconName
 )
 
 fun List<AccountEntity>.toAccountItems() = map(AccountEntity::toAccountItem)

@@ -14,7 +14,8 @@ data class AccountItem(
     val id: UUID,
     val name: String,
     val type: AccountType,
-    val balance: Long
+    val balance: Long,
+    val iconName: String
 ) {
     val displayedBalance = balance.convertToCurrency()
 }

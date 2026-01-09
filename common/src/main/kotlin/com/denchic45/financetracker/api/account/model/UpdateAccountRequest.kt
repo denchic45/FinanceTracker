@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class UpdateAccountRequest(
     val name: String,
     val type: AccountType,
-    val adjustBalance: AdjustAccountBalanceRequest?
+    val adjustBalance: AdjustAccountBalanceRequest?,
+    val iconName: String
 )

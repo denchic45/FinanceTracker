@@ -8,7 +8,8 @@ fun AccountDao.toAccountResponse() = AccountResponse(
     name = name,
     type = type,
     initialBalance = initialBalance,
-    balance = balance
+    balance = balance,
+    iconName = iconName
 )
 
 fun Iterable<AccountDao>.toAccountResponses() = map(AccountDao::toAccountResponse)

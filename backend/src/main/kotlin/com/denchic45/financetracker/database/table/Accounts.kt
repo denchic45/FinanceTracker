@@ -22,9 +22,9 @@ object Accounts : UUIDTable("account", "account_id") {
     val name = text("name")
     val type = enumerationByName<AccountType>("type", 16)
     val initialBalance = long("initial_balance")
+    val iconName = text("icon_name")
     val ownerId = reference("user_id", Users,
         onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.CASCADE)
-
 }
 
 class AccountDao(id: EntityID<UUID>) : UUIDEntity(id) {
@@ -33,6 +33,7 @@ class AccountDao(id: EntityID<UUID>) : UUIDEntity(id) {
     var name by Accounts.name
     var type by Accounts.type
     var initialBalance by Accounts.initialBalance
+    var iconName by Accounts.iconName
     var owner by UserDao referencedOn Accounts.ownerId
 
 

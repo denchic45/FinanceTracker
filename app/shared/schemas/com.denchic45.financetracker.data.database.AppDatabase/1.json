@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ab90faa7af508aae8c6d9ff79a5435c0",
+    "identityHash": "7d970aadc6b1bd7bae0dcfe9970ec53d",
     "entities": [
       {
         "tableName": "transaction",
@@ -99,7 +99,7 @@
       },
       {
         "tableName": "category",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`category_id` INTEGER NOT NULL, `category_name` TEXT NOT NULL, `icon` TEXT NOT NULL, `income` INTEGER NOT NULL, PRIMARY KEY(`category_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`category_id` INTEGER NOT NULL, `category_name` TEXT NOT NULL, `icon_name` TEXT NOT NULL, `income` INTEGER NOT NULL, PRIMARY KEY(`category_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -114,8 +114,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "icon",
-            "columnName": "icon",
+            "fieldPath": "iconName",
+            "columnName": "icon_name",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -219,7 +219,7 @@
       },
       {
         "tableName": "account",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`account_id` BLOB NOT NULL, `account_name` TEXT NOT NULL, `type` TEXT NOT NULL, `initialBalance` INTEGER NOT NULL, `balance` INTEGER NOT NULL, PRIMARY KEY(`account_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`account_id` BLOB NOT NULL, `account_name` TEXT NOT NULL, `type` TEXT NOT NULL, `initial_balance` INTEGER NOT NULL, `balance` INTEGER NOT NULL, `icon_name` TEXT NOT NULL, PRIMARY KEY(`account_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -241,7 +241,7 @@
           },
           {
             "fieldPath": "initialBalance",
-            "columnName": "initialBalance",
+            "columnName": "initial_balance",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -249,6 +249,12 @@
             "fieldPath": "balance",
             "columnName": "balance",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "iconName",
+            "columnName": "icon_name",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -262,7 +268,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ab90faa7af508aae8c6d9ff79a5435c0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7d970aadc6b1bd7bae0dcfe9970ec53d')"
     ]
   }
 }

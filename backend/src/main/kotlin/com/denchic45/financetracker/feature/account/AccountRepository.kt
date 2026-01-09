@@ -25,6 +25,7 @@ class AccountRepository() {
                 name = request.name
                 type = request.type
                 initialBalance = request.initialBalance
+                iconName = request.iconName
                 owner = ensureNotNull(UserDao.findById(ownerId)) { UserNotFound }
             }.toAccountResponse()
         }
@@ -38,6 +39,7 @@ class AccountRepository() {
         AccountDao.findById(accountId)?.apply {
             name = request.name
             type = request.type
+            iconName = request.iconName
         }?.toAccountResponse()?.right() ?: AccountNotFound.left()
     }
 
