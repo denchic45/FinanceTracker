@@ -91,48 +91,24 @@ fun AccountEditorScreen(
                 }
             })
         }) { paddingValues ->
-        Column(
-            modifier = Modifier.padding(paddingValues).padding(16.dp)
-        ) {
+        Column(Modifier.padding(paddingValues).padding(top = 16.dp)) {
+            val focusRequester = remember { FocusRequester() }
             OutlinedTextField(
                 value = state.name,
                 onValueChange = viewModel::onAccountNameChanged,
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                singleLine = true,
                 label = { Text(stringResource(Res.string.common_name_field)) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                    .focusRequester(focusRequester),
                 isError = state.showNameError,
                 supportingText = {
                     if (state.showNameError)
                         Text(stringResource(Res.string.validation_name_required))
                 })
-            var accountTypesExpanded by remember { mutableStateOf(false) }
-            ExposedDropdownMenuBox(
-                expanded = accountTypesExpanded, onExpandedChange = { accountTypesExpanded = it }) {
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth()
-                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
-                    value = state.type.displayName(),
-                    onValueChange = { },
-                    readOnly = true,
-                    singleLine = true,
-                    label = { Text(stringResource(Res.string.account_type)) },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(
-                            expanded = accountTypesExpanded,
-                            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.SecondaryEditable),
-                        )
-                    },
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    supportingText = {})
-                ExposedDropdownMenu(
-                    expanded = accountTypesExpanded,
-                    onDismissRequest = { accountTypesExpanded = false }) {
-                    AccountType.entries.forEach {
-                        DropdownMenuItem(text = { Text(it.displayName()) }, onClick = {
-                            accountTypesExpanded = false
-                            viewModel.onAccountTypeChange(it)
-                        })
-                    }
-                }
+
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
             }
 
             if (accountId == null) OutlinedTextField(

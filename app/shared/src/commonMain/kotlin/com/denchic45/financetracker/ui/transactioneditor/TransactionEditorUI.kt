@@ -40,12 +40,15 @@ import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
@@ -211,94 +214,112 @@ fun TransactionEditorScreen(
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .verticalScroll(rememberScrollState()),
         ) {
-            TransactionTypeSelector(
-                selectedType = state.transactionType,
-                onTypeSelected = viewModel::onTransactionTypeChange
-            )
-
-            PlainTextTextField(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                value = state.amountText,
-                onValueChange = viewModel::onAmountTextChange,
-                textStyle = MaterialTheme.typography.headlineLarge.copy(textAlign = TextAlign.Center),
-                placeholderText = "0.00 ₽",
-                isError = state.amountErrorType != null,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Decimal
-                ),
-                visualTransformation = CurrencyVisualTransformation()
-            )
-
-            Row {
-                ListItem(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable {
-                            showDatePicker = true
-                        },
-                    headlineContent = {
-                        Text(
-                            state.datetime.formattedDateTime,
-                            modifier = Modifier
-                        )
-                    },
-                    leadingContent = { Icon(painterResource(Res.drawable.calendar_event), null) },
+            Column(
+                Modifier.padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                TransactionTypeSelector(
+                    selectedType = state.transactionType,
+                    onTypeSelected = viewModel::onTransactionTypeChange
                 )
-                ListItem(
-                    modifier = Modifier
-                        .width(124.dp)
-                        .clickable {
-                            showTimePicker = true
-                        },
-                    headlineContent = {
-                        Text(
-                            state.datetime.time.format(LocalTime.Format {
-                                hour(); char(':'); minute()
-                            }),
-                            modifier = Modifier
-                        )
-                    },
-                    leadingContent = { Icon(painterResource(Res.drawable.clock), null) },
+                val focusRequester = remember { FocusRequester() }
+                PlainTextTextField(
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                        .focusRequester(focusRequester),
+                    value = state.amountText,
+                    onValueChange = viewModel::onAmountTextChange,
+                    textStyle = MaterialTheme.typography.headlineLarge.copy(textAlign = TextAlign.Center),
+                    placeholderText = "0.00 ₽",
+                    isError = state.amountErrorType != null,
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal
+                    ),
+                    visualTransformation = CurrencyVisualTransformation()
                 )
-            }
 
-            AccountSelector(
-                label = stringResource(if (state.transactionType == TransactionType.TRANSFER) Res.string.txn_source_account_hint else Res.string.txn_income_account_hint),
-                selectedItem = state.sourceAccount,
-                onClick = viewModel::onSourceAccountPickerClick,
-                isError = state.showSourceAccountError
-            )
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                }
 
-            if (state.transactionType == TransactionType.TRANSFER) {
+                Row {
+                    ListItem(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                showDatePicker = true
+                            },
+                        headlineContent = {
+                            Text(
+                                state.datetime.formattedDateTime,
+                                modifier = Modifier
+                            )
+                        },
+                        leadingContent = {
+                            Icon(
+                                painterResource(Res.drawable.calendar_event),
+                                null
+                            )
+                        },
+                    )
+                    ListItem(
+                        modifier = Modifier
+                            .width(124.dp)
+                            .clickable {
+                                showTimePicker = true
+                            },
+                        headlineContent = {
+                            Text(
+                                state.datetime.time.format(LocalTime.Format {
+                                    hour(); char(':'); minute()
+                                }),
+                                modifier = Modifier
+                            )
+                        },
+                        leadingContent = { Icon(painterResource(Res.drawable.clock), null) },
+                    )
+                }
+
                 AccountSelector(
-                    label = stringResource(Res.string.txn_income_account_hint),
-                    selectedItem = state.incomeAccount,
-                    onClick = viewModel::onIncomeAccountPickerClick,
-                    isError = state.showIncomeAccountError
+                    label = stringResource(
+                        when (state.transactionType) {
+                            TransactionType.EXPENSE, TransactionType.TRANSFER -> Res.string.txn_source_account_hint
+                            TransactionType.INCOME -> Res.string.txn_income_account_hint
+                        }
+                    ),
+                    selectedItem = state.sourceAccount,
+                    onClick = viewModel::onSourceAccountPickerClick,
+                    isError = state.showSourceAccountError
+                )
+
+                if (state.transactionType == TransactionType.TRANSFER) {
+                    AccountSelector(
+                        label = stringResource(Res.string.txn_income_account_hint),
+                        selectedItem = state.incomeAccount,
+                        onClick = viewModel::onIncomeAccountPickerClick,
+                        isError = state.showIncomeAccountError
+                    )
+                }
+
+                if (state.transactionType != TransactionType.TRANSFER) {
+                    CategorySelector(
+                        selectedItem = state.category,
+                        onClick = viewModel::onCategoryPickerClick,
+                        isError = state.showCategoryError,
+                    )
+                }
+
+                OutlinedTextField(
+                    value = state.note,
+                    onValueChange = viewModel::onNoteChange,
+                    label = { Text(stringResource(Res.string.txn_note_field_hint)) },
+                    supportingText = { },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 3
                 )
             }
-
-            if (state.transactionType != TransactionType.TRANSFER) {
-                CategorySelector(
-                    selectedItem = state.category,
-                    onClick = viewModel::onCategoryPickerClick,
-                    isError = state.showCategoryError,
-                )
-            }
-
-            OutlinedTextField(
-                value = state.note,
-                onValueChange = viewModel::onNoteChange,
-                label = { Text(stringResource(Res.string.txn_note_field_hint)) },
-                supportingText = { },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 3
-            )
 
             TagsSelector(
                 selectedTags = state.tags,
@@ -364,7 +385,10 @@ private fun AccountSelector(
             verticalAlignment = Alignment.CenterVertically
         ) {
             selectedItem?.let {
-                AccountTypeIcon(selectedItem.type)
+                AccountTypeIcon(
+                    type = selectedItem.type,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
                 Spacer(Modifier.width(8.dp))
             }
             Text(
@@ -395,7 +419,11 @@ private fun CategorySelector(
             verticalAlignment = Alignment.CenterVertically
         ) {
             selectedItem?.let {
-                Icon(painterResource(categorizedIcons.getValue(selectedItem.iconName)), null)
+                Icon(
+                    painterResource(categorizedIcons.getValue(selectedItem.iconName)),
+                    null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
                 Spacer(Modifier.width(8.dp))
             }
             Text(

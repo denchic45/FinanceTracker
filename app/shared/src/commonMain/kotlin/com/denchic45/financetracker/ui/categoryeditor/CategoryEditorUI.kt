@@ -28,7 +28,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.ui.categorizedIcons
 import financetracker_app.shared.generated.resources.Res
@@ -121,33 +123,19 @@ fun CategoryEditorScreen(
                     }
                 }
             }
-
+            val focusRequester = remember { FocusRequester() }
             OutlinedTextField(
                 value = state.name,
                 onValueChange = viewModel::onNameChange,
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
                 label = { Text(stringResource(Res.string.common_name_field)) },
                 isError = state.showNameError,
                 supportingText = { if (state.showNameError) Text(stringResource(Res.string.validation_name_required)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
             )
-
-            Text(stringResource(Res.string.icon_pick), style = MaterialTheme.typography.titleMedium)
-
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 48.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(categorizedIcons.toList()) { (name, icon) ->
-                    CategoryIconGridItem(
-                        iconResource = icon,
-                        selected = state.iconName == name,
-                        onClick = { viewModel.onIconChange(name) })
-                }
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
             }
-        }
-    }
-}
 
 @Composable
 fun CategoryIconGridItem(
