@@ -40,6 +40,7 @@ class CategoryRepository(
         fetch = {
             categoryApi.getList(income).onRight {
                 database.withTransaction {
+                    categoryDao.deleteWhereNotIn(income, it.map(CategoryResponse::id))
                     categoryDao.upsert(it.toCategoryEntities())
                 }
             }.onLeft { println("left: $it") }

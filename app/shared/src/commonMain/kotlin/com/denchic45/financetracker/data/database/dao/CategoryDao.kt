@@ -29,4 +29,7 @@ interface CategoryDao {
 
     @Query("DELETE FROM category WHERE category_id = :id")
     suspend fun deleteById(id: Long)
+
+    @Query("DELETE FROM category WHERE income = :income AND category_id NOT IN (:ids)")
+    fun deleteWhereNotIn(income: Boolean, ids: List<Long>)
 }
