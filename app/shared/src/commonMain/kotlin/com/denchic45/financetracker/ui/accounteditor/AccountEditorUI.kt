@@ -160,7 +160,7 @@ fun AccountEditorScreen(
                     )
                 },
                 overlineContent = { Text(stringResource(Res.string.account_type)) },
-                headlineContent = { Text(state.type.displayName()) },
+                headlineContent = { Text(state.type.displayName) },
                 modifier = Modifier.clickable(onClick = { accountTypesExpanded = true })
             )
         }
@@ -257,7 +257,7 @@ fun AccountTypeSelectorSheet(
                     modifier = Modifier.clickable(onClick = { onSelect(type) }),
                     headlineContent = {
                         Text(
-                            type.displayName(),
+                            type.displayName,
                             color = contentColor,
                             fontWeight = if (selected) FontWeight.SemiBold else null
                         )

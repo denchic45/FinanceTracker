@@ -33,5 +33,7 @@ data class TransactionAccountEntity(
     val id: UUID,
     val name: String,
     val type: AccountType,
-    val balance: Long
+    val balance: Long,
+    @ColumnInfo(name = "icon_name")
+    val iconName: String
 )

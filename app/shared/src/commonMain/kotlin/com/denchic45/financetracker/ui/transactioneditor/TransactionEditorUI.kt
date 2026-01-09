@@ -363,7 +363,7 @@ private fun TransactionTypeSelector(
                     role = Role.RadioButton
                 )
             ) {
-                Text(type.displayName())
+                Text(type.displayName)
             }
         }
     }

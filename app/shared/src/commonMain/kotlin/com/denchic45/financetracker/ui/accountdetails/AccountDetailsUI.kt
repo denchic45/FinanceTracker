@@ -4,13 +4,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -22,13 +24,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.denchic45.financetracker.domain.model.AccountItem
+import com.denchic45.financetracker.domain.model.displayName
+import com.denchic45.financetracker.ui.accountIcons
+import com.denchic45.financetracker.ui.accounts.displayedBalance
 import com.denchic45.financetracker.ui.dialog.ConfirmDialog
+import com.denchic45.financetracker.ui.resource.CacheableResourceContent
 import com.denchic45.financetracker.ui.resource.CircularLoadingBox
-import com.denchic45.financetracker.ui.resource.onData
-import com.denchic45.financetracker.ui.resource.onLoading
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.account_delete_dialog_message
 import financetracker_app.shared.generated.resources.account_delete_dialog_title
@@ -50,7 +54,7 @@ fun AccountDetailsSheet(
         parametersOf(accountId)
     }
 ) {
-    val account by viewModel.account.collectAsState()
+    val accountResource by viewModel.account.collectAsState()
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     if (showDeleteConfirmation) {
@@ -64,15 +68,16 @@ fun AccountDetailsSheet(
     }
 
     ModalBottomSheet(onDismissRequest = viewModel::onDismissClick) {
-        account
-            .onLoading { CircularLoadingBox(Modifier.height(200.dp)) }
-            .onData { _, item ->
+        CacheableResourceContent(
+            resource = accountResource,
+            loadingContent = { CircularLoadingBox(Modifier.height(200.dp)) },
+            dataContent = {
                 AccountDetailsContent(
-                    account = item,
+                    account = it,
                     onEditClick = viewModel::onEditClick,
                     onRemoveClick = { showDeleteConfirmation = true }
                 )
-            }
+            })
     }
 }
 
@@ -88,29 +93,38 @@ private fun AccountDetailsContent(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = account.name,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
+        ListItem(
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+            leadingContent = {
+                Icon(
+                    painterResource(accountIcons.getValue(account.iconName)),
+                    null,
+                    modifier = Modifier.size(56.dp)
+                )
+            },
+            headlineContent = {
+                Text(
+                    text = account.name,
+                    style = MaterialTheme.typography.titleLarge
+                )
+            },
+            supportingContent = {
+                Text(
+                    text = account.type.displayName,
+//                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+            trailingContent = {
+                Text(
+                    text = account.displayedBalance,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
         )
-        Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            text = account.displayedBalance,
-            style = MaterialTheme.typography.titleLarge,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            text = account.type.name,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(16.dp))
-
+        HorizontalDivider(Modifier.padding(vertical = 24.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly

@@ -48,11 +48,12 @@ sealed class TransactionItem {
     ) : TransactionItem()
 }
 
-@Composable
-fun TransactionType.displayName() = stringResource(
-    when (this) {
-        TransactionType.EXPENSE -> Res.string.txn_expense
-        TransactionType.INCOME -> Res.string.txn_income
-        TransactionType.TRANSFER -> Res.string.txn_transfer
-    }
-)
+@get:Composable
+val TransactionType.displayName: String
+    get() = stringResource(
+        when (this) {
+            TransactionType.EXPENSE -> Res.string.txn_expense
+            TransactionType.INCOME -> Res.string.txn_income
+            TransactionType.TRANSFER -> Res.string.txn_transfer
+        }
+    )

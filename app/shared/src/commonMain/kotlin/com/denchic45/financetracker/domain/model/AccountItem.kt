@@ -17,11 +17,12 @@ data class AccountItem(
     val iconName: String
 )
 
-@Composable
-fun AccountType.displayName(): String = stringResource(
-    when (this) {
-        AccountType.ORDINARY -> Res.string.account_type_ordinary
-        AccountType.DEBT -> Res.string.account_type_debt
-        AccountType.SAVINGS -> Res.string.account_type_savings
-    }
-)
+@get:Composable
+val AccountType.displayName: String
+    get() = stringResource(
+        when (this) {
+            AccountType.ORDINARY -> Res.string.account_type_ordinary
+            AccountType.DEBT -> Res.string.account_type_debt
+            AccountType.SAVINGS -> Res.string.account_type_savings
+        }
+    )
