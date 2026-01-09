@@ -3,8 +3,6 @@ package com.denchic45.financetracker.database
 import com.denchic45.financetracker.database.table.*
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.exists
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
