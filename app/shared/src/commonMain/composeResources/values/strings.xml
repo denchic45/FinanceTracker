@@ -46,7 +46,6 @@
     <string name="account_type_ordinary">Ordinary</string>
     <string name="account_type_debt">Debt</string>
     <string name="account_type_savings">Savings</string>
-    <string name="accounts_select">Select Accounts</string>
     <string name="account_delete_dialog_message">The account and all transactions with it will be deleted without the possibility of recovery</string>
     <string name="accounts_title">Accounts</string>
     <string name="password_hide_field">Hide password</string>
@@ -61,7 +60,12 @@
     <string name="auth_firstname_field">First name</string>
     <string name="auth_lastname_field">Surname</string>
     <string name="auth_welcome">Welcome!</string>
-    <string name="icon_pick">Pick icon</string>
+    <string name="icon_pick_title">Pick icon</string>
+    <string name="account_pick_title">Pick account</string>
+    <string name="accounts_pick">Pick Accounts</string>
+    <string name="account_type_pick_title">Pick account type</string>
+    <string name="category_pick_title">Pick category</string>
+    <string name="tags_pick_title">Pick tags</string>
     <string name="common_all">Show all</string>
     <string name="common_select">Select</string>
     <string name="common_time_input_dialog_title">Select time</string>

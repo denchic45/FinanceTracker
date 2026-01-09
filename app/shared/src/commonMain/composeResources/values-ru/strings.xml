@@ -44,9 +44,8 @@
     <string name="account_balance">Баланс</string>
     <string name="account_type">Тип счета</string>
     <string name="account_type_ordinary">Обычный</string>
-    <string name="account_type_debt">Долг</string>
+    <string name="account_type_debt">Кредитный</string>
     <string name="account_type_savings">Сберегательный</string>
-    <string name="accounts_select">Выбрать счета</string>
     <string name="accounts_title">Счета</string>
     <string name="account_delete_dialog_message">Счет и все операции с ним будут удалены без возможности восстановления</string>
     <string name="password_hide_field">Скрыть пароль</string>
@@ -61,7 +60,12 @@
     <string name="auth_lastname_field">Фамилия</string>
     <string name="auth_repeat_password_field">Повторите пароль</string>
     <string name="auth_welcome">Добро пожаловать!</string>
-    <string name="icon_pick">Выберите иконку</string>
+    <string name="icon_pick_title">Выберите иконку</string>
+    <string name="account_pick_title">Выберите счет</string>
+    <string name="accounts_pick">Выбрать счета</string>
+    <string name="account_type_pick_title">Выберите тип счета</string>
+    <string name="category_pick_title">Выберите категорию</string>
+    <string name="tags_pick_title">Выберите теги</string>
     <string name="common_all">Все</string>
     <string name="common_time_input_dialog_title">Выбрать время</string>
     <string name="txns_title">Транзакции</string>
