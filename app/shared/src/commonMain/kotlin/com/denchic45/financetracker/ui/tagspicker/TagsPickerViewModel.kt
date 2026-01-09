@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class TagsPickerViewModel(
-    selectedTagIds: List<Long>,
+    selectedTagIds: Set<Long>,
     observeTagsUseCase: ObserveTagsUseCase,
     private val tagsPickerInteractor: TagsPickerInteractor,
     private val router: AppRouter

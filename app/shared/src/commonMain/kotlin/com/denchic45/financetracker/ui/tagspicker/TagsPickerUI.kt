@@ -12,6 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -29,6 +30,7 @@ import financetracker_app.shared.generated.resources.check
 import financetracker_app.shared.generated.resources.common_done
 import financetracker_app.shared.generated.resources.tag_add
 import financetracker_app.shared.generated.resources.tag_list_empty
+import financetracker_app.shared.generated.resources.tags_pick_title
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -38,7 +40,7 @@ import org.koin.core.parameter.parametersOf
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagsPickerSheet(
-    selectedTagIds: List<Long>,
+    selectedTagIds: Set<Long>,
     viewModel: TagsPickerViewModel = koinViewModel {
         parametersOf("selectedTagIds", selectedTagIds)
     }
@@ -47,14 +49,18 @@ fun TagsPickerSheet(
     val selected = viewModel.selectedTags
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(onDismissRequest = viewModel::onDismissClick, sheetState = sheetState) {
-
         CacheableResourceListContent(
             resource = tags,
             loadingContent = { CircularLoadingBox(Modifier.height(160.dp)) },
             dataContent = { tags ->
                 Column {
+                    Text(
+                        stringResource(Res.string.tags_pick_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
                     FlowRow(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier.padding(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
@@ -70,7 +76,7 @@ fun TagsPickerSheet(
                     FilledTonalButton(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
+                            .padding(horizontal = 16.dp),
                         onClick = viewModel::onDoneClick
                     ) {
                         Text(stringResource(Res.string.common_done))
