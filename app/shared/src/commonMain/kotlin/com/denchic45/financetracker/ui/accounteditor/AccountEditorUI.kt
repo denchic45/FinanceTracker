@@ -23,6 +23,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigationevent.NavigationEventInfo
@@ -31,6 +36,10 @@ import androidx.navigationevent.compose.rememberNavigationEventState
 import com.denchic45.financetracker.api.account.model.AccountType
 import com.denchic45.financetracker.domain.model.displayName
 import com.denchic45.financetracker.ui.CurrencyVisualTransformation
+import com.denchic45.financetracker.ui.LocalCurrencyHandler
+import com.denchic45.financetracker.ui.LocalDefaultCurrency
+import com.denchic45.financetracker.ui.accountIcons
+import com.denchic45.financetracker.ui.accounts.AccountTypeIcon
 import com.denchic45.financetracker.ui.dialog.ConfirmDiscardChangesDialog
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.account_balance
@@ -126,6 +135,11 @@ fun AccountEditorScreen(
                     keyboardType = KeyboardType.Decimal
                 ),
                 visualTransformation = CurrencyVisualTransformation()
+                visualTransformation = CurrencyVisualTransformation(
+                    LocalCurrencyHandler.current.decimalSeparator,
+                    LocalDefaultCurrency.current
+                )
+            )
             )
         }
     }

@@ -4,37 +4,61 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
+import com.denchic45.financetracker.domain.model.Currency
 
-class CurrencyVisualTransformation : VisualTransformation {
+class CurrencyVisualTransformation(
+    private val decimalSeparator: Char,
+    private val currency: Currency
+) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
-        // Don't show the symbol if the text is empty
-        if (text.text.isEmpty()) {
-            return TransformedText(text, OffsetMapping.Identity)
+        val originalText = text.text
+        if (originalText.isEmpty()) return TransformedText(text, OffsetMapping.Identity)
+
+        val parts = originalText.split(decimalSeparator)
+        val integerPart = parts[0]
+
+        val formattedInteger = integerPart.reversed()
+            .chunked(3)
+            .joinToString(" ")
+            .reversed()
+
+        val formattedText = if (parts.size > 1) {
+            "$formattedInteger$decimalSeparator${parts[1]}"
+        } else {
+            formattedInteger
         }
 
-        // The text to display, e.g., "123.45 ₽"
-        val transformed = text + AnnotatedString(" ₽")
+        val out = "$formattedText ${currency.symbol}"
 
-        // The OffsetMapping is crucial. It tells Compose how to map cursor
-        // positions from the transformed text back to the original text.
-        // Since we are only adding characters at the end, the mapping is
-        // one-to-one (identity) for the original text length.
         val offsetMapping = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
-                // The cursor position in the transformed text is the same as the original.
-                return offset
+                if (offset == 0) return 0
+                val spacesBefore = formattedText.take(
+                    findTransformedIndex(originalText, formattedText, offset)
+                ).count { it == ' ' }
+
+                return offset + spacesBefore
             }
 
             override fun transformedToOriginal(offset: Int): Int {
-                // If the user tries to place the cursor within or after " ₽",
-                // move it back to the end of the actual number.
-                if (offset >= text.length) {
-                    return text.length
+                if (offset >= formattedText.length) return originalText.length
+
+                val textBefore = out.take(offset)
+                val spacesBefore = textBefore.count { it == ' ' }
+
+                return (offset - spacesBefore).coerceIn(0, originalText.length)
+            }
+
+            private fun findTransformedIndex(orig: String, trans: String, offset: Int): Int {
+                var origCount = 0
+                trans.forEachIndexed { index, char ->
+                    if (char != ' ') origCount++
+                    if (origCount == offset) return index + 1
                 }
-                return offset
+                return trans.length
             }
         }
 
-        return TransformedText(transformed, offsetMapping)
+        return TransformedText(AnnotatedString(out), offsetMapping)
     }
 }

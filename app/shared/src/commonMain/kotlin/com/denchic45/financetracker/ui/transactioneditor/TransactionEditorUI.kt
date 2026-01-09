@@ -60,6 +60,8 @@ import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TagItem
 import com.denchic45.financetracker.domain.model.displayName
 import com.denchic45.financetracker.ui.CurrencyVisualTransformation
+import com.denchic45.financetracker.ui.LocalCurrencyHandler
+import com.denchic45.financetracker.ui.LocalDefaultCurrency
 import com.denchic45.financetracker.ui.PlainTextTextField
 import com.denchic45.financetracker.ui.RemoveTransactionConfirmDialog
 import com.denchic45.financetracker.ui.accounts.AccountTypeIcon
@@ -237,7 +239,10 @@ fun TransactionEditorScreen(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Decimal
                     ),
-                    visualTransformation = CurrencyVisualTransformation()
+                    visualTransformation = CurrencyVisualTransformation(
+                        LocalCurrencyHandler.current.decimalSeparator,
+                        LocalDefaultCurrency.current
+                    )
                 )
 
                 LaunchedEffect(Unit) {
