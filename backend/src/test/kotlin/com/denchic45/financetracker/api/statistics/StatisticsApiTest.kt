@@ -58,23 +58,25 @@ class StatisticsApiTest : KtorClientTest() {
             CreateAccountRequest(
                 name = "Primary Account",
                 type = AccountType.SAVINGS,
-                initialBalance = initialPrimaryBalance
+                initialBalance = initialPrimaryBalance,
+                iconName = "wallet"
             )
         ).assertedRight().id
 
         secondaryAccountId = accountApi.create(
             CreateAccountRequest(
-                name = "Secondary Account", type = AccountType.ORDINARY, initialBalance = initialSecondaryBalance
+                name = "Secondary Account", type = AccountType.ORDINARY, initialBalance = initialSecondaryBalance,
+                iconName = "wallet"
             )
         ).assertedRight().id
 
         // Create Categories
         incomeCategoryId = categoryApi.create(
-            CreateCategoryRequest(name = "Income Salary", icon = "income_icon", income = true)
+            CreateCategoryRequest(name = "Income Salary", iconName = "income_icon", income = true)
         ).assertedRight().id
 
         expenseCategoryId = categoryApi.create(
-            CreateCategoryRequest(name = "Expense Groceries", icon = "expense_icon", income = false)
+            CreateCategoryRequest(name = "Expense Groceries", iconName = "expense_icon", income = false)
         ).assertedRight().id
     }
 
@@ -187,6 +189,7 @@ class StatisticsApiTest : KtorClientTest() {
 
     @Test
     fun testGroupedAmounts(): Unit = runBlocking {
+//        assertTrue(false)
         val startDate = LocalDate(2025, 1, 1)
         val endDate = LocalDate(2025, 12, 31)
 

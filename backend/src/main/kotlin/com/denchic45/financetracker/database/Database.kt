@@ -22,8 +22,7 @@ fun Application.configureDatabase() {
         parameters = { parametersOf(environment.config) }
     )
     databaseFactory.connect()
-    println("connect to database...")
-    databaseFactory.connect()
+    println("connecting to database...")
 
     transaction {
         SchemaUtils.create(Users, RefreshTokens, Accounts, Transactions, Categories, Tags, TransactionTags)

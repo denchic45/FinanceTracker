@@ -3,8 +3,9 @@ package com.denchic45.financetracker.api
 import com.denchic45.financetracker.api.auth.AuthApi
 import com.denchic45.financetracker.api.auth.model.RefreshTokenRequest
 import com.denchic45.financetracker.api.auth.model.SignInRequest
-import com.denchic45.financetracker.database.table.UserDao
 import com.denchic45.financetracker.api.di.apiModule
+import com.denchic45.financetracker.database.table.UserDao
+import com.denchic45.financetracker.module
 import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.plugins.auth.*
@@ -17,7 +18,9 @@ import io.ktor.server.testing.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.TestInstance
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.stopKoin
 import org.koin.core.parameter.parametersOf
@@ -42,7 +45,11 @@ abstract class KtorClientTest : KoinTest {
                 buildApplication()
             }
             environment {
-                config = ApplicationConfig("application.conf")
+                config = MapApplicationConfig(
+                    "ktor.environment" to "test",
+                    "jwt.audience" to "test-authenticated",
+                    "jwt.secret" to "test-secret",
+                )
             }
         }
         testApp.start()
@@ -65,6 +72,7 @@ abstract class KtorClientTest : KoinTest {
     }
 
     open fun Application.buildApplication() {
+        module()
         loadKoinModules(apiModule)
     }
 

@@ -18,12 +18,12 @@ class CategoryApiTest : KtorClientTest() {
     fun testCrud(): Unit = runBlocking {
         val request = CreateCategoryRequest(
             name = "Monthly Salary",
-            icon = "money_bag",
+            iconName = "money_bag",
             income = true
         )
         val createdCategory = categoryApi.create(request).assertedRight().apply {
             assertEquals(request.name, name)
-            assertEquals(request.icon, icon)
+            assertEquals(request.iconName, iconName)
             assertEquals(request.income, income)
         }
 
@@ -34,7 +34,7 @@ class CategoryApiTest : KtorClientTest() {
         categoryApi.update(createdCategory.id, UpdateCategoryRequest("Salary", "money_bill"))
             .assertedRight().apply {
                 assertEquals("Salary", name)
-                assertEquals("money_bill", icon)
+                assertEquals("money_bill", iconName)
             }
 
         categoryApi.delete(createdCategory.id).assertedNone()

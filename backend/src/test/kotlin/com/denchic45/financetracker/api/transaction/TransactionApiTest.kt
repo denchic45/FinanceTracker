@@ -47,7 +47,8 @@ class TransactionApiTest : KtorClientTest() {
             CreateAccountRequest(
                 name = "Primary Account",
                 type = AccountType.DEBT,
-                initialBalance = initialPrimaryBalance
+                initialBalance = initialPrimaryBalance,
+                iconName = "wallet"
             )
         ).assertedRight()
         primaryAccountId = createdPrimaryAccount.id
@@ -57,14 +58,15 @@ class TransactionApiTest : KtorClientTest() {
             CreateAccountRequest(
                 name = "Savings Account",
                 type = AccountType.SAVINGS,
-                initialBalance = initialSecondaryBalance
+                initialBalance = initialSecondaryBalance,
+                iconName = "wallet"
             )
         ).assertedRight()
         secondaryAccountId = createdSecondaryAccount.id
 
         // Create Expense Category
         val createdCategory = categoryApi.create(
-            CreateCategoryRequest(name = "Test Expense Category", icon = "test_icon", income = false)
+            CreateCategoryRequest(name = "Test Expense Category", iconName = "test_icon", income = false)
         ).assertedRight()
         categoryId = createdCategory.id
     }
