@@ -30,5 +30,8 @@ class CategoryPickerViewModel(
         viewModelScope.launch { categoryPickerInteractor.onSelect(category) }
     }
 
-    fun onDismissClick() = router.pop()
+    fun onDismissClick() {
+        router.pop()
+        viewModelScope.launch { categoryPickerInteractor.onDismiss() }
+    }
 }

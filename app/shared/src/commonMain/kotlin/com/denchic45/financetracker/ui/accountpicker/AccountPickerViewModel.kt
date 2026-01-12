@@ -71,7 +71,10 @@ class AccountPickerViewModel(
         router.pop()
     }
 
-    fun onDismissClick() = router.pop()
+    fun onDismissClick() {
+        router.pop()
+        viewModelScope.launch { accountPickerInteractor.onDismiss() }
+    }
 
     fun onAddAccountClick() = router.push(NavEntry.AccountEditor(null))
 }

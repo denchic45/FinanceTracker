@@ -248,7 +248,7 @@ class TransactionEditorViewModel(
             NavEntry.AccountPicker(PickerMode.Single(state.sourceAccount?.id))
         )
         viewModelScope.launch {
-            val picked = accountPickerInteractor.getPicked()
+            val picked = accountPickerInteractor.getPicked() ?: return@launch
             if (picked == state.incomeAccount) {
                 state.incomeAccount = state.sourceAccount
             }
@@ -262,7 +262,7 @@ class TransactionEditorViewModel(
             NavEntry.AccountPicker(PickerMode.Single(state.incomeAccount?.id))
         )
         viewModelScope.launch {
-            val picked = accountPickerInteractor.getPicked()
+            val picked = accountPickerInteractor.getPicked() ?: return@launch
             if (picked == state.sourceAccount) {
                 state.sourceAccount = state.incomeAccount
             }
@@ -283,7 +283,7 @@ class TransactionEditorViewModel(
             )
         )
         viewModelScope.launch {
-            state.category = categoryPickerInteractor.getPicked()
+            state.category = categoryPickerInteractor.getPicked() ?: return@launch
             state.showCategoryError = false
         }
     }
@@ -293,7 +293,7 @@ class TransactionEditorViewModel(
             NavEntry.TagsPicker(state.tags.map(TagItem::id).toSet())
         )
         viewModelScope.launch {
-            state.tags = tagsPickerInteractor.getPicked()
+            state.tags = tagsPickerInteractor.getPicked() ?: return@launch
         }
     }
 
@@ -311,8 +311,10 @@ class TransactionEditorViewModel(
         }
     }
 
-    fun onDismissClick() = router.pop()
-
+    fun onDismissClick() {
+        router.pop()
+        viewModelScope.launch { tagsPickerInteractor.onDismiss() }
+    }
 }
 
 @Stable

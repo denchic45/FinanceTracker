@@ -43,7 +43,7 @@ class AppEventHandler {
     ) {
         loadingJob?.cancel()
         loadingJob = coroutineScope.launch {
-            delay(3.seconds)
+            delay(5.seconds)
             _loading.value = state
         }
     }
