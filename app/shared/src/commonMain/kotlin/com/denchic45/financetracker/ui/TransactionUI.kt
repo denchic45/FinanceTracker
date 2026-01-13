@@ -30,6 +30,7 @@ import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TransactionItem
 import com.denchic45.financetracker.ui.accounts.AccountTypeIcon
 import com.denchic45.financetracker.ui.dialog.ConfirmDeletionDialog
+import com.denchic45.financetracker.ui.theme.PreviewTheme
 import com.denchic45.financetracker.ui.transactions.IncomeColor
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.arrow_forward
@@ -167,7 +168,7 @@ fun RemoveTransactionConfirmDialog(
 @Preview
 @Composable
 private fun TransactionListItemPreview() {
-    MaterialTheme {
+    PreviewTheme {
         Column {
             TransactionListItem(
                 transaction = TransactionItem.Expense(

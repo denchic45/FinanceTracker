@@ -84,6 +84,7 @@ fun TagEditorDialog(
             OutlinedTextField(
                 value = state.name,
                 onValueChange = viewModel::onNameChange,
+                singleLine = true,
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 label = { Text(stringResource(Res.string.common_name_field)) },
                 isError = state.showNameError,

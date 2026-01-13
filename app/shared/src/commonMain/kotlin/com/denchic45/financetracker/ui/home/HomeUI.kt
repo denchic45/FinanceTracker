@@ -52,7 +52,7 @@ import com.denchic45.financetracker.ui.displayedAmount
 import com.denchic45.financetracker.ui.resource.isLoading
 import com.denchic45.financetracker.ui.resource.onData
 import com.denchic45.financetracker.ui.resource.onSuccess
-import com.denchic45.financetracker.ui.theme.FinanceTrackerTheme
+import com.denchic45.financetracker.ui.theme.PreviewTheme
 import com.denchic45.financetracker.ui.transactions.ExpenseColor
 import com.denchic45.financetracker.ui.transactions.IncomeColor
 import com.denchic45.financetracker.ui.transactions.TransferColor
@@ -319,7 +319,7 @@ fun AccountCard(account: AccountItem, onClick: () -> Unit) {
 @Preview(name = "1. General Balance Card")
 @Composable
 fun GeneralBalanceCardPreview() {
-    FinanceTrackerTheme {
+    PreviewTheme {
         GeneralBalanceCard(displayedBalance = "125000")
     }
 }
@@ -330,7 +330,7 @@ fun GeneralBalanceCardPreview() {
 @Composable
 fun MonthStatRowPreview() {
     val mockStat = TotalsAmount(expenses = 35000, incomes = 60000, profit = 25000)
-    FinanceTrackerTheme {
+    PreviewTheme {
         MonthStatRow(totalsAmount = mockStat)
     }
 }
@@ -340,7 +340,7 @@ fun MonthStatRowPreview() {
 @Preview(name = "3. Stat Box (Income)")
 @Composable
 fun StatBoxIncomePreview() {
-    FinanceTrackerTheme {
+    PreviewTheme {
         StatBox(
             label = stringResource(Res.string.txn_income),
             amountText = "60 000 ₽",
@@ -360,7 +360,7 @@ fun AccountCardPreview() {
         balance = 9500000L, // 95 000.00
         iconName = "credit_card"
     )
-    FinanceTrackerTheme {
+    PreviewTheme {
         AccountCard(
             account = mockAccount, onClick = {})
     }
@@ -379,7 +379,7 @@ fun TransactionListItemExpensePreview() {
         balance = 9500000L,
         iconName = "credit_card"
     )
-    val mockCategory = CategoryItem(101, "Продукты", "", false)
+    val mockCategory = CategoryItem(101, "Продукты", "shopping_cart", false)
     val mockTransaction = TransactionItem.Expense(
         id = 1,
         amount = 150000L, // 1500.00
@@ -390,7 +390,7 @@ fun TransactionListItemExpensePreview() {
         tags = emptyList()
     )
 
-    FinanceTrackerTheme {
+    PreviewTheme {
         Column(Modifier.padding(16.dp)) {
             TransactionListItem(transaction = mockTransaction, onClick = {})
         }
@@ -424,7 +424,7 @@ fun TransactionListItemTransferPreview() {
         incomeAccount = cashAccount
     )
 
-    FinanceTrackerTheme {
+    PreviewTheme {
         Column(Modifier.padding(16.dp)) {
             TransactionListItem(
                 transaction = mockTransaction, onClick = {})

@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -46,6 +44,7 @@ import com.denchic45.financetracker.ui.displayedAmount
 import com.denchic45.financetracker.ui.resource.CircularLoadingBox
 import com.denchic45.financetracker.ui.resource.onData
 import com.denchic45.financetracker.ui.resource.onLoading
+import com.denchic45.financetracker.ui.theme.PreviewTheme
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.arrow_down
 import financetracker_app.shared.generated.resources.arrow_up
@@ -141,8 +140,7 @@ private fun TransactionDetailsContent(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -162,8 +160,7 @@ private fun TransactionDetailsContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             when (transaction) {
                 is TransactionItem.Income -> {
@@ -308,30 +305,31 @@ private fun DetailRow(
     label: String,
     value: String
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Icon(
-            painter = painterResource(iconResource),
-            contentDescription = label,
-            modifier = Modifier.size(24.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column {
+    ListItem(
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        headlineContent = {
             Text(
                 text = label,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        },
+        supportingContent = {
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium
             )
+        },
+        leadingContent = {
+            Icon(
+                painter = painterResource(iconResource),
+                contentDescription = label,
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
-    }
+    )
 }
 
 @Composable
@@ -340,42 +338,37 @@ fun EditableDetailRow(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Icon(
-            painter = painterResource(iconResource),
-            contentDescription = label,
-            modifier = Modifier.size(24.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(modifier = modifier) {
-            // 1. The non-editable description/label
+    ListItem(
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        headlineContent = {
+            BasicTextField(
+                value = value,
+                onValueChange = onValueChange,
+                textStyle = textStyle.copy(
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                singleLine = true
+            )
+        },
+        overlineContent = {
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-
-            // 2. The editable TextField that looks like Text
-            BasicTextField(
-                value = value,
-                onValueChange = onValueChange,
-                textStyle = textStyle.copy(
-                    // Inherit color from the theme
-                    color = MaterialTheme.colorScheme.onSurface
-                ),
-                // Ensure the cursor has a visible color
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                singleLine = true
+        },
+        leadingContent = {
+            Icon(
+                painter = painterResource(iconResource),
+                contentDescription = label,
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-    }
+    )
 }
 
 @OptIn(ExperimentalTime::class)
@@ -400,7 +393,7 @@ fun TransactionDetailsOutcomePreview() {
         category = mockCategory,
         tags = listOf(TagItem(1, "Еда"), TagItem(2, "Пятерочка"))
     )
-    MaterialTheme {
+    PreviewTheme {
         TransactionDetailsContent(
             transaction = mockTransaction,
             onEditClick = { },

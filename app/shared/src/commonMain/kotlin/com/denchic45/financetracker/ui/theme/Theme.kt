@@ -4,6 +4,11 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import com.denchic45.financetracker.domain.JVMCurrencyHandler
+import com.denchic45.financetracker.domain.model.Currency
+import com.denchic45.financetracker.ui.LocalCurrencyHandler
+import com.denchic45.financetracker.ui.LocalDefaultCurrency
 
 internal val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -33,3 +38,15 @@ expect fun FinanceTrackerTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 )
+
+@Composable
+fun PreviewTheme(content: @Composable () -> Unit) {
+    FinanceTrackerTheme {
+        CompositionLocalProvider(
+            LocalCurrencyHandler provides JVMCurrencyHandler(),
+            LocalDefaultCurrency provides Currency.RUB
+        ) {
+            content()
+        }
+    }
+}
