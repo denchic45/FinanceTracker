@@ -20,6 +20,7 @@ val categorizedIconNames = setOf(
     "shoe",
     "shopping_bag",
     "shirt",
+    "calendar_dollar",
     "gift",
     "shopping_cart",
     "box",
