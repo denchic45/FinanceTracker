@@ -2,7 +2,7 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.serialization)
@@ -47,15 +47,29 @@ tasks.register("generateSecrets") {
     }
 }
 
-kotlin {
-    androidLibrary {
-        namespace = "com.denchic45.financetracker"
-        compileSdk = 36
+android {
+    namespace = "com.denchic45.financetracker"
+    compileSdk = 36
 
-        androidResources {
-            enable = true
-        }
+    defaultConfig {
+        minSdk = 24
     }
+
+    buildFeatures {
+        compose = true
+    }
+}
+
+kotlin {
+    androidTarget()
+//    androidLibrary {
+//        namespace = "com.denchic45.financetracker"
+//        compileSdk = 36
+//
+//        androidResources {
+//            enable = true
+//        }
+//    }
 
     sourceSets {
         commonMain.get().kotlin.srcDir(tasks.named("generateSecrets"))
@@ -71,6 +85,8 @@ kotlin {
 
             // Dependency Injection
             implementation(libs.koin.compose)
+
+            implementation(libs.androidx.compose.ui.tooling)
         }
 
         val androidMain by getting {
@@ -84,7 +100,6 @@ kotlin {
                 // Compose BOM & UI
                 implementation(project.dependencies.platform(libs.androidx.compose.bom))
                 implementation(libs.bundles.compose.ui)
-//            implementation(libs.compose.resources)
 
                 // Compose Material & Adaptive Layout
                 implementation(libs.bundles.compose.material)
@@ -98,8 +113,6 @@ kotlin {
                 // Data Persistence (Room & Datastore)
                 implementation(libs.bundles.room)
                 implementation(libs.bundles.testing)
-
-                implementation(libs.androidx.compose.ui.tooling)
             }
         }
     }
@@ -108,9 +121,8 @@ kotlin {
 
 dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }
-
-compose.resources { }
 
 room {
     schemaDirectory("$projectDir/schemas")
