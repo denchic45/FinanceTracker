@@ -19,6 +19,7 @@ import io.ktor.client.plugins.plugin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -31,7 +32,7 @@ class AuthService(
 ) {
 
     val observeIsAuthenticated: Flow<Boolean>
-        get() = appPreferences.accessToken
+        get() = appPreferences.accessToken.distinctUntilChanged()
             .mapNotNull { !it.isNullOrBlank() }
             .onEach { isAuth ->
                 if (!isAuth)
@@ -52,8 +53,8 @@ class AuthService(
             .fold(
                 ifLeft = { it.some() },
                 ifRight = {
-                    saveTokens(it)
                     appPreferences.setDefaultCurrency(Currency.RUB) // TODO remove hardcoded currency
+                    saveTokens(it)
                     None
                 })
     }
@@ -64,7 +65,10 @@ class AuthService(
     }
 
     suspend fun signIn(request: SignInRequest): Option<Failure> {
-        return safeFetch { authApi.signIn(request) }.onRight { saveTokens(it) }
+        return safeFetch { authApi.signIn(request) }.onRight {
+            appPreferences.setDefaultCurrency(Currency.RUB) // TODO remove hardcoded currency
+            saveTokens(it)
+        }
             .toEmptyRequestResult()
     }
 }
