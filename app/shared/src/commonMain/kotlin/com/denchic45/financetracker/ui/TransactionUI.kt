@@ -28,12 +28,11 @@ import com.denchic45.financetracker.api.account.model.AccountType
 import com.denchic45.financetracker.domain.model.AccountItem
 import com.denchic45.financetracker.domain.model.CategoryItem
 import com.denchic45.financetracker.domain.model.TransactionItem
-import com.denchic45.financetracker.ui.accounts.AccountTypeIcon
 import com.denchic45.financetracker.ui.dialog.ConfirmDeletionDialog
 import com.denchic45.financetracker.ui.theme.PreviewTheme
 import com.denchic45.financetracker.ui.transactions.IncomeColor
+import com.denchic45.financetracker.ui.util.formattedDateTime
 import financetracker_app.shared.generated.resources.Res
-import financetracker_app.shared.generated.resources.arrow_forward
 import financetracker_app.shared.generated.resources.common_delete_dialog_message
 import financetracker_app.shared.generated.resources.transfer
 import financetracker_app.shared.generated.resources.txn_delete_dialog_title
@@ -102,43 +101,9 @@ fun TransactionListItem(
             Row {
                 CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
                     ProvideTextStyle(MaterialTheme.typography.bodySmall) {
-                        when (transaction) {
-                            is TransactionItem.Expense,
-                            is TransactionItem.Income -> {
-                                AccountTypeIcon(
-                                    type = transaction.account.type,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Text(
-                                    transaction.account.name,
-                                    modifier = Modifier.padding(start = 8.dp)
-                                )
-                            }
-
-                            is TransactionItem.Transfer -> {
-                                AccountTypeIcon(
-                                    type = transaction.account.type,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Text(
-                                    transaction.account.name,
-                                    modifier = Modifier.padding(start = 8.dp)
-                                )
-                                Icon(
-                                    painterResource(Res.drawable.arrow_forward),
-                                    null,
-                                    modifier = Modifier.padding(horizontal = 8.dp).size(16.dp)
-                                )
-                                AccountTypeIcon(
-                                    type = transaction.account.type,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Text(
-                                    transaction.incomeAccount.name,
-                                    modifier = Modifier.padding(start = 8.dp)
-                                )
-                            }
-                        }
+                        Text(
+                            transaction.datetime.formattedDateTime(true)
+                        )
                     }
                 }
             }

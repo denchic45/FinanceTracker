@@ -1,12 +1,12 @@
 package com.denchic45.financetracker.ui.util
 
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.daysUntil
 import kotlinx.datetime.format.MonthNames
-import kotlinx.datetime.periodUntil
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.todayIn
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.time.Clock
@@ -34,29 +34,46 @@ val RUSSIAN_ABBREVIATED: MonthNames = MonthNames(
 )
 
 @OptIn(ExperimentalTime::class)
-val LocalDateTime.formattedDateTime: String
+fun LocalDateTime.formattedDateTime(showExtra: Boolean = false): String {
+    val timeZone = TimeZone.currentSystemDefault()
+    val daysDiff = day - Clock.System.todayIn(timeZone).day
+    val pattern = when {
+        daysDiff < 1 -> "dd MMMM"
+        daysDiff < 14 -> "EEE, dd MMMM"
+        else -> "EEE, dd MMMM uuuu"
+    } + ", HH:mm"
+
+    val extraText = when (daysDiff) {
+        1 -> "Завтра"
+        -1 -> "Вчера"
+        else -> null
+    }
+
+    val dateTime = toJavaLocalDateTime().format(
+        DateTimeFormatter.ofPattern(
+            pattern,
+            Locale.getDefault()
+        )
+    )
+    return (extraText.takeIf { showExtra && it != null }
+        ?.let { "$it ● " } ?: "") + dateTime
+}
+
+@OptIn(ExperimentalTime::class)
+val LocalDate.formattedDate: String
     get() {
         val timeZone = TimeZone.currentSystemDefault()
-        val other = this.toInstant(timeZone)
-        val now = Clock.System.now()
-        val period = now.periodUntil(other, timeZone)
+        val daysDiff = day - Clock.System.todayIn(timeZone).day
         val pattern = when {
-            period.days < 1 -> "dd MMMM"
-            period.days < 14 -> "EEE, dd MMMM"
+            daysDiff < 1 -> "dd MMMM"
+            daysDiff < 14 -> "EEE, dd MMMM"
             else -> "EEE, dd MMMM uuuu"
         }
 
-        val daysDiff = now.daysUntil(other, timeZone)
-        val extraText = when (daysDiff) {
-            1 -> "Завтра"
-            -1 -> "Вчера"
-            else -> null
-        }
-
-        return toJavaLocalDateTime().format(
+        return toJavaLocalDate().format(
             DateTimeFormatter.ofPattern(
                 pattern,
                 Locale.getDefault()
             )
-        ) + (extraText?.let { " ● $it" } ?: "")
+        )
     }

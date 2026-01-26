@@ -66,7 +66,7 @@ import com.denchic45.financetracker.ui.PlainTextTextField
 import com.denchic45.financetracker.ui.RemoveTransactionConfirmDialog
 import com.denchic45.financetracker.ui.accounts.AccountTypeIcon
 import com.denchic45.financetracker.ui.categorizedIcons
-import com.denchic45.financetracker.ui.util.formattedDateTime
+import com.denchic45.financetracker.ui.util.formattedDate
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.arrow_back
 import financetracker_app.shared.generated.resources.calendar_event
@@ -228,7 +228,8 @@ fun TransactionEditorScreen(
                 )
                 val focusRequester = remember { FocusRequester() }
                 PlainTextTextField(
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
                         .focusRequester(focusRequester),
                     value = state.amountText,
                     onValueChange = viewModel::onAmountTextChange,
@@ -258,7 +259,7 @@ fun TransactionEditorScreen(
                             },
                         headlineContent = {
                             Text(
-                                state.datetime.formattedDateTime,
+                                state.datetime.date.formattedDate,
                                 modifier = Modifier
                             )
                         },

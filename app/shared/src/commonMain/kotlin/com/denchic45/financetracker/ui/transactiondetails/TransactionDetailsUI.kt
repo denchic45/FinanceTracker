@@ -45,10 +45,13 @@ import com.denchic45.financetracker.ui.resource.CircularLoadingBox
 import com.denchic45.financetracker.ui.resource.onData
 import com.denchic45.financetracker.ui.resource.onLoading
 import com.denchic45.financetracker.ui.theme.PreviewTheme
+import com.denchic45.financetracker.ui.util.formattedDateTime
 import financetracker_app.shared.generated.resources.Res
 import financetracker_app.shared.generated.resources.arrow_down
 import financetracker_app.shared.generated.resources.arrow_up
+import financetracker_app.shared.generated.resources.calendar_event
 import financetracker_app.shared.generated.resources.clipboard_copy
+import financetracker_app.shared.generated.resources.common_date_field
 import financetracker_app.shared.generated.resources.common_delete
 import financetracker_app.shared.generated.resources.common_duplicate
 import financetracker_app.shared.generated.resources.common_edit
@@ -204,6 +207,12 @@ private fun TransactionDetailsContent(
                     )
                 }
             }
+
+            DetailRow(
+                iconResource = Res.drawable.calendar_event,
+                label = stringResource(Res.string.common_date_field),
+                value = transaction.datetime.formattedDateTime()
+            )
 
             if (transaction.note.isNotBlank()) {
                 EditableDetailRow(

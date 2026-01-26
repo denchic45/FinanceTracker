@@ -33,6 +33,7 @@
     <string name="nav_settings_label">Settings</string>
     <string name="nav_about_label">About</string>
     <string name="common_name_field">Name</string>
+    <string name="common_date_field">Date</string>
     <string name="discard_changes_dialog_title">Discard changes?</string>
     <string name="discard_changes_dialog_message">Changes will not be saved if you close this screen</string>
     <string name="common_ok">Ok</string>

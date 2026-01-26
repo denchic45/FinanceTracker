@@ -33,6 +33,7 @@
     <string name="nav_settings_label">Настройки</string>
     <string name="nav_about_label">О приложении</string>
     <string name="common_name_field">Название</string>
+    <string name="common_date_field">Дата</string>
     <string name="discard_changes_dialog_title">Отменить изменения?</string>
     <string name="discard_changes_dialog_message">Изменения не будут сохранены при закрытии</string>
     <string name="common_ok">Ок</string>
