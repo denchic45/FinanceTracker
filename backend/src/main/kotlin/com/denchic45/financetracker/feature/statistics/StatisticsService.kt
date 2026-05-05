@@ -5,24 +5,27 @@ import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.denchic45.financetracker.api.account.model.AccountResponse
-import com.denchic45.financetracker.database.function.toChar
-import com.denchic45.financetracker.database.table.*
 import com.denchic45.financetracker.api.error.AccountNotFound
 import com.denchic45.financetracker.api.error.ApiError
 import com.denchic45.financetracker.api.error.CategoryNotFound
 import com.denchic45.financetracker.api.error.TagNotFound
+import com.denchic45.financetracker.api.statistic.model.*
+import com.denchic45.financetracker.database.function.toChar
+import com.denchic45.financetracker.database.table.*
 import com.denchic45.financetracker.feature.category.toCategoryResponse
 import com.denchic45.financetracker.feature.tag.toTagResponse
-import com.denchic45.financetracker.api.statistic.model.*
 import kotlinx.datetime.*
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.kotlin.datetime.date
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.datetime.date
+import org.jetbrains.exposed.v1.jdbc.Query
+import org.jetbrains.exposed.v1.jdbc.andWhere
+import org.jetbrains.exposed.v1.jdbc.select
+import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import java.time.format.DateTimeFormatter
-import java.util.*
+import kotlin.uuid.Uuid
 
 
 class StatisticsService {
@@ -47,7 +50,7 @@ class StatisticsService {
         }
     }
 
-    fun findStatistics(ownerId: UUID, params: StatisticsQueryParameters): Either<ApiError, StatisticsResponse> =
+    fun findStatistics(ownerId: Uuid, params: StatisticsQueryParameters): Either<ApiError, StatisticsResponse> =
         either {
             transaction {
                 val baseQuery = {
@@ -198,7 +201,7 @@ class StatisticsService {
             }
 
     private fun Raise<AccountNotFound>.findAccountAmounts(
-        query: Query, ownerId: UUID
+        query: Query, ownerId: Uuid
     ): List<AccountStatisticsResponse> {
         val accountIds = Accounts.select(Accounts.id).where(Accounts.ownerId eq ownerId).map { it[Accounts.id].value }
         val transferExpenseSum = transferExpenseSum(accountIds)

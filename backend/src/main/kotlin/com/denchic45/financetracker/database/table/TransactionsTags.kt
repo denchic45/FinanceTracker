@@ -1,17 +1,17 @@
 package com.denchic45.financetracker.database.table
 
-import org.jetbrains.exposed.dao.LongEntity
-import org.jetbrains.exposed.dao.LongEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.sql.ReferenceOption
+import org.jetbrains.exposed.v1.core.ReferenceOption
+import org.jetbrains.exposed.v1.core.dao.id.EntityID
+import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
+import org.jetbrains.exposed.v1.dao.LongEntity
+import org.jetbrains.exposed.v1.dao.LongEntityClass
 
 
 object TransactionTags : LongIdTable("transaction_tag", "transaction_tag_id") {
 
-    val transactionId = reference("transaction_id", Transactions, onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.CASCADE)
+    val transactionId = reference("transaction_id", Transactions, onDelete = ReferenceOption.CASCADE)
 
-    val tagId = reference("tag_id", Tags, onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.CASCADE)
+    val tagId = reference("tag_id", Tags, onDelete = ReferenceOption.CASCADE)
 
     init {
         uniqueIndex(transactionId, tagId)

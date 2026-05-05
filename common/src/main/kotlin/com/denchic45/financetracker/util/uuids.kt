@@ -1,6 +1,7 @@
 package com.denchic45.financetracker.util
 
 
-import java.util.*
+import kotlin.uuid.Uuid
 
-fun String.toUUID(): UUID = UUID.fromString(this)
+
+fun String.toUuid(): Uuid = Uuid.parse(this)

@@ -10,7 +10,7 @@ import com.denchic45.financetracker.api.response.toResult
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import java.util.*
+import kotlin.uuid.Uuid
 
 class AccountApi(private val client: HttpClient) {
 
@@ -25,18 +25,18 @@ class AccountApi(private val client: HttpClient) {
         return client.get("/accounts").toResult()
     }
 
-    suspend fun getById(accountId: UUID): ApiResult<AccountResponse> {
+    suspend fun getById(accountId: Uuid): ApiResult<AccountResponse> {
         return client.get("/accounts/$accountId").toResult()
     }
 
-    suspend fun update(accountId: UUID, request: UpdateAccountRequest): ApiResult<AccountResponse> {
+    suspend fun update(accountId: Uuid, request: UpdateAccountRequest): ApiResult<AccountResponse> {
         return client.put("/accounts/$accountId") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.toResult()
     }
 
-    suspend fun delete(accountId: UUID): EmptyApiResult {
+    suspend fun delete(accountId: Uuid): EmptyApiResult {
         return client.delete("/accounts/$accountId").toEmptyResult()
     }
 }

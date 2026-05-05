@@ -13,13 +13,14 @@ import com.denchic45.financetracker.api.error.UserNotFound
 import com.denchic45.financetracker.database.table.AccountDao
 import com.denchic45.financetracker.database.table.Accounts
 import com.denchic45.financetracker.database.table.UserDao
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import java.util.*
+import kotlin.uuid.Uuid
 
 class AccountRepository() {
 
-    fun add(request: CreateAccountRequest, ownerId: UUID): Either<UserNotFound, AccountResponse> = either {
+    fun add(request: CreateAccountRequest, ownerId: Uuid): Either<UserNotFound, AccountResponse> = either {
         transaction {
             AccountDao.new {
                 name = request.name
@@ -31,11 +32,11 @@ class AccountRepository() {
         }
     }
 
-    fun findById(accountId: UUID): Either<AccountNotFound, AccountResponse> = transaction {
+    fun findById(accountId: Uuid): Either<AccountNotFound, AccountResponse> = transaction {
         AccountDao.findById(accountId)?.toAccountResponse()?.right() ?: AccountNotFound.left()
     }
 
-    fun update(accountId: UUID, request: UpdateAccountRequest): Either<AccountNotFound, AccountResponse> = transaction {
+    fun update(accountId: Uuid, request: UpdateAccountRequest): Either<AccountNotFound, AccountResponse> = transaction {
         AccountDao.findById(accountId)?.apply {
             name = request.name
             type = request.type
@@ -43,11 +44,11 @@ class AccountRepository() {
         }?.toAccountResponse()?.right() ?: AccountNotFound.left()
     }
 
-    fun remove(accountId: UUID): Either<AccountNotFound, Unit> = transaction {
+    fun remove(accountId: Uuid): Either<AccountNotFound, Unit> = transaction {
         AccountDao.findById(accountId)?.delete()?.right() ?: AccountNotFound.left()
     }
 
-    fun findAll(ownerId: UUID): List<AccountResponse> = transaction {
+    fun findAll(ownerId: Uuid): List<AccountResponse> = transaction {
         AccountDao.find(Accounts.ownerId eq ownerId).toAccountResponses()
     }
 }

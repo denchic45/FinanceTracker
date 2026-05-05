@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.denchic45.financetracker.domain.model.Currency
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 
 
 class AppPreferences(private val dataStore: DataStore<Preferences>) {
@@ -16,10 +15,13 @@ class AppPreferences(private val dataStore: DataStore<Preferences>) {
 
     val accessToken = dataStore.data.map { it[accessTokenKey] }
     val refreshToken = dataStore.data.map { it[refreshTokenKey] }
-    val defaultCurrency = dataStore.data.mapNotNull {
-        val currencyString = it[defaultCurrencyKey]
-            ?: throw IllegalStateException("Default currency required")
-        Currency.fromSymbol(currencyString.single())
+    val defaultCurrency = dataStore.data.map { preferences ->
+        preferences[defaultCurrencyKey]?.let { Currency.fromSymbol(it.single()) }
+            ?: run {
+                val defaultCurrency = Currency.RUB
+                setDefaultCurrency(defaultCurrency)
+                defaultCurrency
+            }
     }
 
     suspend fun setAccessToken(token: String) {

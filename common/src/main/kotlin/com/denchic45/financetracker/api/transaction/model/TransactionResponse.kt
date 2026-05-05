@@ -3,10 +3,9 @@ package com.denchic45.financetracker.api.transaction.model
 import com.denchic45.financetracker.api.account.model.AccountType
 import com.denchic45.financetracker.api.category.model.CategoryResponse
 import com.denchic45.financetracker.api.tag.model.TagResponse
-import com.denchic45.financetracker.util.UUIDSerializer
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
-import java.util.UUID
+import kotlin.uuid.Uuid
 
 @Serializable
 sealed class AbstractTransactionResponse() {
@@ -41,8 +40,7 @@ data class TransferTransactionResponse(
 
 @Serializable
 data class TransactionAccount(
-    @Serializable(UUIDSerializer::class)
-    val id: UUID,
+    val id: Uuid,
     val name: String,
     val accountType: AccountType,
     val initialBalance: Long,

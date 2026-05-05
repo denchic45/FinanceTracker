@@ -11,14 +11,14 @@ import com.denchic45.financetracker.api.error.UserNotFound
 import com.denchic45.financetracker.database.table.Categories
 import com.denchic45.financetracker.database.table.CategoryDao
 import com.denchic45.financetracker.database.table.UserDao
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.*
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import kotlin.uuid.Uuid
 
-class CategoryRepository() {
+class CategoryRepository {
 
-    fun add(request: CreateCategoryRequest, ownerId: UUID) = either {
+    fun add(request: CreateCategoryRequest, ownerId: Uuid) = either {
         transaction {
             CategoryDao.new {
                 name = request.name
@@ -33,7 +33,7 @@ class CategoryRepository() {
         CategoryDao.findById(categoryId)?.toCategoryResponse()?.right() ?: CategoryNotFound.left()
     }
 
-    fun findByType(income: Boolean, ownerId: UUID) = transaction {
+    fun findByType(income: Boolean, ownerId: Uuid) = transaction {
         CategoryDao.find(Categories.income eq income and (Categories.ownerId eq ownerId)).toCategoryResponses()
     }
 
@@ -50,7 +50,7 @@ class CategoryRepository() {
         none()
     }
 
-    fun addDefaultsFor(userId: UUID) {
+    fun addDefaultsFor(userId: Uuid) {
         val defaultCategoryData = listOf(
             // --- EXPENSES ---
             Triple("Продукты", "shopping_cart", false),

@@ -2,16 +2,16 @@ package com.denchic45.financetracker.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.server.config.ApplicationConfig
-import org.jetbrains.exposed.sql.Database
+import io.ktor.server.config.*
+import org.jetbrains.exposed.v1.jdbc.Database
 
 class DatabaseFactoryImpl(private val env: ApplicationConfig) : DatabaseFactory {
 
-	override fun connect() {
+    override fun connect() {
         Database.connect(hikari())
-	}
+    }
 
-	private fun hikari(): HikariDataSource {
+    private fun hikari(): HikariDataSource {
         val databaseUrl = env.property("database.url").getString()
         val databaseUser = env.property("database.user").getString()
         val databasePassword = env.property("database.password").getString()
@@ -25,5 +25,5 @@ class DatabaseFactoryImpl(private val env: ApplicationConfig) : DatabaseFactory 
         }
         config.validate()
         return HikariDataSource(config)
-	}
+    }
 }

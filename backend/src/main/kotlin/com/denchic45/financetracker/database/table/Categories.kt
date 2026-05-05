@@ -1,17 +1,16 @@
 package com.denchic45.financetracker.database.table
 
-import org.jetbrains.exposed.dao.LongEntity
-import org.jetbrains.exposed.dao.LongEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.sql.ReferenceOption
+import org.jetbrains.exposed.v1.core.ReferenceOption
+import org.jetbrains.exposed.v1.core.dao.id.EntityID
+import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
+import org.jetbrains.exposed.v1.dao.LongEntity
+import org.jetbrains.exposed.v1.dao.LongEntityClass
 
 object Categories : LongIdTable("category", "category_id") {
     val name = text("name")
     val iconName = text("icon_name")
     val income = bool("income")
-    val ownerId = reference("user_id", Users,
-        onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.CASCADE)
+    val ownerId = reference("user_id", Users, onDelete = ReferenceOption.CASCADE)
 }
 
 class CategoryDao(id: EntityID<Long>) : LongEntity(id) {

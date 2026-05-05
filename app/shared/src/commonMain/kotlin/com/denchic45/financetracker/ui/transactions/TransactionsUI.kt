@@ -51,7 +51,7 @@ fun TransactionsScreen(
         )
     }) { padding ->
         PagingItemsContent(
-            modifier = Modifier.padding(padding),
+//            modifier = Modifier.padding(padding),
             pagingItems = pagingItems,
             dataContent = {
                 LazyColumn(Modifier.fillMaxSize()) {

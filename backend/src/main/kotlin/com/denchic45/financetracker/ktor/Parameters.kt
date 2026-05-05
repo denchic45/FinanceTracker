@@ -1,19 +1,19 @@
 package com.denchic45.financetracker.ktor
 
-import com.denchic45.financetracker.util.toUUID
+import com.denchic45.financetracker.util.toUuid
 import io.ktor.http.*
 import io.ktor.server.plugins.*
 import io.ktor.server.util.*
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import java.time.format.DateTimeParseException
-import java.util.*
+import kotlin.uuid.Uuid
 
 
-fun Parameters.getUuid(name: String): UUID? {
+fun Parameters.getUuid(name: String): Uuid? {
     val value = get(name)
     return try {
-        value?.toUUID()
+        value?.toUuid()
     } catch (e: IllegalArgumentException) {
         throw ParameterConversionException(
             parameterName = name,
@@ -23,10 +23,10 @@ fun Parameters.getUuid(name: String): UUID? {
     }
 }
 
-fun Parameters.getUuidOrFail(name: String): UUID {
+fun Parameters.getUuidOrFail(name: String): Uuid {
     val value = getOrFail(name)
     return try {
-        value.toUUID()
+        value.toUuid()
     } catch (e: IllegalArgumentException) {
         throw ParameterConversionException(
             parameterName = name,
@@ -44,8 +44,8 @@ inline fun <reified T : Enum<T>> Parameters.getEnumOrFail(name: String): T {
     return getOrFail<T>(name)
 }
 
-fun String.tryToUUID(): UUID = try {
-    toUUID()
+fun String.tryToUuid(): Uuid = try {
+    toUuid()
 } catch (t: Throwable) {
     throw BadRequestException("Invalid id: $this")
 }

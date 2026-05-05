@@ -7,14 +7,13 @@ import com.denchic45.financetracker.api.tag.model.TagResponse
 import com.denchic45.financetracker.database.table.TagDao
 import com.denchic45.financetracker.database.table.Tags
 import com.denchic45.financetracker.database.table.UserDao
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.*
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import kotlin.uuid.Uuid
 
-class TagRepository() {
+class TagRepository {
 
-
-    fun add(request: TagRequest, ownerId: UUID): TagResponse = transaction {
+    fun add(request: TagRequest, ownerId: Uuid): TagResponse = transaction {
         TagDao.new {
             name = request.name
             owner = UserDao[ownerId]
@@ -25,7 +24,7 @@ class TagRepository() {
         TagDao.findById(tagId)?.toTagResponse()?.right() ?: TagNotFound.left()
     }
 
-    fun findAll(ownerId: UUID): List<TagResponse> = transaction {
+    fun findAll(ownerId: Uuid): List<TagResponse> = transaction {
         TagDao.find(Tags.ownerId eq ownerId).toTagResponses().toList()
     }
 

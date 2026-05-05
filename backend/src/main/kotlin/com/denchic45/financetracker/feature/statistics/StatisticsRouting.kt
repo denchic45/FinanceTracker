@@ -1,19 +1,19 @@
 package com.denchic45.financetracker.feature.statistics
 
+import com.denchic45.financetracker.api.statistic.model.GroupingPeriod
+import com.denchic45.financetracker.api.statistic.model.StatisticsField
 import com.denchic45.financetracker.ktor.currentUserId
 import com.denchic45.financetracker.ktor.getEnumOrFail
 import com.denchic45.financetracker.ktor.getLocalDate
 import com.denchic45.financetracker.ktor.getLocalDateOrFail
-import com.denchic45.financetracker.api.statistic.model.GroupingPeriod
-import com.denchic45.financetracker.api.statistic.model.StatisticsField
 import com.denchic45.financetracker.util.respond
-import com.denchic45.financetracker.util.toUUID
+import com.denchic45.financetracker.util.toUuid
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import kotlinx.datetime.LocalDate
 import org.koin.ktor.ext.inject
-import java.util.*
+import kotlin.uuid.Uuid
 
 
 fun Application.configureStatistics() {
@@ -40,7 +40,7 @@ fun Application.configureStatistics() {
                             query.getEnumOrFail<GroupingPeriod>("group_by")
                         } else null,
 
-                        filteredAccountIds = query["filteredAccountIds"]?.split(",")?.map { it.toUUID() },
+                        filteredAccountIds = query["filteredAccountIds"]?.split(",")?.map { it.toUuid() },
                         filteredCategoryIds = query["filteredCategoryIds"]?.split(",")?.map { it.toLong() },
                         filteredTagIds = query["filteredTagIds"]?.split(",")?.map { it.toLong() }
                     )
@@ -57,7 +57,7 @@ data class StatisticsQueryParameters(
     val toDate: LocalDate,
     val fields: List<StatisticsField>,
     val groupBy: GroupingPeriod?,
-    val filteredAccountIds: List<UUID>?,
+    val filteredAccountIds: List<Uuid>?,
     val filteredCategoryIds: List<Long>?,
     val filteredTagIds: List<Long>?
 )

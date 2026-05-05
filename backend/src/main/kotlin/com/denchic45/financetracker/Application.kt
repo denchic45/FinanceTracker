@@ -11,6 +11,11 @@ import io.ktor.server.application.*
 import io.ktor.server.netty.*
 
 fun main(args: Array<String>) {
+//    val host = getLocalIPv4()
+    val host = "192.168.0.200"
+    System.setProperty("HOST", host)
+    println("Connecting to $host")
+
     EngineMain.main(args)
 }
 

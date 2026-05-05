@@ -4,6 +4,9 @@ import com.denchic45.financetracker.api.KtorClientTest
 import com.denchic45.financetracker.api.account.AccountApi
 import com.denchic45.financetracker.api.account.model.AccountType
 import com.denchic45.financetracker.api.account.model.CreateAccountRequest
+import com.denchic45.financetracker.api.assertedLeft
+import com.denchic45.financetracker.api.assertedNone
+import com.denchic45.financetracker.api.assertedRight
 import com.denchic45.financetracker.api.category.CategoryApi
 import com.denchic45.financetracker.api.category.model.CreateCategoryRequest
 import com.denchic45.financetracker.api.error.InvalidPageSize
@@ -11,9 +14,6 @@ import com.denchic45.financetracker.api.transaction.model.TransactionRequest
 import com.denchic45.financetracker.api.transaction.model.TransactionResponse
 import com.denchic45.financetracker.api.transaction.model.TransferTransactionRequest
 import com.denchic45.financetracker.api.transaction.model.TransferTransactionResponse
-import com.denchic45.financetracker.api.assertedLeft
-import com.denchic45.financetracker.api.assertedNone
-import com.denchic45.financetracker.api.assertedRight
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDateTime
 import org.junit.jupiter.api.AfterAll
@@ -22,9 +22,9 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
-import java.util.*
 import kotlin.properties.Delegates
 import kotlin.test.assertTrue
+import kotlin.uuid.Uuid
 
 class TransactionApiTest : KtorClientTest() {
     private val transactionApi: TransactionApi by inject { parametersOf(client) }
@@ -32,8 +32,8 @@ class TransactionApiTest : KtorClientTest() {
     private val categoryApi: CategoryApi by inject { parametersOf(client) }
 
     // Fields to store IDs created in setup
-    private lateinit var primaryAccountId: UUID
-    private lateinit var secondaryAccountId: UUID
+    private lateinit var primaryAccountId: Uuid
+    private lateinit var secondaryAccountId: Uuid
     private var categoryId by Delegates.notNull<Long>()
 
     private val initialPrimaryBalance = 50000L

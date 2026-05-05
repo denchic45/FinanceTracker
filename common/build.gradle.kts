@@ -16,6 +16,7 @@ repositories {
 tasks.withType<KotlinCompile> {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_21)
+        freeCompilerArgs.addAll("-opt-in=kotlin.uuid.ExperimentalUuidApi")
     }
 }
 

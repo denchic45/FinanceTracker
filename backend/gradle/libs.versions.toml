@@ -1,7 +1,8 @@
 [versions]
 kotlin = "2.1.21"
 ktor = "3.3.1"
-exposed = "0.61.0"
+exposed = "1.2.0"
+exposed-migration = "1.0.0"
 koin = "4.1.1"
 hikariCP = "5.1.0"
 postgresql = "42.7.7"
@@ -36,7 +37,8 @@ exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "e
 exposed-java-time = { module = "org.jetbrains.exposed:exposed-java-time", version.ref = "exposed" }
 exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
 exposed-json = { module = "org.jetbrains.exposed:exposed-json", version.ref = "exposed" }
-exposed-migration = { module = "org.jetbrains.exposed:exposed-migration", version.ref = "exposed" }
+exposed-migration-core = { module = "org.jetbrains.exposed:exposed-migration-core", version.ref = "exposed-migration" }
+exposed-migration-jdbc = { module = "org.jetbrains.exposed:exposed-migration-jdbc", version.ref = "exposed-migration" }
 
 # Database - Drivers & Pool
 hikari-cp = { module = "com.zaxxer:HikariCP", version.ref = "hikariCP" }
@@ -79,7 +81,8 @@ exposed = [
     "exposed-java-time",
     "exposed-kotlin-datetime",
     "exposed-json",
-    "exposed-migration"
+    "exposed-migration-core",
+    "exposed-migration-jdbc"
 ]
 
 [plugins]

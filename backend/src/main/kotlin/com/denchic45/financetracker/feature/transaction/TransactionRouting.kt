@@ -4,9 +4,10 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import com.denchic45.financetracker.api.error.InvalidPageSize
 import com.denchic45.financetracker.api.error.TransactionValidationMessages
+import com.denchic45.financetracker.api.transaction.model.AbstractTransactionRequest
 import com.denchic45.financetracker.feature.buildValidationResult
 import com.denchic45.financetracker.ktor.currentUserId
-import com.denchic45.financetracker.api.transaction.model.AbstractTransactionRequest
+import com.denchic45.financetracker.ktor.getLocalDate
 import com.denchic45.financetracker.util.respond
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -15,8 +16,12 @@ import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
+import org.jetbrains.exposed.v1.core.SortOrder
 import org.koin.ktor.ext.inject
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 fun Application.configureTransactions() {
     routing {
         authenticate("auth-jwt") {
@@ -38,10 +43,24 @@ fun Application.configureTransactions() {
                 get {
                     either {
                         val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1
-                        val pageSize = call.request.queryParameters["pageSize"]?.toIntOrNull() ?: 30
+                        val pageSize = call.request.queryParameters["page_size"]?.toIntOrNull() ?: 30
+                        val params = call.request.queryParameters
+
+                        val filters = TransactionFilters(
+                            page = page,
+                            pageSize = pageSize,
+                            accountIds = params.getAll("account_id")?.map { Uuid.parse(it) },
+                            categoryIds = params.getAll("category_id")?.map { it.toLong() },
+                            tagIds = params.getAll("tag_id")?.map { it.toLong() },
+                            fromDate = params.getLocalDate("from_date"),
+                            toDate = params.getLocalDate("to_date"),
+
+                            sortBy = TransactionSortField.fromString(params["sort_by"]),
+                            sortOrder = if (params["sort_order"]?.lowercase() == "asc") SortOrder.ASC else SortOrder.DESC
+                        )
 
                         ensure(pageSize <= 30) { InvalidPageSize(30, pageSize) }
-                        repository.find(currentUserId(), page, pageSize).bind()
+                        repository.find(currentUserId(), filters).bind()
                     }.respond()
                 }
                 route("/{transactionId}") {

@@ -1,9 +1,9 @@
 package com.denchic45.financetracker.database.function
 
-import org.jetbrains.exposed.sql.Expression
-import org.jetbrains.exposed.sql.Function
-import org.jetbrains.exposed.sql.QueryBuilder
-import org.jetbrains.exposed.sql.TextColumnType
+import org.jetbrains.exposed.v1.core.Expression
+import org.jetbrains.exposed.v1.core.Function
+import org.jetbrains.exposed.v1.core.QueryBuilder
+import org.jetbrains.exposed.v1.core.TextColumnType
 
 
 fun <T> Expression<T>.toChar(format: String): ToChar = ToChar(this, format)

@@ -1,10 +1,10 @@
 package com.denchic45.financetracker.api.auth.model
 
 import java.time.OffsetDateTime
-import java.util.*
+import kotlin.uuid.Uuid
 
 data class RefreshToken(
-    val userId: UUID,
+    val userId: Uuid,
     val token: String,
     val expireAt: OffsetDateTime
 ) {

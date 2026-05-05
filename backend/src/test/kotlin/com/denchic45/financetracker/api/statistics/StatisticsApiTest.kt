@@ -31,6 +31,7 @@ import java.util.*
 import kotlin.properties.Delegates
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.uuid.Uuid
 
 class StatisticsApiTest : KtorClientTest() {
 
@@ -40,8 +41,8 @@ class StatisticsApiTest : KtorClientTest() {
     private val transactionApi: TransactionApi by inject { parametersOf(client) }
     private val tagApi: TagApi by inject { parametersOf(client) }
 
-    private lateinit var primaryAccountId: UUID
-    private lateinit var secondaryAccountId: UUID
+    private lateinit var primaryAccountId: Uuid
+    private lateinit var secondaryAccountId: Uuid
     private var incomeCategoryId by Delegates.notNull<Long>()
     private var expenseCategoryId by Delegates.notNull<Long>()
 

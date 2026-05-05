@@ -1,37 +1,27 @@
 package com.denchic45.financetracker.database.table
 
 import com.denchic45.financetracker.api.transaction.model.TransactionType
-import org.jetbrains.exposed.dao.LongEntity
-import org.jetbrains.exposed.dao.LongEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.case
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.kotlin.datetime.datetime
-import org.jetbrains.exposed.sql.longLiteral
-import org.jetbrains.exposed.sql.sum
+import com.denchic45.financetracker.database.table.Transactions.datetime
+import org.jetbrains.exposed.v1.core.ReferenceOption
+import org.jetbrains.exposed.v1.core.case
+import org.jetbrains.exposed.v1.core.dao.id.EntityID
+import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.longLiteral
+import org.jetbrains.exposed.v1.core.sum
+import org.jetbrains.exposed.v1.dao.LongEntity
+import org.jetbrains.exposed.v1.dao.LongEntityClass
+import org.jetbrains.exposed.v1.datetime.datetime
+
 
 object Transactions : LongIdTable("transaction", "transaction_id") {
     val datetime = datetime("datetime")
     val amount = long("amount")
     val type = enumerationByName<TransactionType>("transaction_type", 28)
     val description = text("description")
-    val sourceAccountId = reference(
-        "source_account_id", Accounts,
-        onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.CASCADE
-    )
-    val categoryId = optReference(
-        "category_id",
-        Categories,
-        onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.CASCADE
-    )
-    val incomeAccountId = optReference(
-        "income_account_id",
-        Accounts,
-        onDelete = ReferenceOption.CASCADE,
-        onUpdate = ReferenceOption.CASCADE
-    )
+    val sourceAccountId = reference("source_account_id", Accounts, onDelete = ReferenceOption.CASCADE)
+    val categoryId = optReference("category_id", Categories, onDelete = ReferenceOption.CASCADE)
+    val incomeAccountId = optReference("income_account_id", Accounts, onDelete = ReferenceOption.CASCADE,)
 
     val expenseSum = case().When(type eq TransactionType.EXPENSE, amount).Else(longLiteral(0)).sum()
 

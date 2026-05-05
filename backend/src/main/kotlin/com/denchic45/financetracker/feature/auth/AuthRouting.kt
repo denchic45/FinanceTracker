@@ -17,8 +17,7 @@ import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.*
-import java.util.regex.Pattern
+import kotlin.uuid.Uuid
 
 
 fun Route.authRoute() {
@@ -26,7 +25,7 @@ fun Route.authRoute() {
     val categoryRepository: CategoryRepository by inject()
     val config = environment.config
 
-    fun generateToken(userId: UUID): String {
+    fun generateToken(userId: Uuid): String {
         return JWT.create()
             .withAudience(config.property("jwt.audience").getString())
             .withClaim("sub", userId.toString())

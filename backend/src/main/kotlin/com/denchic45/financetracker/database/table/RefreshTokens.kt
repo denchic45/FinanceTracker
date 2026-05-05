@@ -1,8 +1,9 @@
 package com.denchic45.financetracker.database.table
 
-import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.javatime.timestampWithTimeZone
+import org.jetbrains.exposed.v1.core.ReferenceOption
+import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
+import org.jetbrains.exposed.v1.datetime.timestampWithTimeZone
+
 
 object RefreshTokens : LongIdTable("refresh_token") {
     val token = text("token")

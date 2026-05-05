@@ -14,19 +14,19 @@ import com.denchic45.financetracker.api.error.*
 import com.denchic45.financetracker.database.table.RefreshTokens
 import com.denchic45.financetracker.database.table.UserDao
 import com.denchic45.financetracker.database.table.Users
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.less
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 import java.time.OffsetDateTime
-import java.util.*
+import kotlin.uuid.Uuid
 
 class AuthService {
 
-    fun signUp(request: SignUpRequest): Either<EmailAlreadyUsed, Pair<UUID, String>> = transaction {
+    fun signUp(request: SignUpRequest): Either<EmailAlreadyUsed, Pair<Uuid, String>> = transaction {
         val existingUser = UserDao.find { Users.email eq request.email }.singleOrNull()
         if (existingUser != null) return@transaction EmailAlreadyUsed.left()
 
@@ -43,7 +43,7 @@ class AuthService {
     }
 
 
-    fun findUserAndGenerateRefreshToken(request: SignInRequest): Either<ApiError, Pair<UUID, String>> = either {
+    fun findUserAndGenerateRefreshToken(request: SignInRequest): Either<ApiError, Pair<Uuid, String>> = either {
         transaction {
             val user = ensureNotNull(UserDao.find(Users.email eq request.email).singleOrNull()) { WrongEmail }
             ensure(BCrypt.checkpw(request.password, user.password)) { WrongPassword }
@@ -52,7 +52,7 @@ class AuthService {
         }
     }
 
-    fun refreshToken(request: RefreshTokenRequest): Either<InvalidRefreshToken, Pair<UUID, String>> = either {
+    fun refreshToken(request: RefreshTokenRequest): Either<InvalidRefreshToken, Pair<Uuid, String>> = either {
         transaction {
             val refreshToken = ensureNotNull(getRefreshToken(request.refreshToken)) { InvalidRefreshToken }
             removeRefreshToken(request.refreshToken)
@@ -61,13 +61,13 @@ class AuthService {
         }
     }
 
-    private fun generateRefreshToken(userId: UUID): RefreshToken = RefreshToken(
+    private fun generateRefreshToken(userId: Uuid): RefreshToken = RefreshToken(
         userId,
-        UUID.randomUUID().toString(),
+        Uuid.random().toString(),
         OffsetDateTime.now().plusMonths(3)
     )
 
-    private fun generateAndInsertRefreshToken(userId: UUID): String {
+    private fun generateAndInsertRefreshToken(userId: Uuid): String {
         return insertRefreshToken(generateRefreshToken(userId))
     }
 

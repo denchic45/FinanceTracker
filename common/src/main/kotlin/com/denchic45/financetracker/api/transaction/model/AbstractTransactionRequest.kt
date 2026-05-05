@@ -1,16 +1,15 @@
 package com.denchic45.financetracker.api.transaction.model
 
-import com.denchic45.financetracker.util.UUIDSerializer
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
-import java.util.*
+import kotlin.uuid.Uuid
 
 @Serializable
 sealed class AbstractTransactionRequest {
     abstract val datetime: LocalDateTime
     abstract val amount: Long
     abstract val note: String
-    abstract val accountId: UUID
+    abstract val accountId: Uuid
 }
 
 @Serializable
@@ -19,8 +18,7 @@ data class TransactionRequest(
     override val datetime: LocalDateTime,
     override val amount: Long,
     override val note: String,
-    @Serializable(UUIDSerializer::class)
-    override val accountId: UUID,
+    override val accountId: Uuid,
     val categoryId: Long,
     val tagIds: List<Long> = emptyList()
 ) : AbstractTransactionRequest()
@@ -30,8 +28,6 @@ data class TransferTransactionRequest(
     override val datetime: LocalDateTime,
     override val amount: Long,
     override val note: String,
-    @Serializable(UUIDSerializer::class)
-    override val accountId: UUID,
-    @Serializable(UUIDSerializer::class)
-    val incomeSourceId: UUID
+    override val accountId: Uuid,
+    val incomeSourceId: Uuid
 ) : AbstractTransactionRequest()

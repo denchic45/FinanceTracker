@@ -13,8 +13,7 @@ adaptive = "1.2.0"
 icondialog = "3.3.0"
 navigation3 = "1.0.0"
 lifecycleViewmodelNav3 = "2.10.0"
-paging = "3.3.6"
-pagingCompose = "3.4.0-alpha04"
+paging = "3.4.0"
 datastorePreferences = "1.1.7"
 ktorClientOkhttp = "3.2.3"
 coilCompose = "3.2.0"
@@ -36,9 +35,8 @@ androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", versi
 compose-ui = { group = "androidx.compose.ui", name = "ui" }
 activity-compose = { group = "androidx.activity", name = "activity-compose" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-#androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "composeUi" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
 compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "jetbrainsCompose" }
 compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "jetbrainsCompose" }
 

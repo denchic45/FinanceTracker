@@ -9,6 +9,7 @@ import com.denchic45.financetracker.api.statistic.StatisticsApi
 import com.denchic45.financetracker.api.tag.TagApi
 import com.denchic45.financetracker.api.transaction.TransactionApi
 import com.denchic45.financetracker.data.AppPreferences
+import com.denchic45.financetracker.util.getLocalIPv4
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.auth.Auth
@@ -53,9 +54,9 @@ val networkModule = module {
                         } else null
                     }
                     refreshTokens {
-                        get<AuthApi>().refreshToken(
-                            RefreshTokenRequest(oldTokens!!.refreshToken!!)
-                        ).fold(
+                        val refreshToken = appPreferences.refreshToken.first() ?: return@refreshTokens null
+                        get<AuthApi>().refreshToken(RefreshTokenRequest(refreshToken))
+                            .fold(
                             ifLeft = {
                                 appPreferences.clearAll()
                                 null
